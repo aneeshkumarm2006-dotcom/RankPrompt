@@ -174,7 +174,7 @@ const Reports = () => {
 
       const cleanedBrandUrl = cleanBrandUrl(formData.websiteUrl);
 
-      const N8N_WEBHOOK_URL = 'https://n8n.srv883399.hstgr.cloud/webhook-test/bfc97a52-cf33-4b41-976b-dffacac20c27';
+      const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       
       // Generate authentication token for n8n webhook
