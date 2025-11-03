@@ -2,8 +2,6 @@ import crypto from 'crypto';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import ScheduledPrompt from '../models/ScheduledPrompt.js';
-import AnalysisJob from '../models/AnalysisJob.js';
-import AnalysisResult from '../models/AnalysisResult.js';
 
 /**
  * Store prompts for scheduling after step 3 (generate-prompts)

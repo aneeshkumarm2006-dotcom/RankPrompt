@@ -1,5 +1,6 @@
 import https from 'https';
 import http from 'http';
+import Brand from '../models/Brand.js';
 
 /**
  * @desc    Get favicon for a website URL
@@ -86,6 +87,149 @@ export const getFavicon = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching favicon',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Create/Save a new brand
+ * @route   POST /api/brand/save
+ * @access  Private
+ */
+export const saveBrand = async (req, res) => {
+  try {
+    const { brandName, websiteUrl, favicon } = req.body;
+    const userId = req.user._id;
+
+    if (!brandName || !websiteUrl) {
+      return res.status(400).json({
+        success: false,
+        message: 'Brand name and website URL are required',
+      });
+    }
+
+    // Check if brand already exists for this user
+    const existingBrand = await Brand.findOne({ userId, brandName });
+    if (existingBrand) {
+      return res.status(400).json({
+        success: false,
+        message: 'Brand already exists',
+      });
+    }
+
+    const brand = await Brand.create({
+      userId,
+      brandName,
+      websiteUrl,
+      favicon,
+    });
+
+    res.status(201).json({
+      success: true,
+      data: brand,
+    });
+  } catch (error) {
+    console.error('Error saving brand:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error saving brand',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Get all brands for current user
+ * @route   GET /api/brand/list
+ * @access  Private
+ */
+export const getUserBrands = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const brands = await Brand.find({ userId, isActive: true })
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      data: brands,
+    });
+  } catch (error) {
+    console.error('Error fetching brands:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching brands',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Get single brand by ID
+ * @route   GET /api/brand/:id
+ * @access  Private
+ */
+export const getBrandById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const brand = await Brand.findOne({ _id: id, userId });
+
+    if (!brand) {
+      return res.status(404).json({
+        success: false,
+        message: 'Brand not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: brand,
+    });
+  } catch (error) {
+    console.error('Error fetching brand:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching brand',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Delete a brand
+ * @route   DELETE /api/brand/:id
+ * @access  Private
+ */
+export const deleteBrand = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const brand = await Brand.findOneAndUpdate(
+      { _id: id, userId },
+      { isActive: false },
+      { new: true }
+    );
+
+    if (!brand) {
+      return res.status(404).json({
+        success: false,
+        message: 'Brand not found',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Brand deleted successfully',
+    });
+  } catch (error) {
+    console.error('Error deleting brand:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error deleting brand',
       error: error.message,
     });
   }

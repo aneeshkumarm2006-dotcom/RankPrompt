@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   Zap, 
@@ -19,6 +19,30 @@ const Sidebar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
+  const [brands, setBrands] = useState([]);
+
+  // Fetch user brands when dropdown is opened
+  useEffect(() => {
+    if (isBrandsOpen && brands.length === 0) {
+      fetchBrands();
+    }
+  }, [isBrandsOpen]);
+
+  const fetchBrands = async () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      const response = await fetch(`${API_URL}/brand/list`, {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const { data } = await response.json();
+        setBrands(data);
+      }
+    } catch (error) {
+      console.error('Error fetching brands:', error);
+    }
+  };
 
   const menuItems = [
     { 
@@ -26,13 +50,6 @@ const Sidebar = () => {
       path: '/reports/new', 
       icon: Plus, 
       gradient: 'from-purple-500 to-pink-500',
-    },
-    { 
-      name: 'Get Started', 
-      path: '/get-started', 
-      icon: Sparkles, 
-      gradient: 'from-green-500 to-emerald-500',
-      badge: '0/4'
     },
     { 
       name: 'Reports', 
@@ -141,12 +158,36 @@ const Sidebar = () => {
                 </Link>
                 {item.hasDropdown && isBrandsOpen && (
                   <div className="ml-12 mt-2 space-y-1">
-                    <Link
-                      to="/brands/all"
-                      className="block p-2 text-sm text-gray-400 hover:text-white transition-colors"
-                    >
-                      All Brands
-                    </Link>
+                    {brands.length === 0 ? (
+                      <div className="p-2 text-sm text-gray-500">
+                        No saved brands yet
+                      </div>
+                    ) : (
+                      brands.map((brand) => (
+                        <div
+                          key={brand._id}
+                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
+                        >
+                          {brand.favicon ? (
+                            <img
+                              src={brand.favicon}
+                              alt={brand.brandName}
+                              className="w-5 h-5 rounded"
+                              onError={(e) => {
+                                e.target.style.display = 'none';
+                              }}
+                            />
+                          ) : (
+                            <div className="w-5 h-5 bg-gray-600 rounded flex items-center justify-center text-xs text-white">
+                              {brand.brandName?.charAt(0)}
+                            </div>
+                          )}
+                          <span className="text-sm text-gray-300 hover:text-white flex-1 truncate">
+                            {brand.brandName}
+                          </span>
+                        </div>
+                      ))
+                    )}
                   </div>
                 )}
               </>

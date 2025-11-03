@@ -1,10 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { Search, Globe, X, Check } from 'lucide-react';
 import Step2BrandAnalysis from '../components/Step2BrandAnalysis';
 import Step3ReadyToAnalyze from '../components/Step3ReadyToAnalyze';
+import AnalysisLoadingModal from '../components/AnalysisLoadingModal';
+import SaveBrandModal from '../components/SaveBrandModal';
 
 const Reports = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     brandName: '',
     websiteUrl: '',
@@ -23,8 +27,10 @@ const Reports = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showBrandModal, setShowBrandModal] = useState(false);
+  const [showSaveBrandModal, setShowSaveBrandModal] = useState(false);
   const [existingBrand, setExistingBrand] = useState(null);
   const [step2Data, setStep2Data] = useState(null);
+  const [analysisProgress, setAnalysisProgress] = useState({ total: 0, completed: 0 });
 
   const countries = [
     { code: 'IN', name: 'India' },
@@ -132,9 +138,44 @@ const Reports = () => {
     // Fetch favicon
     const favicon = await fetchFavicon(formData.websiteUrl);
     setFormData(prev => ({ ...prev, brandFavicon: favicon }));
-
-    // Move to step 2
     setIsAnalyzing(false);
+
+    // Show save brand modal
+    setShowSaveBrandModal(true);
+  };
+
+  const handleSaveBrand = async () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      const response = await fetch(`${API_URL}/brand/save`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          brandName: formData.brandName,
+          websiteUrl: formData.websiteUrl,
+          favicon: formData.brandFavicon,
+        }),
+      });
+
+      if (response.ok) {
+        console.log('✅ Brand saved successfully');
+      } else {
+        const error = await response.json();
+        console.error('❌ Failed to save brand:', error.message);
+      }
+    } catch (error) {
+      console.error('❌ Error saving brand:', error);
+    }
+
+    setShowSaveBrandModal(false);
+    setCurrentStep(2);
+  };
+
+  const handleSkipSaveBrand = () => {
+    setShowSaveBrandModal(false);
     setCurrentStep(2);
   };
 
@@ -193,122 +234,201 @@ const Reports = () => {
       console.log('✅ Authentication token generated');
 
       const totalJobs = finalPrompts.length;
-      const totalCalls = totalJobs * 2; // n8n-proxy + tracker per prompt
 
       console.log('\n' + '='.repeat(80));
-      console.log(`🚀 STARTING ANALYSIS - CHECK CHROME NETWORK TAB`);
+      console.log(`🚀 STARTING ANALYSIS - SENDING ALL REQUESTS IN PARALLEL`);
       console.log('='.repeat(80));
       console.log(`Brand: ${formData.brandName}`);
+      console.log(`Brand URL: ${cleanedBrandUrl}`);
       console.log(`Prompts: ${finalPrompts.length}`);
       console.log(`AI Models: ${selectedAiModels.join(', ')}`);
-      console.log(`Total Jobs: ${totalJobs}`);
-      console.log(`n8n-proxy calls (POST): ${totalJobs}`);
-      console.log(`tracker calls (POST): ${totalJobs}`);
-      console.log(`TOTAL API CALLS: ${totalCalls}`);
+      console.log(`Total API Calls: ${totalJobs} (all sent simultaneously)`);
       console.log(`🔐 Authentication: JWT Bearer token`);
+      console.log(`⏱️  Expected time: ~40 seconds (not ${Math.round(totalJobs * 40 / 60)} minutes!)`);
       console.log('='.repeat(80) + '\n');
 
-      let completedJobs = 0;
-      const results = [];
+      // Determine location and country based on search scope
+      let location = null;
+      let country = null;
 
-      // Process each prompt (all models sent together as booleans)
-      for (const prompt of finalPrompts) {
-        completedJobs++;
-        
-        console.log(`\n[${completedJobs}/${totalJobs}] Processing:`);
-        console.log(`  Prompt: "${prompt.text.substring(0, 60)}..."`);
-        console.log(`  Brand: ${formData.brandName}`);
-        console.log(`  Models: ${selectedAiModels.join(', ')}`);
-
-        try {
-          // Determine location and country based on search scope
-          let location = null;
-          let country = null;
-
-          if (formData.searchScope === 'local') {
-            // For local: extract city and country from localSearchCity (e.g., "Delhi, IN")
-            const parts = formData.localSearchCity.split(',').map(p => p.trim());
-            location = parts[0]; // City name
-            country = parts[1] || formData.targetCountry; // Country code (2 letters)
-          } else {
-            // For national: location is null, country is targetCountry
-            location = null;
-            country = formData.targetCountry; // 2-letter country code
-          }
-
-          // CALL 1: n8n-proxy (POST with body - all models as booleans)
-          console.log(`  → [n8n-proxy] POST to n8n webhook...`);
-          console.log(`  Brand URL: ${cleanedBrandUrl}`);
-          console.log(`  Location: ${location || 'null'}, Country: ${country}`);
-          console.log(`  🔐 Using Bearer token for authentication`);
-          
-          const n8nResponse = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              prompt: prompt.text,
-              brand: formData.brandName,
-              brandUrl: cleanedBrandUrl,
-              chatgpt: formData.platforms.chatgpt,
-              perplexity: formData.platforms.perplexity,
-              google_ai_overviews: formData.platforms.googleAiOverviews,
-              location: location,
-              country: country,
-            }),
-          });
-
-          const n8nData = await n8nResponse.json().catch(() => null);
-          console.log(`  ✓ n8n-proxy responded: ${n8nResponse.status}`);
-
-          // CALL 2: tracker (POST to check response)
-          console.log(`  → [tracker] POST to verify n8n response...`);
-          const trackerResponse = await fetch(N8N_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              check: 'status',
-              jobId: completedJobs,
-            }),
-          });
-
-          const hasValidResponse = n8nResponse.ok && n8nData;
-          console.log(`  ✓ tracker: ${hasValidResponse ? 'valid response ✓' : 'failed ✗'}`);
-
-          results.push({
-            prompt: prompt.text,
-            category: prompt.category,
-            models: selectedAiModels,
-            success: hasValidResponse,
-            n8nResponse: n8nData,
-          });
-
-        } catch (error) {
-          console.log(`  ✗ Error: ${error.message}`);
-          results.push({
-            prompt: prompt.text,
-            category: prompt.category,
-            models: selectedAiModels,
-            success: false,
-            error: error.message,
-          });
-        }
+      if (formData.searchScope === 'local') {
+        const parts = formData.localSearchCity.split(',').map(p => p.trim());
+        location = parts[0]; // City name
+        country = parts[1] || formData.targetCountry; // Country code (2 letters)
+      } else {
+        location = null;
+        country = formData.targetCountry; // 2-letter country code
       }
 
+      console.log(`📍 Location: ${location || 'null'}, Country: ${country}`);
+
+      const promptsSentPayloads = finalPrompts.map((prompt, index) => ({
+        prompt: prompt.text,
+        category: prompt.category,
+        brand: formData.brandName,
+        brandUrl: cleanedBrandUrl,
+        chatgpt: formData.platforms.chatgpt,
+        perplexity: formData.platforms.perplexity,
+        google_ai_overviews: formData.platforms.googleAiOverviews,
+        location,
+        country,
+        promptIndex: index,
+        status: 'sent',
+      }));
+
+      console.log(`\n🚀 Sending ${totalJobs} requests to n8n webhook NOW...\n`);
+
+      // Set initial progress
+      setAnalysisProgress({ total: totalJobs, completed: 0 });
+
+      // Send ALL requests in parallel using Promise.all
+      const n8nPromises = finalPrompts.map((prompt, index) => {
+        console.log(`[${index + 1}/${totalJobs}] Queuing: "${prompt.text.substring(0, 50)}..."`);
+        
+        const payload = promptsSentPayloads[index];
+
+        return fetch(N8N_WEBHOOK_URL, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            prompt: payload.prompt,
+            brand: payload.brand,
+            brandUrl: payload.brandUrl,
+            chatgpt: payload.chatgpt,
+            perplexity: payload.perplexity,
+            google_ai_overviews: payload.google_ai_overviews,
+            location: payload.location,
+            country: payload.country,
+          }),
+        })
+        .then(async (response) => {
+          const data = await response.json().catch(() => null);
+          console.log(`✅ [${index + 1}/${totalJobs}] Response received: ${response.status}`);
+          
+          // Update progress
+          setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
+          
+          return {
+            prompt: payload.prompt,
+            category: payload.category,
+            success: response.ok,
+            status: response.status,
+            response: data,
+            promptIndex: payload.promptIndex,
+          };
+        })
+        .catch((error) => {
+          console.log(`❌ [${index + 1}/${totalJobs}] Error: ${error.message}`);
+          
+          // Update progress even on error
+          setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
+          
+          return {
+            prompt: payload.prompt,
+            category: payload.category,
+            success: false,
+            error: error.message,
+            promptIndex: payload.promptIndex,
+          };
+        });
+      });
+
+      console.log(`\n⏳ Waiting for all ${totalJobs} requests to complete...\n`);
+
+      // Wait for ALL requests to complete
+      const results = await Promise.all(n8nPromises);
+
       console.log('\n' + '='.repeat(80));
-      console.log(`✅ ANALYSIS COMPLETE`);
+      console.log(`✅ ANALYSIS COMPLETE - ALL RESPONSES COLLECTED`);
       console.log('='.repeat(80));
-      console.log(`Total calls made: ${totalCalls}`);
+      console.log(`Total prompts sent: ${totalJobs}`);
       console.log(`Successful: ${results.filter(r => r.success).length}`);
       console.log(`Failed: ${results.filter(r => !r.success).length}`);
+      console.log('\n📦 Clubbed responses:');
+      console.log(JSON.stringify(results, null, 2));
       console.log('='.repeat(80) + '\n');
 
-      alert(`✅ Analysis Complete!\n\nTotal API calls: ${totalCalls}\nSuccessful: ${results.filter(r => r.success).length}\nFailed: ${results.filter(r => !r.success).length}\n\nCheck Chrome Network tab for all HTTP requests!`);
+      // Save report to database
+      console.log('💾 Saving report to database...');
+      try {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        const promptsResponsesPayloads = results.map((result, index) => ({
+          prompt: result.prompt,
+          category: result.category,
+          success: result.success,
+          status: result.status ?? null,
+          response: result.response,
+          error: result.error ?? null,
+          promptIndex: typeof result.promptIndex === 'number' ? result.promptIndex : index,
+        }));
+
+        const saveResponse = await fetch(`${API_URL}/reports/save`, {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            brandData: {
+              brandName: formData.brandName,
+              websiteUrl: cleanedBrandUrl,
+              favicon: formData.brandFavicon,
+              searchScope: formData.searchScope,
+              location: location,
+              country: country,
+              language: formData.language,
+              platforms: formData.platforms,
+            },
+            reportData: results,
+            promptsSent: promptsSentPayloads,
+            promptsResponses: promptsResponsesPayloads,
+          }),
+        });
+
+        if (saveResponse.ok) {
+          const { data: savedReport } = await saveResponse.json();
+          console.log('✅ Report saved successfully:', savedReport._id);
+          
+          // Navigate to report view with saved report ID
+          navigate(`/reports/${savedReport._id}`);
+        } else {
+          console.error('❌ Failed to save report');
+          // Still navigate to view with in-memory data
+          navigate('/reports/view', {
+            state: {
+              reportData: results,
+              brandData: {
+                brandName: formData.brandName,
+                websiteUrl: cleanedBrandUrl,
+                searchScope: formData.searchScope,
+                location: location,
+                country: country,
+                platforms: formData.platforms,
+              },
+            },
+          });
+        }
+      } catch (saveError) {
+        console.error('❌ Error saving report:', saveError);
+        // Still navigate to view with in-memory data
+        navigate('/reports/view', {
+          state: {
+            reportData: results,
+            brandData: {
+              brandName: formData.brandName,
+              websiteUrl: cleanedBrandUrl,
+              searchScope: formData.searchScope,
+              location: location,
+              country: country,
+              platforms: formData.platforms,
+            },
+          },
+        });
+      }
+      
       setIsAnalyzing(false);
 
     } catch (error) {
@@ -771,6 +891,26 @@ const Reports = () => {
           </div>
         </div>
       )}
+
+      {/* Save Brand Modal */}
+      <SaveBrandModal
+        isOpen={showSaveBrandModal}
+        onClose={handleSkipSaveBrand}
+        brandData={{
+          brandName: formData.brandName,
+          websiteUrl: formData.websiteUrl,
+          favicon: formData.brandFavicon,
+        }}
+        onSave={handleSaveBrand}
+        onSkip={handleSkipSaveBrand}
+      />
+
+      {/* Analysis Loading Modal */}
+      <AnalysisLoadingModal 
+        isOpen={isAnalyzing}
+        totalPrompts={analysisProgress.total}
+        completedPrompts={analysisProgress.completed}
+      />
     </div>
   );
 };

@@ -7,6 +7,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
+import ReportView from './pages/ReportView';
+import AllReports from './pages/AllReports';
+import SharedReport from './pages/SharedReport';
 import Profile from './pages/Profile';
 import EarnCredits from './pages/EarnCredits';
 import BuyCredits from './pages/BuyCredits';
@@ -20,6 +23,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/shared/:token" element={<SharedReport />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
@@ -28,13 +32,33 @@ function App() {
             />
             <Route
               path="/reports"
-              element={<Navigate to="/reports/new" replace />}
+              element={
+                <ProtectedRoute>
+                  <AllReports />
+                </ProtectedRoute>
+              }
             />
             <Route
               path="/reports/new"
               element={
                 <ProtectedRoute>
                   <Reports />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports/view"
+              element={
+                <ProtectedRoute>
+                  <ReportView />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/reports/:id"
+              element={
+                <ProtectedRoute>
+                  <ReportView />
                 </ProtectedRoute>
               }
             />
