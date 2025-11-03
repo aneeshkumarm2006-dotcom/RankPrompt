@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   Zap, 
   Plus, 
@@ -17,6 +17,7 @@ import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
   const [brands, setBrands] = useState([]);
@@ -41,6 +42,32 @@ const Sidebar = () => {
       }
     } catch (error) {
       console.error('Error fetching brands:', error);
+    }
+  };
+
+  const handleBrandClick = async (brandId) => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      const response = await fetch(`${API_URL}/reports/by-brand/${brandId}`, {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const { data: report } = await response.json();
+        
+        // Navigate to the report based on its status
+        if (report.status === 'in-progress') {
+          navigate(`/reports/new?continue=${report._id}`);
+        } else {
+          navigate(`/reports/${report._id}`);
+        }
+      } else {
+        // No report found for this brand, navigate to reports list
+        navigate('/reports');
+      }
+    } catch (error) {
+      console.error('Error fetching brand report:', error);
+      navigate('/reports');
     }
   };
 
@@ -166,6 +193,7 @@ const Sidebar = () => {
                       brands.map((brand) => (
                         <div
                           key={brand._id}
+                          onClick={() => handleBrandClick(brand._id)}
                           className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
                         >
                           {brand.favicon ? (

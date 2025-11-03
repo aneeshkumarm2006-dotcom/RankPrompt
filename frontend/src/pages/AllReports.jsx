@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { Eye, Trash2, Share2, Calendar, TrendingUp } from 'lucide-react';
+import { Eye, Trash2, Share2, Calendar, TrendingUp, PlayCircle, Clock } from 'lucide-react';
 
 const AllReports = () => {
   const navigate = useNavigate();
   const [reports, setReports] = useState([]);
+  const [inProgressReports, setInProgressReports] = useState([]);
+  const [completedReports, setCompletedReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -24,6 +26,13 @@ const AllReports = () => {
       if (response.ok) {
         const { data, totalPages: total } = await response.json();
         setReports(data);
+        
+        // Separate in-progress and completed reports
+        const inProgress = data.filter(r => r.status === 'in-progress');
+        const completed = data.filter(r => r.status === 'completed');
+        
+        setInProgressReports(inProgress);
+        setCompletedReports(completed);
         setTotalPages(total);
       } else {
         console.error('Failed to fetch reports');
@@ -93,10 +102,10 @@ const AllReports = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className="flex min-h-screen bg-gray-900">
       <Sidebar />
       
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 ml-64 overflow-auto">
         <div className="max-w-7xl mx-auto p-6">
           {/* Header */}
           <div className="mb-6">
@@ -118,9 +127,89 @@ const AllReports = () => {
             </div>
           ) : (
             <>
-              {/* Reports Grid */}
-              <div className="grid grid-cols-1 gap-4">
-                {reports.map((report) => (
+              {/* In-Progress Reports Section */}
+              {inProgressReports.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Clock className="w-5 h-5 text-yellow-500" />
+                    <h2 className="text-xl font-bold text-white">In Progress</h2>
+                    <span className="text-sm text-gray-400">({inProgressReports.length})</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {inProgressReports.map((report) => (
+                      <div
+                        key={report._id}
+                        className="bg-gray-800 rounded-lg p-6 border-2 border-yellow-500/30 hover:border-yellow-500/50 transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          {/* Left: Brand Info */}
+                          <div className="flex items-start gap-4 flex-1">
+                            {report.favicon && (
+                              <img
+                                src={report.favicon}
+                                alt={report.brandName}
+                                className="w-12 h-12 rounded-lg"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            )}
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-xl font-bold text-white">
+                                  {report.brandName}
+                                </h3>
+                                <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
+                                  Step {report.progress?.currentStep || 1} of 3
+                                </span>
+                              </div>
+                              <p className="text-gray-400 text-sm mb-3">{report.brandUrl}</p>
+                              
+                              {/* Meta */}
+                              <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <Calendar className="w-4 h-4" />
+                                <span>Last updated: {new Date(report.progress?.lastUpdated || report.updatedAt).toLocaleDateString()}</span>
+                                <span className="mx-2">•</span>
+                                <span className="capitalize">{report.searchScope} Search</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Right: Actions */}
+                          <div className="flex items-center gap-2 ml-4">
+                            <button
+                              onClick={() => navigate(`/reports/new?continue=${report._id}`)}
+                              className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors"
+                              title="Continue Report"
+                            >
+                              <PlayCircle className="w-4 h-4" />
+                              Continue
+                            </button>
+                            <button
+                              onClick={() => handleDeleteReport(report._id)}
+                              className="flex items-center gap-2 px-4 py-2 bg-red-500 bg-opacity-20 text-red-400 rounded-lg hover:bg-opacity-30 transition-colors"
+                              title="Delete Report"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Completed Reports Section */}
+              {completedReports.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="w-5 h-5 text-green-500" />
+                    <h2 className="text-xl font-bold text-white">Completed Reports</h2>
+                    <span className="text-sm text-gray-400">({completedReports.length})</span>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {completedReports.map((report) => (
                   <div
                     key={report._id}
                     className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-colors"
@@ -207,8 +296,10 @@ const AllReports = () => {
                       </div>
                     </div>
                   </div>
-                ))}
-              </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Pagination */}
               {totalPages > 1 && (

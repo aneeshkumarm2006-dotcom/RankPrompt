@@ -66,8 +66,15 @@ const reportSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['generating', 'completed', 'failed'],
+      enum: ['in-progress', 'completed', 'failed'],
       default: 'completed',
+    },
+    // Progress tracking for in-progress reports
+    progress: {
+      currentStep: { type: Number, default: 1 }, // 1, 2, or 3
+      formData: { type: mongoose.Schema.Types.Mixed }, // Saved form data
+      step2Data: { type: mongoose.Schema.Types.Mixed }, // Saved step 2 data
+      lastUpdated: { type: Date, default: Date.now },
     },
     isShared: {
       type: Boolean,

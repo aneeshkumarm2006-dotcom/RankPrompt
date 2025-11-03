@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { Search, Globe, X, Check } from 'lucide-react';
 import Step2BrandAnalysis from '../components/Step2BrandAnalysis';
@@ -9,6 +9,9 @@ import SaveBrandModal from '../components/SaveBrandModal';
 
 const Reports = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const continueReportId = searchParams.get('continue');
+  
   const [formData, setFormData] = useState({
     brandName: '',
     websiteUrl: '',
@@ -25,12 +28,91 @@ const Reports = () => {
   });
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [isFetchingBrandInfo, setIsFetchingBrandInfo] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showBrandModal, setShowBrandModal] = useState(false);
   const [showSaveBrandModal, setShowSaveBrandModal] = useState(false);
   const [existingBrand, setExistingBrand] = useState(null);
   const [step2Data, setStep2Data] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState({ total: 0, completed: 0 });
+  const [inProgressReportId, setInProgressReportId] = useState(null);
+
+  // Load in-progress report if continuing
+  useEffect(() => {
+    if (continueReportId) {
+      loadInProgressReport(continueReportId);
+    }
+  }, [continueReportId]);
+
+  const loadInProgressReport = async (reportId) => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      const response = await fetch(`${API_URL}/reports/${reportId}`, {
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const { data: report } = await response.json();
+        
+        if (report.status === 'in-progress' && report.progress) {
+          // Restore form data
+          if (report.progress.formData) {
+            setFormData(report.progress.formData);
+          }
+          
+          // Restore step 2 data if exists
+          if (report.progress.step2Data) {
+            setStep2Data(report.progress.step2Data);
+          }
+          
+          // Set current step
+          setCurrentStep(report.progress.currentStep || 1);
+          setInProgressReportId(reportId);
+          
+          console.log('✅ Loaded in-progress report:', reportId);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading in-progress report:', error);
+    }
+  };
+
+  const saveProgress = async (step, step2DataToSave = null) => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      const response = await fetch(`${API_URL}/reports/save-progress`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          reportId: inProgressReportId,
+          brandData: {
+            brandName: formData.brandName,
+            websiteUrl: formData.websiteUrl,
+            favicon: formData.brandFavicon,
+            searchScope: formData.searchScope,
+            location: formData.searchScope === 'local' ? formData.localSearchCity.split(',')[0].trim() : null,
+            country: formData.searchScope === 'local' ? formData.localSearchCity.split(',')[1]?.trim() || formData.targetCountry : formData.targetCountry,
+            language: formData.language,
+            platforms: formData.platforms,
+          },
+          currentStep: step,
+          formData: formData,
+          step2Data: step2DataToSave || step2Data,
+        }),
+      });
+
+      if (response.ok) {
+        const { data: savedReport } = await response.json();
+        if (!inProgressReportId) {
+          setInProgressReportId(savedReport._id);
+        }
+        console.log('✅ Progress saved');
+      }
+    } catch (error) {
+      console.error('Error saving progress:', error);
+    }
+  };
 
   const countries = [
     { code: 'IN', name: 'India' },
@@ -133,12 +215,12 @@ const Reports = () => {
       return;
     }
 
-    setIsAnalyzing(true);
+    setIsFetchingBrandInfo(true);
     
     // Fetch favicon
     const favicon = await fetchFavicon(formData.websiteUrl);
     setFormData(prev => ({ ...prev, brandFavicon: favicon }));
-    setIsAnalyzing(false);
+    setIsFetchingBrandInfo(false);
 
     // Show save brand modal
     setShowSaveBrandModal(true);
@@ -172,16 +254,19 @@ const Reports = () => {
 
     setShowSaveBrandModal(false);
     setCurrentStep(2);
+    await saveProgress(2);
   };
 
   const handleSkipSaveBrand = () => {
     setShowSaveBrandModal(false);
     setCurrentStep(2);
+    saveProgress(2);
   };
 
   const handleStep2Complete = (data) => {
     setStep2Data(data);
     setCurrentStep(3);
+    saveProgress(3, data);
   };
 
   const handleAnalyzeVisibility = async (finalPrompts) => {
@@ -787,11 +872,11 @@ const Reports = () => {
               {/* Analyze Button */}
               <button
                 onClick={handleAnalyzeBrand}
-                disabled={isAnalyzing}
+                disabled={isFetchingBrandInfo}
                 className="w-full bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white font-bold py-4 px-6 rounded-xl transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center space-x-2"
               >
                 <Search className="w-5 h-5" />
-                <span>{isAnalyzing ? 'Analyzing Brand...' : 'Analyze Brand'}</span>
+                <span>{isFetchingBrandInfo ? 'Analyzing Brand...' : 'Analyze Brand'}</span>
               </button>
             </div>
           </div>

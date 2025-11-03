@@ -279,3 +279,125 @@ export const deleteReport = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc    Save or update in-progress report
+ * @route   POST /api/reports/save-progress
+ * @access  Private
+ */
+export const saveInProgressReport = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { reportId, brandData, currentStep, formData, step2Data } = req.body;
+
+    if (!brandData || !currentStep) {
+      return res.status(400).json({
+        success: false,
+        message: 'Brand data and current step are required',
+      });
+    }
+
+    let report;
+
+    if (reportId) {
+      // Update existing in-progress report
+      report = await Report.findOneAndUpdate(
+        { _id: reportId, userId, status: 'in-progress' },
+        {
+          brandName: brandData.brandName,
+          brandUrl: brandData.websiteUrl,
+          favicon: brandData.favicon,
+          searchScope: brandData.searchScope,
+          location: brandData.location,
+          country: brandData.country,
+          language: brandData.language,
+          platforms: brandData.platforms,
+          progress: {
+            currentStep,
+            formData,
+            step2Data,
+            lastUpdated: Date.now(),
+          },
+        },
+        { new: true }
+      );
+
+      if (!report) {
+        return res.status(404).json({
+          success: false,
+          message: 'In-progress report not found',
+        });
+      }
+    } else {
+      // Create new in-progress report
+      report = await Report.create({
+        userId,
+        brandId: brandData.brandId || null,
+        brandName: brandData.brandName,
+        brandUrl: brandData.websiteUrl,
+        favicon: brandData.favicon,
+        searchScope: brandData.searchScope,
+        location: brandData.location,
+        country: brandData.country,
+        language: brandData.language || 'English',
+        platforms: brandData.platforms,
+        reportData: [], // Empty for in-progress
+        status: 'in-progress',
+        progress: {
+          currentStep,
+          formData,
+          step2Data,
+          lastUpdated: Date.now(),
+        },
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: report,
+    });
+  } catch (error) {
+    console.error('Error saving in-progress report:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error saving in-progress report',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Get report by brand ID (for navigation from sidebar)
+ * @route   GET /api/reports/by-brand/:brandId
+ * @access  Private
+ */
+export const getReportByBrandId = async (req, res) => {
+  try {
+    const { brandId } = req.params;
+    const userId = req.user._id;
+
+    // Find the most recent report for this brand
+    const report = await Report.findOne({ brandId, userId })
+      .sort({ createdAt: -1 })
+      .select('_id brandName status');
+
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: 'No report found for this brand',
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: report,
+    });
+  } catch (error) {
+    console.error('Error fetching report by brand:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching report',
+      error: error.message,
+    });
+  }
+};

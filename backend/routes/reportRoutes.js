@@ -6,6 +6,8 @@ import {
   shareReport,
   getSharedReport,
   deleteReport,
+  saveInProgressReport,
+  getReportByBrandId,
 } from '../controllers/reportController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -13,7 +15,9 @@ const router = express.Router();
 
 // Protected routes
 router.post('/save', protect, saveReport);
+router.post('/save-progress', protect, saveInProgressReport);
 router.get('/list', protect, getUserReports);
+router.get('/by-brand/:brandId', protect, getReportByBrandId);
 router.get('/:id', protect, getReportById);
 router.post('/:id/share', protect, shareReport);
 router.delete('/:id', protect, deleteReport);
