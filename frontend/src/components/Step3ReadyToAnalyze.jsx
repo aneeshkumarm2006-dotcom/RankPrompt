@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Search, Edit2, ExternalLink, Loader, ChevronDown } from 'lucide-react';
 
 const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartOver }) => {
@@ -10,19 +10,25 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
   const [showAllPrompts, setShowAllPrompts] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedText, setEditedText] = useState('');
+  
+  // Prevent double API calls in React StrictMode
+  const hasCalledAPI = useRef(false);
 
   useEffect(() => {
-    if (step2Data.mode === 'generate') {
-      generatePromptsWithAI();
-    } else {
-      // Custom prompts mode
-      setPrompts(
-        step2Data.customPrompts.map((text, index) => ({
-          text,
-          category: 'Custom',
-          categoryDescription: 'User-defined prompt',
-        }))
-      );
+    if (!hasCalledAPI.current) {
+      hasCalledAPI.current = true;
+      if (step2Data.mode === 'generate') {
+        generatePromptsWithAI();
+      } else {
+        // Custom prompts mode
+        setPrompts(
+          step2Data.customPrompts.map((text, index) => ({
+            text,
+            category: 'Custom',
+            categoryDescription: 'User-defined prompt',
+          }))
+        );
+      }
     }
   }, []);
 

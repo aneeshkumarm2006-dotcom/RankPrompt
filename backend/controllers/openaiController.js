@@ -90,22 +90,32 @@ export const generateCategories = async (req, res) => {
       messages: [
         {
           role: 'system',
-          content: 'You are an SEO expert specializing in categorizing business types and generating relevant search categories. Return ONLY a JSON array of category objects with no additional text or formatting.',
+          content: 'You are an SEO expert specializing in categorizing business types and generating relevant search categories. You must return a valid JSON object with a "categories" key containing an array of category objects.',
         },
         {
           role: 'user',
-          content: `Based on the brand "${brandName}" (${websiteUrl})${summary ? ` with the following description: ${summary}` : ''}, generate exactly 10 distinct SEO/business categories that would be most relevant for this brand's online visibility and search optimization.
+          content: `Based on the brand "${brandName}" (${websiteUrl})${summary ? ` with the following description: ${summary}` : ''}, generate EXACTLY 10 distinct SEO/business categories that would be most relevant for this brand's online visibility and search optimization.
 
-Return ONLY a JSON array in this exact format with no markdown formatting or code blocks:
-[{"name": "Category Name", "description": "Brief description"}]
+Return a valid JSON object in this EXACT format:
+{
+  "categories": [
+    {"name": "Category Name 1", "description": "Brief description"},
+    {"name": "Category Name 2", "description": "Brief description"},
+    ... (10 total categories)
+  ]
+}
 
-Make categories specific, relevant, and useful for SEO/content strategy. Examples: "E-commerce Marketplace", "Consumer Electronics", "Fashion Retail", "Home Essentials", "Online Shopping Platform", etc.`,
+Make categories specific, relevant, and useful for SEO/content strategy. Examples: "E-commerce Marketplace", "Consumer Electronics", "Fashion Retail", "Home Essentials", "Online Shopping Platform", etc.
+
+IMPORTANT: Return exactly 10 categories, no more, no less.`,
         },
       ],
-      temperature: 0.8,
-      max_tokens: 800,
+      temperature: 0.7,
+      max_tokens: 1000,
       response_format: { type: "json_object" },
     });
+
+    console.log('📝 Generating categories for:', brandName);
 
     let responseContent = completion.choices[0].message.content;
     
@@ -113,37 +123,46 @@ Make categories specific, relevant, and useful for SEO/content strategy. Example
     let categories = [];
     try {
       const parsed = JSON.parse(responseContent);
-      // Handle if response is wrapped in an object
-      if (Array.isArray(parsed)) {
-        categories = parsed;
-      } else if (parsed.categories && Array.isArray(parsed.categories)) {
+      
+      // Handle if response has categories key (expected)
+      if (parsed.categories && Array.isArray(parsed.categories)) {
         categories = parsed.categories;
+        console.log(`✓ Successfully parsed ${categories.length} categories`);
+      } else if (Array.isArray(parsed)) {
+        // Direct array response (fallback)
+        categories = parsed;
+        console.log(`✓ Got direct array with ${categories.length} categories`);
       } else {
         // Try to find any array in the object
         const values = Object.values(parsed);
         for (const value of values) {
           if (Array.isArray(value)) {
             categories = value;
+            console.log(`✓ Found array with ${categories.length} categories in object`);
             break;
           }
         }
       }
+
+      // Validate each category has required fields
+      categories = categories.filter(cat => cat.name && cat.description);
+      
     } catch (parseError) {
-      // Fallback: try to extract array from response
-      const arrayMatch = responseContent.match(/\[[\s\S]*\]/);
-      if (arrayMatch) {
-        try {
-          categories = JSON.parse(arrayMatch[0]);
-        } catch (e) {
-          throw new Error('Failed to parse categories from AI response');
-        }
-      } else {
-        throw new Error('Failed to parse categories from AI response');
-      }
+      console.error('❌ Failed to parse OpenAI response:', parseError.message);
+      console.error('Raw response:', responseContent);
+      
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to parse categories from AI response',
+        error: parseError.message,
+      });
     }
 
     // Ensure we have categories array
     if (!Array.isArray(categories) || categories.length === 0) {
+      console.error('❌ No valid categories generated');
+      console.error('Parsed data:', categories);
+      
       return res.status(500).json({
         success: false,
         message: 'Failed to generate categories from AI response',
@@ -152,11 +171,14 @@ Make categories specific, relevant, and useful for SEO/content strategy. Example
 
     // If we don't have exactly 10, pad or trim
     if (categories.length < 10) {
-      console.warn(`Only generated ${categories.length} categories instead of 10`);
+      console.warn(`⚠️ Only generated ${categories.length} categories instead of 10`);
     } else if (categories.length > 10) {
+      console.log(`Trimming from ${categories.length} to 10 categories`);
       categories = categories.slice(0, 10);
     }
 
+    console.log(`✅ Successfully generated ${categories.length} categories for ${brandName}`);
+    
     res.status(200).json({
       success: true,
       data: {
@@ -166,7 +188,7 @@ Make categories specific, relevant, and useful for SEO/content strategy. Example
       },
     });
   } catch (error) {
-    console.error('Generate categories error:', error);
+    console.error('❌ Generate categories error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to generate categories',
@@ -230,13 +252,14 @@ export const generatePrompts = async (req, res) => {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert at generating natural, user-intent focused search queries that people would ask AI assistants like ChatGPT, Perplexity, or Google. Generate GENERIC queries that do NOT mention specific brand names. Return ONLY a JSON array of strings with no additional formatting.',
+            content: 'You are an expert at generating natural, user-intent focused search queries that people would ask AI assistants like ChatGPT, Perplexity, or Google. Generate GENERIC queries that do NOT mention specific brand names. You must return a valid JSON object with a "prompts" key containing an array of strings.',
           },
           {
             role: 'user',
-            content: `Generate ${promptCount} unique, natural search queries/prompts that potential customers would ask AI assistants when looking for products/services in the "${category.name}" category${locationContext}.
+            content: `Generate EXACTLY ${promptCount} unique, natural search queries/prompts that potential customers would ask AI assistants when looking for products/services in the "${category.name}" category${locationContext}.
 
 CRITICAL REQUIREMENTS:
+- Generate EXACTLY ${promptCount} prompts - no more, no less
 - DO NOT mention "${brandName}" or any specific brand names in the prompts
 - Generate GENERIC queries that someone would ask when searching in this category
 - Make queries sound natural and conversational
@@ -251,14 +274,16 @@ Examples for e-commerce:
 - "Where can I buy electronics online with fast delivery?"
 - "Which website has the best deals on fashion?"
 
-Return ONLY a JSON array of prompt strings in this format:
-["prompt 1", "prompt 2", "prompt 3"]
+Return a valid JSON object in this EXACT format:
+{
+  "prompts": ["prompt 1", "prompt 2", "prompt 3", ... ${promptCount} prompts total]
+}
 
-No markdown, no code blocks, no brand names, just the JSON array.`,
+IMPORTANT: Generate exactly ${promptCount} prompts, no markdown, no code blocks, no brand names.`,
           },
         ],
         temperature: 0.9,
-        max_tokens: 1000,
+        max_tokens: 1500,
         response_format: { type: "json_object" },
       });
 
@@ -268,11 +293,13 @@ No markdown, no code blocks, no brand names, just the JSON array.`,
       let prompts = [];
       try {
         const parsed = JSON.parse(responseContent);
-        // Handle if response is wrapped in an object
-        if (Array.isArray(parsed)) {
-          prompts = parsed;
-        } else if (parsed.prompts && Array.isArray(parsed.prompts)) {
+        
+        // Handle if response has prompts key
+        if (parsed.prompts && Array.isArray(parsed.prompts)) {
           prompts = parsed.prompts;
+        } else if (Array.isArray(parsed)) {
+          // Direct array response
+          prompts = parsed;
         } else {
           // Try to find any array in the object
           const values = Object.values(parsed);
@@ -283,37 +310,56 @@ No markdown, no code blocks, no brand names, just the JSON array.`,
             }
           }
         }
-      } catch (parseError) {
-        // Fallback: try to extract array from response
-        const arrayMatch = responseContent.match(/\[[\s\S]*\]/);
-        if (arrayMatch) {
-          try {
-            prompts = JSON.parse(arrayMatch[0]);
-          } catch (e) {
-            console.error('Failed to parse array for category:', category.name);
-            prompts = [];
-          }
-        } else {
-          console.error('Failed to parse prompts for category:', category.name);
-          prompts = [];
+
+        console.log(`✓ Category "${category.name}": Generated ${prompts.length}/${promptCount} prompts`);
+        
+        // Warn if we didn't get the expected number
+        if (prompts.length < promptCount) {
+          console.warn(`⚠️ Warning: Expected ${promptCount} prompts for "${category.name}", got ${prompts.length}`);
         }
+
+      } catch (parseError) {
+        console.error(`❌ Failed to parse prompts for category "${category.name}":`, parseError.message);
+        console.error('Raw response:', responseContent);
+        prompts = [];
       }
 
       // Ensure prompts is an array before iterating
       if (!Array.isArray(prompts)) {
-        console.error('Prompts is not an array for category:', category.name, 'Type:', typeof prompts);
+        console.error(`❌ Prompts is not an array for category "${category.name}". Type:`, typeof prompts);
         prompts = [];
       }
 
-      // Add prompts with category info
+      // Filter out any non-string prompts and add category info
       prompts.forEach((prompt) => {
-        allPrompts.push({
-          text: prompt,
-          category: category.name,
-          categoryDescription: category.description,
-        });
+        if (typeof prompt === 'string' && prompt.trim()) {
+          allPrompts.push({
+            text: prompt.trim(),
+            category: category.name,
+            categoryDescription: category.description,
+          });
+        }
       });
     }
+
+    // Log final summary
+    console.log('\n' + '='.repeat(60));
+    console.log(`📊 PROMPT GENERATION SUMMARY`);
+    console.log('='.repeat(60));
+    console.log(`Requested: ${numberOfPrompts} prompts across ${categories.length} categories`);
+    console.log(`Generated: ${allPrompts.length} prompts`);
+    console.log(`Success Rate: ${Math.round((allPrompts.length / numberOfPrompts) * 100)}%`);
+    
+    // Show breakdown by category
+    const categoryBreakdown = {};
+    allPrompts.forEach(p => {
+      categoryBreakdown[p.category] = (categoryBreakdown[p.category] || 0) + 1;
+    });
+    console.log('\nBreakdown by category:');
+    Object.entries(categoryBreakdown).forEach(([cat, count]) => {
+      console.log(`  - ${cat}: ${count} prompts`);
+    });
+    console.log('='.repeat(60) + '\n');
 
     res.status(200).json({
       success: true,

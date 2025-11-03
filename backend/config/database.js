@@ -3,14 +3,14 @@ import mongoose from 'mongoose';
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGODB_URI, {
-      // These options are no longer needed in Mongoose 6+
-      // but keeping for compatibility
+      serverSelectionTimeoutMS: 5000,
     });
 
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
+    console.error(`❌ MongoDB Failed: ${error.message}`);
+    console.warn('⚠️  Server will start WITHOUT MongoDB');
+    console.warn('⚠️  OpenAI and n8n calls will work, data just won\'t be saved');
   }
 };
 

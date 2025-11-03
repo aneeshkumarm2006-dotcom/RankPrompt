@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes.js';
 import brandRoutes from './routes/brandRoutes.js';
 import creditRoutes from './routes/creditRoutes.js';
 import openaiRoutes from './routes/openaiRoutes.js';
+import analysisRoutes from './routes/analysisRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -58,6 +59,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/brand', brandRoutes);
 app.use('/api/credits', creditRoutes);
 app.use('/api/openai', openaiRoutes);
+app.use('/api/analysis', analysisRoutes);
 
 // Health check route
 app.get('/api/health', (req, res) => {

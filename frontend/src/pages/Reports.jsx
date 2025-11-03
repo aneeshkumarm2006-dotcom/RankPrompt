@@ -143,30 +143,179 @@ const Reports = () => {
     setCurrentStep(3);
   };
 
-  const handleAnalyzeVisibility = (finalPrompts) => {
-    // This will be integrated with your n8n agent
-    const completeData = {
-      brandData: formData,
-      step2Data,
-      step3Data: {
-        prompts: finalPrompts,
-        totalPrompts: finalPrompts.length,
-        categories: [...new Set(finalPrompts.map(p => p.category))],
-        timestamp: new Date().toISOString(),
+  const handleAnalyzeVisibility = async (finalPrompts) => {
+    try {
+      setIsAnalyzing(true);
+      
+      // Get selected AI models from platforms
+      const selectedAiModels = [];
+      if (formData.platforms.chatgpt) selectedAiModels.push('chatgpt');
+      if (formData.platforms.perplexity) selectedAiModels.push('perplexity');
+      if (formData.platforms.googleAiOverviews) selectedAiModels.push('google_ai_overview');
+
+      if (selectedAiModels.length === 0) {
+        alert('Please select at least one AI platform (ChatGPT, Perplexity, or Google AI Overview)');
+        setIsAnalyzing(false);
+        return;
       }
-    };
-    
-    console.log('✅ Complete data for n8n agent:', completeData);
-    
-    alert(`Ready to analyze ${finalPrompts.length} prompts!\n\nData structure:\n- Brand: ${formData.brandName}\n- Prompts: ${finalPrompts.length}\n- Categories: ${completeData.step3Data.categories.length}\n\nCheck console for full data object.`);
-    
-    // TODO: Send completeData to your n8n agent
-    // Example:
-    // await fetch('YOUR_N8N_WEBHOOK_URL', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(completeData)
-    // });
+
+      // Clean brand URL - remove protocol, www, paths, and query params
+      const cleanBrandUrl = (url) => {
+        try {
+          // Remove protocol if present
+          let cleaned = url.replace(/^(https?:\/\/)?(www\.)?/, '');
+          // Remove path and query params
+          cleaned = cleaned.split('/')[0].split('?')[0];
+          return cleaned;
+        } catch (error) {
+          return url;
+        }
+      };
+
+      const cleanedBrandUrl = cleanBrandUrl(formData.websiteUrl);
+
+      const N8N_WEBHOOK_URL = 'https://n8n.srv883399.hstgr.cloud/webhook-test/bfc97a52-cf33-4b41-976b-dffacac20c27';
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      
+      // Generate authentication token for n8n webhook
+      console.log('🔐 Generating authentication token...');
+      const tokenResponse = await fetch(`${API_URL}/analysis/generate-webhook-token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+      });
+
+      if (!tokenResponse.ok) {
+        throw new Error('Failed to generate authentication token');
+      }
+
+      const { data: { token } } = await tokenResponse.json();
+      console.log('✅ Authentication token generated');
+
+      const totalJobs = finalPrompts.length;
+      const totalCalls = totalJobs * 2; // n8n-proxy + tracker per prompt
+
+      console.log('\n' + '='.repeat(80));
+      console.log(`🚀 STARTING ANALYSIS - CHECK CHROME NETWORK TAB`);
+      console.log('='.repeat(80));
+      console.log(`Brand: ${formData.brandName}`);
+      console.log(`Prompts: ${finalPrompts.length}`);
+      console.log(`AI Models: ${selectedAiModels.join(', ')}`);
+      console.log(`Total Jobs: ${totalJobs}`);
+      console.log(`n8n-proxy calls (POST): ${totalJobs}`);
+      console.log(`tracker calls (POST): ${totalJobs}`);
+      console.log(`TOTAL API CALLS: ${totalCalls}`);
+      console.log(`🔐 Authentication: JWT Bearer token`);
+      console.log('='.repeat(80) + '\n');
+
+      let completedJobs = 0;
+      const results = [];
+
+      // Process each prompt (all models sent together as booleans)
+      for (const prompt of finalPrompts) {
+        completedJobs++;
+        
+        console.log(`\n[${completedJobs}/${totalJobs}] Processing:`);
+        console.log(`  Prompt: "${prompt.text.substring(0, 60)}..."`);
+        console.log(`  Brand: ${formData.brandName}`);
+        console.log(`  Models: ${selectedAiModels.join(', ')}`);
+
+        try {
+          // Determine location and country based on search scope
+          let location = null;
+          let country = null;
+
+          if (formData.searchScope === 'local') {
+            // For local: extract city and country from localSearchCity (e.g., "Delhi, IN")
+            const parts = formData.localSearchCity.split(',').map(p => p.trim());
+            location = parts[0]; // City name
+            country = parts[1] || formData.targetCountry; // Country code (2 letters)
+          } else {
+            // For national: location is null, country is targetCountry
+            location = null;
+            country = formData.targetCountry; // 2-letter country code
+          }
+
+          // CALL 1: n8n-proxy (POST with body - all models as booleans)
+          console.log(`  → [n8n-proxy] POST to n8n webhook...`);
+          console.log(`  Brand URL: ${cleanedBrandUrl}`);
+          console.log(`  Location: ${location || 'null'}, Country: ${country}`);
+          console.log(`  🔐 Using Bearer token for authentication`);
+          
+          const n8nResponse = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              prompt: prompt.text,
+              brand: formData.brandName,
+              brandUrl: cleanedBrandUrl,
+              chatgpt: formData.platforms.chatgpt,
+              perplexity: formData.platforms.perplexity,
+              google_ai_overviews: formData.platforms.googleAiOverviews,
+              location: location,
+              country: country,
+            }),
+          });
+
+          const n8nData = await n8nResponse.json().catch(() => null);
+          console.log(`  ✓ n8n-proxy responded: ${n8nResponse.status}`);
+
+          // CALL 2: tracker (POST to check response)
+          console.log(`  → [tracker] POST to verify n8n response...`);
+          const trackerResponse = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              check: 'status',
+              jobId: completedJobs,
+            }),
+          });
+
+          const hasValidResponse = n8nResponse.ok && n8nData;
+          console.log(`  ✓ tracker: ${hasValidResponse ? 'valid response ✓' : 'failed ✗'}`);
+
+          results.push({
+            prompt: prompt.text,
+            category: prompt.category,
+            models: selectedAiModels,
+            success: hasValidResponse,
+            n8nResponse: n8nData,
+          });
+
+        } catch (error) {
+          console.log(`  ✗ Error: ${error.message}`);
+          results.push({
+            prompt: prompt.text,
+            category: prompt.category,
+            models: selectedAiModels,
+            success: false,
+            error: error.message,
+          });
+        }
+      }
+
+      console.log('\n' + '='.repeat(80));
+      console.log(`✅ ANALYSIS COMPLETE`);
+      console.log('='.repeat(80));
+      console.log(`Total calls made: ${totalCalls}`);
+      console.log(`Successful: ${results.filter(r => r.success).length}`);
+      console.log(`Failed: ${results.filter(r => !r.success).length}`);
+      console.log('='.repeat(80) + '\n');
+
+      alert(`✅ Analysis Complete!\n\nTotal API calls: ${totalCalls}\nSuccessful: ${results.filter(r => r.success).length}\nFailed: ${results.filter(r => !r.success).length}\n\nCheck Chrome Network tab for all HTTP requests!`);
+      setIsAnalyzing(false);
+
+    } catch (error) {
+      console.error('❌ Error:', error);
+      alert(`Error: ${error.message}`);
+      setIsAnalyzing(false);
+    }
   };
 
   const handleStartOver = () => {

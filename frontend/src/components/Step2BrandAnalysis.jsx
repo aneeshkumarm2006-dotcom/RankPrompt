@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Plus, Check, Loader, ExternalLink } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,6 +15,9 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   const [showMore, setShowMore] = useState(false);
   const [customPrompts, setCustomPrompts] = useState(['']);
   const [error, setError] = useState(null);
+  
+  // Prevent double API calls in React StrictMode
+  const hasCalledAPI = useRef(false);
 
   const promptOptions = [
     { value: 1, label: '1' },
@@ -28,7 +31,10 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   const maxCategories = user?.plan === 'free' ? 3 : 10;
 
   useEffect(() => {
-    analyzeBrandAndGenerateCategories();
+    if (!hasCalledAPI.current) {
+      hasCalledAPI.current = true;
+      analyzeBrandAndGenerateCategories();
+    }
   }, []);
 
   const analyzeBrandAndGenerateCategories = async () => {
