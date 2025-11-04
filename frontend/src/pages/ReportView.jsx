@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
-import { Download, Share2, ChevronDown, ExternalLink, Search } from 'lucide-react';
+import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const ReportView = () => {
   const location = useLocation();
@@ -98,15 +99,63 @@ const ReportView = () => {
     totalFindings: 0,
   };
 
+  // Platform-specific stats
+  const platformStats = {
+    chatgpt: { found: 0, total: 0 },
+    perplexity: { found: 0, total: 0 },
+    google_ai_overviews: { found: 0, total: 0 },
+  };
+
+  // Category-specific stats
+  const categoryStats = {};
+
   reportData.forEach(item => {
     if (item.response && Array.isArray(item.response)) {
       item.response.forEach(platformData => {
         if (platformData.details?.websiteFound) stats.websiteFound++;
         if (platformData.details?.brandMentionFound) stats.brandMentioned++;
         if (platformData.found) stats.totalFindings++;
+
+        // Track platform stats
+        const platform = platformData.src;
+        if (platformStats[platform]) {
+          platformStats[platform].total++;
+          if (platformData.found || platformData.details?.websiteFound || platformData.details?.brandMentionFound) {
+            platformStats[platform].found++;
+          }
+        }
+
+        // Track category stats
+        const category = item.category || 'Uncategorized';
+        if (!categoryStats[category]) {
+          categoryStats[category] = { found: 0, total: 0 };
+        }
+        categoryStats[category].total++;
+        if (platformData.found || platformData.details?.websiteFound || platformData.details?.brandMentionFound) {
+          categoryStats[category].found++;
+        }
       });
     }
   });
+
+  // Prepare chart data for platform visibility
+  const platformChartData = Object.entries(platformStats)
+    .filter(([_, data]) => data.total > 0)
+    .map(([platform, data]) => ({
+      name: platform === 'google_ai_overviews' ? 'Google AI' : platform.charAt(0).toUpperCase() + platform.slice(1),
+      visibility: data.total > 0 ? Math.round((data.found / data.total) * 100) : 0,
+      score: data.total > 0 ? Math.round((data.found / data.total) * 100) : 0,
+    }));
+
+  // Prepare chart data for category visibility
+  const categoryChartData = Object.entries(categoryStats)
+    .map(([category, data]) => ({
+      name: category,
+      visibility: data.total > 0 ? Math.round((data.found / data.total) * 100) : 0,
+      prompts: data.total,
+    }))
+    .sort((a, b) => b.visibility - a.visibility)
+    .slice(0, 5); // Top 5 categories
 
   // Get unique categories
   const categories = ['All Categories', ...new Set(reportData.map(item => item.category))];
@@ -168,7 +217,7 @@ const ReportView = () => {
     <div className="flex h-screen bg-gray-900">
       <Sidebar />
       
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto ml-64">
         <div className="max-w-7xl mx-auto p-6" id="report-content">
           {/* Header */}
           <div className="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700">
@@ -196,6 +245,13 @@ const ReportView = () => {
                   <Share2 className="w-4 h-4" />
                   Share Report
                 </button>
+                <button
+                  onClick={() => navigate('/schedule-report', { state: { reportId } })}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Calendar className="w-4 h-4" />
+                  Schedule Report
+                </button>
               </div>
             </div>
 
@@ -216,6 +272,63 @@ const ReportView = () => {
               <div className="bg-gray-700 rounded-lg p-4">
                 <div className="text-gray-400 text-sm mb-1">Total Findings</div>
                 <div className="text-3xl font-bold text-purple-400">{stats.totalFindings}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Visibility Analysis Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Visibility Score by Platform */}
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <h3 className="text-xl font-bold text-white mb-4">Visibility Score by Platform</h3>
+              {platformChartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={platformChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="name" stroke="#9CA3AF" />
+                    <YAxis stroke="#9CA3AF" />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                      labelStyle={{ color: '#F3F4F6' }}
+                    />
+                    <Legend />
+                    <Bar dataKey="visibility" fill="#8B5CF6" name="Visibility %" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-64 text-gray-400">
+                  No platform data available
+                </div>
+              )}
+              <div className="mt-4 text-sm text-gray-400">
+                <p>Overall Visibility Score: <span className="text-white font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
+              </div>
+            </div>
+
+            {/* Category Visibility Trends */}
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <h3 className="text-xl font-bold text-white mb-4">Category Visibility Trends</h3>
+              {categoryChartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={categoryChartData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <XAxis dataKey="name" stroke="#9CA3AF" angle={-45} textAnchor="end" height={100} />
+                    <YAxis stroke="#9CA3AF" />
+                    <Tooltip 
+                      contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                      labelStyle={{ color: '#F3F4F6' }}
+                    />
+                    <Legend />
+                    <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="flex items-center justify-center h-64 text-gray-400">
+                  No category data available
+                </div>
+              )}
+              <div className="mt-4 text-sm text-gray-400">
+                <p>Top performing category: <span className="text-white font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
               </div>
             </div>
           </div>

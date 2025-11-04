@@ -1,6 +1,7 @@
 import Report from '../models/Report.js';
 import PromptSent from '../models/PromptSent.js';
 import PromptResponse from '../models/PromptResponse.js';
+import User from '../models/User.js';
 import crypto from 'crypto';
 
 /**
@@ -12,10 +13,13 @@ export const saveReport = async (req, res) => {
   try {
     const userId = req.user._id;
     const {
+      inProgressReportId, // ID of in-progress report to update (if exists)
+      brandId, // Brand ID from frontend
       brandData,
       reportData,
       promptsSent, // Array of prompts sent to n8n
       promptsResponses, // Array of responses from n8n
+      promptsCount, // Number of prompts generated for credit deduction
     } = req.body;
 
     if (!brandData || !reportData) {
@@ -23,6 +27,35 @@ export const saveReport = async (req, res) => {
         success: false,
         message: 'Brand data and report data are required',
       });
+    }
+
+    // Deduct credits based on prompts count
+    if (promptsCount && promptsCount > 0) {
+      const user = await User.findById(userId);
+      
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+
+      // Check if user has enough credits
+      if (user.credits < promptsCount) {
+        return res.status(400).json({
+          success: false,
+          message: 'Insufficient credits',
+          creditsNeeded: promptsCount,
+          creditsAvailable: user.credits,
+        });
+      }
+
+      // Deduct credits and update usage
+      user.credits -= promptsCount;
+      user.creditsUsed += promptsCount;
+      await user.save();
+
+      console.log(`✅ Deducted ${promptsCount} credits from user ${userId}. Remaining: ${user.credits}`);
     }
 
     // Calculate statistics
@@ -47,22 +80,66 @@ export const saveReport = async (req, res) => {
       ? Math.round((reportData.filter(r => r.success).length / stats.totalPrompts) * 100)
       : 0;
 
-    // Create report
-    const report = await Report.create({
-      userId,
-      brandId: brandData.brandId || null,
-      brandName: brandData.brandName,
-      brandUrl: brandData.websiteUrl,
-      favicon: brandData.favicon,
-      searchScope: brandData.searchScope,
-      location: brandData.location,
-      country: brandData.country,
-      language: brandData.language || 'English',
-      platforms: brandData.platforms,
-      reportData,
-      stats,
-      status: 'completed',
-    });
+    let report;
+
+    // Check if we're updating an existing in-progress report
+    if (inProgressReportId) {
+      report = await Report.findOneAndUpdate(
+        { _id: inProgressReportId, userId, status: 'in-progress' },
+        {
+          brandId: brandId || null, // Use brandId from request
+          brandName: brandData.brandName,
+          brandUrl: brandData.websiteUrl,
+          favicon: brandData.favicon,
+          searchScope: brandData.searchScope,
+          location: brandData.location,
+          country: brandData.country,
+          language: brandData.language || 'English',
+          platforms: brandData.platforms,
+          reportData,
+          stats,
+          status: 'completed',
+          progress: null, // Clear progress data
+        },
+        { new: true }
+      );
+
+      if (!report) {
+        // If in-progress report not found, create new one
+        report = await Report.create({
+          userId,
+          brandId: brandId || null, // Use brandId from request
+          brandName: brandData.brandName,
+          brandUrl: brandData.websiteUrl,
+          favicon: brandData.favicon,
+          searchScope: brandData.searchScope,
+          location: brandData.location,
+          country: brandData.country,
+          language: brandData.language || 'English',
+          platforms: brandData.platforms,
+          reportData,
+          stats,
+          status: 'completed',
+        });
+      }
+    } else {
+      // Create new report
+      report = await Report.create({
+        userId,
+        brandId: brandId || null, // Use brandId from request
+        brandName: brandData.brandName,
+        brandUrl: brandData.websiteUrl,
+        favicon: brandData.favicon,
+        searchScope: brandData.searchScope,
+        location: brandData.location,
+        country: brandData.country,
+        language: brandData.language || 'English',
+        platforms: brandData.platforms,
+        reportData,
+        stats,
+        status: 'completed',
+      });
+    }
 
     // Save prompts sent (if provided)
     if (promptsSent && Array.isArray(promptsSent)) {
@@ -376,15 +453,19 @@ export const getReportByBrandId = async (req, res) => {
     const { brandId } = req.params;
     const userId = req.user._id;
 
-    // Find the most recent report for this brand
-    const report = await Report.findOne({ brandId, userId })
+    // Find the most recent completed report for this brand
+    const report = await Report.findOne({ 
+      brandId, 
+      userId,
+      status: 'completed' // Only fetch completed reports
+    })
       .sort({ createdAt: -1 })
       .select('_id brandName status');
 
     if (!report) {
       return res.status(404).json({
         success: false,
-        message: 'No report found for this brand',
+        message: 'No completed report found for this brand',
       });
     }
 

@@ -13,6 +13,7 @@ import SharedReport from './pages/SharedReport';
 import Profile from './pages/Profile';
 import EarnCredits from './pages/EarnCredits';
 import BuyCredits from './pages/BuyCredits';
+import ScheduleReport from './pages/ScheduleReport';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -83,6 +84,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <BuyCredits />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/schedule-report"
+              element={
+                <ProtectedRoute>
+                  <ScheduleReport />
                 </ProtectedRoute>
               }
             />

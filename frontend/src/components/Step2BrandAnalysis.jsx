@@ -19,16 +19,26 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   // Prevent double API calls in React StrictMode
   const hasCalledAPI = useRef(false);
 
-  const promptOptions = [
-    { value: 1, label: '1' },
-    { value: 10, label: '10' },
-    { value: 25, label: '25' },
-    { value: 50, label: '50' },
-    { value: 5, label: '5', pro: true },
-    { value: 25, label: '25', pro: true },
-  ];
+  // Prompt options based on subscription tier
+  const promptOptions = user?.subscriptionTier === 'free' 
+    ? [
+        { value: 1, label: '1' },
+        { value: 10, label: '10' },
+        { value: 25, label: '25' },
+        { value: 50, label: '50' },
+        { value: 100, label: '100', disabled: true, pro: true },
+        { value: 150, label: '150', disabled: true, pro: true },
+      ]
+    : [
+        { value: 1, label: '1' },
+        { value: 10, label: '10' },
+        { value: 25, label: '25' },
+        { value: 50, label: '50' },
+        { value: 100, label: '100' },
+        { value: 150, label: '150' },
+      ];
 
-  const maxCategories = user?.plan === 'free' ? 3 : 10;
+  const maxCategories = user?.subscriptionTier === 'free' ? 3 : 10;
 
   useEffect(() => {
     if (!hasCalledAPI.current) {
@@ -357,14 +367,14 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
               <div className="flex flex-wrap gap-3">
                 {promptOptions.map((option) => (
                   <button
-                    key={`${option.value}-${option.pro ? 'pro' : 'regular'}`}
-                    onClick={() => setNumberOfPrompts(option.value)}
-                    disabled={option.pro}
+                    key={`${option.value}-${option.disabled ? 'disabled' : 'enabled'}`}
+                    onClick={() => !option.disabled && setNumberOfPrompts(option.value)}
+                    disabled={option.disabled}
                     className={`px-6 py-3 rounded-xl font-semibold transition-all ${
-                      numberOfPrompts === option.value && !option.pro
+                      numberOfPrompts === option.value && !option.disabled
                         ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white'
-                        : option.pro
-                        ? 'glass-light text-gray-500 cursor-not-allowed'
+                        : option.disabled
+                        ? 'glass-light text-gray-500 cursor-not-allowed opacity-50'
                         : 'glass-light text-gray-300 hover:bg-white/10 hover:text-white'
                     }`}
                   >

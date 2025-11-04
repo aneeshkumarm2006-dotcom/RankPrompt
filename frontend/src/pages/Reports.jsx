@@ -1,14 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import { Search, Globe, X, Check } from 'lucide-react';
 import Step2BrandAnalysis from '../components/Step2BrandAnalysis';
 import Step3ReadyToAnalyze from '../components/Step3ReadyToAnalyze';
 import AnalysisLoadingModal from '../components/AnalysisLoadingModal';
 import SaveBrandModal from '../components/SaveBrandModal';
+import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
 
 const Reports = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const continueReportId = searchParams.get('continue');
   
@@ -36,6 +39,9 @@ const Reports = () => {
   const [step2Data, setStep2Data] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState({ total: 0, completed: 0 });
   const [inProgressReportId, setInProgressReportId] = useState(null);
+  const [savedBrandId, setSavedBrandId] = useState(null);
+  const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
+  const [creditsInfo, setCreditsInfo] = useState({ needed: 0, available: 0 });
 
   // Load in-progress report if continuing
   useEffect(() => {
@@ -243,7 +249,9 @@ const Reports = () => {
       });
 
       if (response.ok) {
-        console.log('✅ Brand saved successfully');
+        const { data: savedBrand } = await response.json();
+        setSavedBrandId(savedBrand._id);
+        console.log('✅ Brand saved successfully with ID:', savedBrand._id);
       } else {
         const error = await response.json();
         console.error('❌ Failed to save brand:', error.message);
@@ -271,6 +279,17 @@ const Reports = () => {
 
   const handleAnalyzeVisibility = async (finalPrompts) => {
     try {
+      // Check if user has enough credits
+      const promptsCount = finalPrompts.length;
+      if (user && user.credits < promptsCount) {
+        setCreditsInfo({
+          needed: promptsCount,
+          available: user.credits,
+        });
+        setShowInsufficientCreditsModal(true);
+        return;
+      }
+
       setIsAnalyzing(true);
       
       // Get selected AI models from platforms
@@ -457,6 +476,8 @@ const Reports = () => {
           },
           credentials: 'include',
           body: JSON.stringify({
+            inProgressReportId: inProgressReportId, // Pass the in-progress report ID if it exists
+            brandId: savedBrandId, // Pass the brand ID if brand was saved
             brandData: {
               brandName: formData.brandName,
               websiteUrl: cleanedBrandUrl,
@@ -470,6 +491,7 @@ const Reports = () => {
             reportData: results,
             promptsSent: promptsSentPayloads,
             promptsResponses: promptsResponsesPayloads,
+            promptsCount: finalPrompts.length, // Add prompts count for credit deduction
           }),
         });
 
@@ -784,9 +806,17 @@ const Reports = () => {
                         )}
                       </div>
                     </div>
-                    <span className="text-gray-300 group-hover:text-white transition-colors">
-                      Perplexity
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <img 
+                        src="https://www.google.com/s2/favicons?domain=perplexity.ai&sz=32" 
+                        alt="Perplexity" 
+                        className="w-4 h-4"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                      <span className="text-gray-300 group-hover:text-white transition-colors">
+                        Perplexity
+                      </span>
+                    </div>
                   </label>
 
                   <label className="flex items-center space-x-3 cursor-pointer group">
@@ -809,9 +839,17 @@ const Reports = () => {
                         )}
                       </div>
                     </div>
-                    <span className="text-gray-300 group-hover:text-white transition-colors">
-                      ChatGPT
-                    </span>
+                    <div className="flex items-center space-x-2">
+                      <img 
+                        src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" 
+                        alt="ChatGPT" 
+                        className="w-4 h-4"
+                        onError={(e) => { e.target.style.display = 'none'; }}
+                      />
+                      <span className="text-gray-300 group-hover:text-white transition-colors">
+                        ChatGPT
+                      </span>
+                    </div>
                   </label>
 
                   <label className="flex items-center space-x-3 cursor-pointer group">
@@ -995,6 +1033,14 @@ const Reports = () => {
         isOpen={isAnalyzing}
         totalPrompts={analysisProgress.total}
         completedPrompts={analysisProgress.completed}
+      />
+
+      {/* Insufficient Credits Modal */}
+      <InsufficientCreditsModal
+        isOpen={showInsufficientCreditsModal}
+        onClose={() => setShowInsufficientCreditsModal(false)}
+        creditsNeeded={creditsInfo.needed}
+        creditsAvailable={creditsInfo.available}
       />
     </div>
   );

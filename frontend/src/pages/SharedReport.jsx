@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Download, Search, ExternalLink } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const SharedReport = () => {
   const { token } = useParams();
@@ -45,6 +46,76 @@ const SharedReport = () => {
 
   const reportData = report?.reportData || [];
   const stats = report?.stats || {};
+
+  // Platform-specific stats
+  const platformStats = useMemo(() => {
+    const stats = {
+      chatgpt: { found: 0, total: 0 },
+      perplexity: { found: 0, total: 0 },
+      google_ai_overviews: { found: 0, total: 0 },
+    };
+
+    reportData.forEach(item => {
+      if (item.response && Array.isArray(item.response)) {
+        item.response.forEach(platformData => {
+          const platform = platformData.src;
+          if (stats[platform]) {
+            stats[platform].total++;
+            if (platformData.found || platformData.details?.websiteFound || platformData.details?.brandMentionFound) {
+              stats[platform].found++;
+            }
+          }
+        });
+      }
+    });
+
+    return stats;
+  }, [reportData]);
+
+  // Category-specific stats
+  const categoryStats = useMemo(() => {
+    const stats = {};
+
+    reportData.forEach(item => {
+      if (item.response && Array.isArray(item.response)) {
+        item.response.forEach(platformData => {
+          const category = item.category || 'Uncategorized';
+          if (!stats[category]) {
+            stats[category] = { found: 0, total: 0 };
+          }
+          stats[category].total++;
+          if (platformData.found || platformData.details?.websiteFound || platformData.details?.brandMentionFound) {
+            stats[category].found++;
+          }
+        });
+      }
+    });
+
+    return stats;
+  }, [reportData]);
+
+  // Prepare chart data for platform visibility
+  const platformChartData = useMemo(() => {
+    return Object.entries(platformStats)
+      .filter(([_, data]) => data.total > 0)
+      .map(([platform, data]) => ({
+        name: platform === 'google_ai_overviews' ? 'Google AI' : platform.charAt(0).toUpperCase() + platform.slice(1),
+        visibility: data.total > 0 ? Math.round((data.found / data.total) * 100) : 0,
+        score: data.total > 0 ? Math.round((data.found / data.total) * 100) : 0,
+      }));
+  }, [platformStats]);
+
+  // Prepare chart data for category visibility
+  const categoryChartData = useMemo(() => {
+    return Object.entries(categoryStats)
+      .map(([category, data]) => ({
+        name: category,
+        visibility: data.total > 0 ? Math.round((data.found / data.total) * 100) : 0,
+        prompts: data.total,
+      }))
+      .sort((a, b) => b.visibility - a.visibility)
+      .slice(0, 5);
+  }, [categoryStats]);
 
   const categories = useMemo(() => {
     const unique = new Set(reportData.map(item => item.category).filter(Boolean));
@@ -167,6 +238,63 @@ const SharedReport = () => {
           <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5">
             <p className="text-sm text-gray-400 mb-1">Total Findings</p>
             <p className="text-3xl font-semibold text-purple-400">{stats.totalFindings ?? 0}</p>
+          </div>
+        </div>
+
+        {/* Visibility Analysis Charts */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Visibility Score by Platform */}
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
+            <h3 className="text-xl font-bold text-white mb-4">Visibility Score by Platform</h3>
+            {platformChartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={platformChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="name" stroke="#9CA3AF" />
+                  <YAxis stroke="#9CA3AF" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                    labelStyle={{ color: '#F3F4F6' }}
+                  />
+                  <Legend />
+                  <Bar dataKey="visibility" fill="#8B5CF6" name="Visibility %" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-400">
+                No platform data available
+              </div>
+            )}
+            <div className="mt-4 text-sm text-gray-400">
+              <p>Overall Visibility Score: <span className="text-white font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
+            </div>
+          </div>
+
+          {/* Category Visibility Trends */}
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
+            <h3 className="text-xl font-bold text-white mb-4">Category Visibility Trends</h3>
+            {categoryChartData.length > 0 ? (
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={categoryChartData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="name" stroke="#9CA3AF" angle={-45} textAnchor="end" height={100} />
+                  <YAxis stroke="#9CA3AF" />
+                  <Tooltip 
+                    contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                    labelStyle={{ color: '#F3F4F6' }}
+                  />
+                  <Legend />
+                  <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="flex items-center justify-center h-64 text-gray-400">
+                No category data available
+              </div>
+            )}
+            <div className="mt-4 text-sm text-gray-400">
+              <p>Top performing category: <span className="text-white font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
+            </div>
           </div>
         </div>
 

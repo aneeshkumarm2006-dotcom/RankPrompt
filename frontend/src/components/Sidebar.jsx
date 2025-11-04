@@ -62,12 +62,14 @@ const Sidebar = () => {
           navigate(`/reports/${report._id}`);
         }
       } else {
-        // No report found for this brand, navigate to reports list
-        navigate('/reports');
+        // No report found for this brand
+        const errorData = await response.json();
+        alert(`No completed report found for this brand. Create a new report to see visibility analysis.`);
+        navigate('/reports/new');
       }
     } catch (error) {
       console.error('Error fetching brand report:', error);
-      navigate('/reports');
+      alert('Error loading brand report. Please try again.');
     }
   };
 

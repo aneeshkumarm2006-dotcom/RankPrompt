@@ -34,6 +34,15 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  subscriptionTier: {
+    type: String,
+    enum: ['free', 'paid'],
+    default: 'free',
+  },
+  creditsUsed: {
+    type: Number,
+    default: 0,
+  },
   currentPlanPeriodEnd: {
     type: Date,
     default: null,
