@@ -11,6 +11,12 @@ const scheduledPromptSchema = new mongoose.Schema({
     required: true,
     index: true,
   },
+  brandId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Brand',
+    required: false,
+    index: true,
+  },
   brandName: {
     type: String,
     required: true,
@@ -22,17 +28,30 @@ const scheduledPromptSchema = new mongoose.Schema({
     trim: true,
   },
   prompts: [{
-    text: {
-      type: String,
-      required: true,
+    // Store full PromptSent document data
+    _id: mongoose.Schema.Types.ObjectId,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
-    category: {
-      type: String,
-      required: true,
+    reportId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Report',
     },
-    categoryDescription: {
-      type: String,
-    },
+    prompt: String,
+    brand: String,
+    brandUrl: String,
+    chatgpt: Boolean,
+    perplexity: Boolean,
+    google_ai_overviews: Boolean,
+    location: String,
+    country: String,
+    category: String,
+    promptIndex: Number,
+    status: String,
+    sentAt: Date,
+    createdAt: Date,
+    updatedAt: Date,
   }],
   aiModels: [{
     type: String,
@@ -65,9 +84,18 @@ const scheduledPromptSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  lastReportId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Report',
+    default: null,
+  },
   nextRun: {
     type: Date,
     default: null,
+  },
+  lastUpdated: {
+    type: Date,
+    default: Date.now,
   },
   createdAt: {
     type: Date,
@@ -82,6 +110,7 @@ const scheduledPromptSchema = new mongoose.Schema({
 // Index for efficient querying by n8n
 scheduledPromptSchema.index({ isActive: 1, nextRun: 1 });
 scheduledPromptSchema.index({ user: 1, createdAt: -1 });
+scheduledPromptSchema.index({ brandId: 1, nextRun: 1 });
 
 // Update timestamp on save
 scheduledPromptSchema.pre('save', function(next) {

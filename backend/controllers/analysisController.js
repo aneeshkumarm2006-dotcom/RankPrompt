@@ -1,7 +1,10 @@
 import crypto from 'crypto';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 import ScheduledPrompt from '../models/ScheduledPrompt.js';
+import Report from '../models/Report.js';
+import PromptSent from '../models/PromptSent.js';
 
 /**
  * Store prompts for scheduling after step 3 (generate-prompts)
@@ -206,7 +209,7 @@ export const initiateAnalysis = async (req, res) => {
  */
 export const getScheduledPrompts = async (req, res) => {
   try {
-    const { userId, isActive } = req.query;
+    const { userId, isActive, brandId } = req.query;
 
     const query = {};
     
@@ -216,6 +219,16 @@ export const getScheduledPrompts = async (req, res) => {
     } else if (req.user) {
       // If authenticated user, show their prompts
       query.user = req.user._id;
+    }
+
+    // Filter by brandId if provided
+    if (brandId) {
+      // Convert to ObjectId if it's a valid ObjectId string
+      if (mongoose.Types.ObjectId.isValid(brandId)) {
+        query.brandId = new mongoose.Types.ObjectId(brandId);
+      } else {
+        query.brandId = brandId;
+      }
     }
 
     // Filter by active status
@@ -287,6 +300,7 @@ export const getPromptsDue = async (req, res) => {
  * Update scheduled prompt's last run time (called by n8n after execution)
  * @route PUT /api/analysis/scheduled-prompts/:id/update-run
  * @access Public (protected by API key)
+ * @body { reportDate?: Date } - Optional report date, defaults to current date
  */
 export const updateScheduledPromptRun = async (req, res) => {
   try {
@@ -300,6 +314,7 @@ export const updateScheduledPromptRun = async (req, res) => {
     }
 
     const { id } = req.params;
+    const { reportDate, reportId } = req.body; // Accept reportDate and reportId from body
     const scheduledPrompt = await ScheduledPrompt.findById(id);
 
     if (!scheduledPrompt) {
@@ -309,13 +324,30 @@ export const updateScheduledPromptRun = async (req, res) => {
       });
     }
 
-    // Update last run and calculate next run
-    scheduledPrompt.lastRun = new Date();
+    // Use provided reportDate, or try to get it from the report, or use current date
+    let lastRunDate = new Date();
+    if (reportDate) {
+      lastRunDate = new Date(reportDate);
+    } else if (reportId) {
+      const report = await Report.findById(reportId);
+      if (report) {
+        lastRunDate = report.reportDate || report.createdAt || new Date();
+      }
+    }
+
+    // Update last run to the report's date
+    scheduledPrompt.lastRun = lastRunDate;
     
-    const nextRun = new Date();
+    // Update lastReportId if provided
+    if (reportId) {
+      scheduledPrompt.lastReportId = reportId;
+    }
+    
+    // Calculate next run based on frequency from the lastRun date
+    const nextRun = new Date(lastRunDate);
     switch (scheduledPrompt.scheduleFrequency) {
       case 'daily':
-        nextRun.setHours(nextRun.getHours() + 24);
+        nextRun.setDate(nextRun.getDate() + 1);
         break;
       case 'weekly':
         nextRun.setDate(nextRun.getDate() + 7);
@@ -324,10 +356,12 @@ export const updateScheduledPromptRun = async (req, res) => {
         nextRun.setMonth(nextRun.getMonth() + 1);
         break;
       default:
-        nextRun.setHours(nextRun.getHours() + 24);
+        nextRun.setDate(nextRun.getDate() + 1);
     }
     
     scheduledPrompt.nextRun = nextRun;
+    scheduledPrompt.lastUpdated = new Date();
+    
     await scheduledPrompt.save();
 
     res.status(200).json({
@@ -435,4 +469,105 @@ export default {
   updateScheduledPromptRun,
   receiveN8nResult,
   generateWebhookToken,
+};
+
+/**
+ * Create a scheduled prompt from an existing report and frequency
+ * @route POST /api/analysis/schedule-from-report
+ * @access Private
+ */
+export const scheduleFromReport = async (req, res) => {
+  try {
+    const { reportId, frequency } = req.body;
+
+    if (!reportId || !frequency) {
+      return res.status(400).json({ success: false, message: 'reportId and frequency are required' });
+    }
+
+    if (!['daily', 'weekly', 'monthly'].includes(frequency)) {
+      return res.status(400).json({ success: false, message: 'frequency must be daily, weekly or monthly' });
+    }
+
+    const report = await Report.findOne({ _id: reportId, userId: req.user._id });
+    if (!report) {
+      return res.status(404).json({ success: false, message: 'Report not found' });
+    }
+
+    if (!report.brandId) {
+      return res.status(400).json({ success: false, message: 'This report is not linked to a brand and cannot be scheduled' });
+    }
+
+    // Get promptsSent for this report to reconstruct prompt set
+    const promptsSent = await PromptSent.find({ reportId }).sort({ promptIndex: 1 });
+    if (!promptsSent.length) {
+      return res.status(400).json({ success: false, message: 'No prompts found for this report' });
+    }
+
+    // Derive aiModels from report.platforms
+    const aiModels = [];
+    if (report.platforms?.chatgpt) aiModels.push('chatgpt');
+    if (report.platforms?.perplexity) aiModels.push('perplexity');
+    if (report.platforms?.googleAiOverviews) aiModels.push('google_ai_overview');
+
+    // Store full PromptSent document data in prompts array
+    const prompts = promptsSent.map(p => ({
+      _id: p._id,
+      userId: p.userId,
+      reportId: p.reportId,
+      prompt: p.prompt,
+      brand: p.brand,
+      brandUrl: p.brandUrl,
+      chatgpt: p.chatgpt,
+      perplexity: p.perplexity,
+      google_ai_overviews: p.google_ai_overviews,
+      location: p.location,
+      country: p.country,
+      category: p.category,
+      promptIndex: p.promptIndex,
+      status: p.status,
+      sentAt: p.sentAt,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+    }));
+
+    // Calculate nextRun based on frequency
+    const nextRun = new Date();
+    switch (frequency) {
+      case 'daily':
+        nextRun.setDate(nextRun.getDate() + 1);
+        break;
+      case 'weekly':
+        nextRun.setDate(nextRun.getDate() + 7);
+        break;
+      case 'monthly':
+        nextRun.setMonth(nextRun.getMonth() + 1);
+        break;
+    }
+
+    // Set lastRun to the original report's creation date
+    const lastRun = report.reportDate || report.createdAt || new Date();
+
+    const scheduledPrompt = await ScheduledPrompt.create({
+      user: req.user._id,
+      brandId: report.brandId,
+      brandName: report.brandName,
+      brandUrl: report.brandUrl,
+      prompts,
+      aiModels,
+      searchScope: report.searchScope === 'local' ? 'local' : 'national',
+      location: report.location || null,
+      language: report.language || 'English',
+      isActive: true,
+      scheduleFrequency: frequency,
+      lastReportId: report._id,
+      lastRun, // Set to original report date
+      nextRun,
+      lastUpdated: new Date(),
+    });
+
+    return res.status(201).json({ success: true, data: scheduledPrompt });
+  } catch (error) {
+    console.error('scheduleFromReport error:', error);
+    return res.status(500).json({ success: false, message: 'Failed to schedule from report', error: error.message });
+  }
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar } from 'lucide-react';
@@ -18,10 +18,83 @@ const ReportView = () => {
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedPlatform, setSelectedPlatform] = useState('All Platforms');
   const [searchQuery, setSearchQuery] = useState('');
+  const [citationContent, setCitationContent] = useState(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleFrequency, setScheduleFrequency] = useState('weekly');
+  const [scheduling, setScheduling] = useState(false);
+  const [hasScheduledReport, setHasScheduledReport] = useState(false);
 
-  // Fetch report from API if ID is provided but no state data
+  // Track previous reportId to detect changes
+  const prevReportIdRef = useRef(reportId);
+
+  // Fetch report from API if ID is provided but no state data, or if reportId changes
   useEffect(() => {
-    if (reportId && !stateReportData) {
+    // If reportId changed (navigating to a different report), show loading
+    if (reportId && reportId !== prevReportIdRef.current) {
+      setLoading(true);
+      setReportData(null);
+      setBrandData(null);
+      setHasScheduledReport(false); // Reset scheduled report state
+      prevReportIdRef.current = reportId;
+      
+      const fetchReport = async () => {
+        const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+        try {
+          const response = await fetch(`${API_URL}/reports/${reportId}`, {
+            credentials: 'include',
+          });
+
+          if (response.ok) {
+            const { data } = await response.json();
+            setReportData(data.reportData);
+            const currentBrandId = data.brandId;
+            setBrandData({
+              brandName: data.brandName,
+              websiteUrl: data.brandUrl,
+              searchScope: data.searchScope,
+              location: data.location,
+              country: data.country,
+              platforms: data.platforms,
+              brandId: currentBrandId,
+            });
+
+            // Check if THIS specific brand has scheduled reports
+            if (currentBrandId) {
+              try {
+                const scheduledResponse = await fetch(
+                  `${API_URL}/analysis/scheduled-prompts?brandId=${currentBrandId}&isActive=true`,
+                  { credentials: 'include' }
+                );
+                if (scheduledResponse.ok) {
+                  const scheduledData = await scheduledResponse.json();
+                  // Verify that we found a scheduled prompt for THIS brandId
+                  const hasScheduled = scheduledData.data && scheduledData.data.length > 0 && 
+                    scheduledData.data.some(sp => sp.brandId === currentBrandId || String(sp.brandId) === String(currentBrandId));
+                  setHasScheduledReport(hasScheduled);
+                }
+              } catch (err) {
+                console.error('Error checking scheduled reports:', err);
+                setHasScheduledReport(false);
+              }
+            } else {
+              setHasScheduledReport(false);
+            }
+          } else {
+            console.error('Failed to fetch report');
+            navigate('/reports/new');
+          }
+        } catch (error) {
+          console.error('Error fetching report:', error);
+          navigate('/reports/new');
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchReport();
+    } else if (reportId && !stateReportData) {
+      // Initial load with reportId but no state data
+      setLoading(true);
       const fetchReport = async () => {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         try {
@@ -39,7 +112,31 @@ const ReportView = () => {
               location: data.location,
               country: data.country,
               platforms: data.platforms,
+              brandId: data.brandId,
             });
+
+            // Check if THIS specific brand has scheduled reports
+            const currentBrandId = data.brandId;
+            if (currentBrandId) {
+              try {
+                const scheduledResponse = await fetch(
+                  `${API_URL}/analysis/scheduled-prompts?brandId=${currentBrandId}&isActive=true`,
+                  { credentials: 'include' }
+                );
+                if (scheduledResponse.ok) {
+                  const scheduledData = await scheduledResponse.json();
+                  // Verify that we found a scheduled prompt for THIS brandId
+                  const hasScheduled = scheduledData.data && scheduledData.data.length > 0 && 
+                    scheduledData.data.some(sp => sp.brandId === currentBrandId || String(sp.brandId) === String(currentBrandId));
+                  setHasScheduledReport(hasScheduled);
+                }
+              } catch (err) {
+                console.error('Error checking scheduled reports:', err);
+                setHasScheduledReport(false);
+              }
+            } else {
+              setHasScheduledReport(false);
+            }
           } else {
             console.error('Failed to fetch report');
             navigate('/reports/new');
@@ -51,10 +148,13 @@ const ReportView = () => {
           setLoading(false);
         }
       };
-
       fetchReport();
+    } else if (stateReportData && stateBrandData) {
+      // If we have state data, use it and don't show loading
+      setLoading(false);
+      prevReportIdRef.current = reportId;
     }
-  }, [reportId, stateReportData, navigate]);
+  }, [reportId, stateReportData, stateBrandData, navigate]);
 
   if (loading) {
     return (
@@ -160,6 +260,43 @@ const ReportView = () => {
   // Get unique categories
   const categories = ['All Categories', ...new Set(reportData.map(item => item.category))];
 
+  // Custom tick component for multiline category names
+  const CustomCategoryTick = ({ x, y, payload }) => {
+    const name = payload.value || '';
+    // Split long category names into multiple lines (max 18 chars per line)
+    const maxLength = 18;
+    let lines = [];
+    
+    if (name.length <= maxLength) {
+      lines = [name];
+    } else {
+      const words = name.split(' ');
+      let currentLine = '';
+      
+      words.forEach(word => {
+        if ((currentLine + word).length <= maxLength) {
+          currentLine += (currentLine ? ' ' : '') + word;
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      });
+      if (currentLine) lines.push(currentLine);
+    }
+    
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text x={0} y={0} dy={16} textAnchor="middle" fill="#9CA3AF" fontSize={11}>
+          {lines.map((line, index) => (
+            <tspan x={0} dy={index === 0 ? 0 : 14} key={index}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      </g>
+    );
+  };
+
   // Filter data
   const filteredData = reportData.filter(item => {
     const matchesCategory = selectedCategory === 'All Categories' || item.category === selectedCategory;
@@ -213,6 +350,33 @@ const ReportView = () => {
     }
   };
 
+  const canSchedule = !!brandData?.brandId;
+
+  const handleSchedule = async () => {
+    if (!canSchedule) return;
+    try {
+      setScheduling(true);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      const resp = await fetch(`${API_URL}/analysis/schedule-from-report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ reportId, frequency: scheduleFrequency }),
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to schedule report');
+      }
+      setShowScheduleModal(false);
+      setHasScheduledReport(true); // Update state after successful scheduling
+      alert('✅ Report scheduled successfully');
+    } catch (e) {
+      alert(e.message);
+    } finally {
+      setScheduling(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-gray-900">
       <Sidebar />
@@ -245,13 +409,25 @@ const ReportView = () => {
                   <Share2 className="w-4 h-4" />
                   Share Report
                 </button>
-                <button
-                  onClick={() => navigate('/schedule-report', { state: { reportId } })}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  <Calendar className="w-4 h-4" />
-                  Schedule Report
-                </button>
+                {canSchedule && (
+                  hasScheduledReport ? (
+                    <button
+                      onClick={() => navigate(`/scheduled-reports/${brandData.brandId}`)}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      View Scheduled Reports
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setShowScheduleModal(true)}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                      <Calendar className="w-4 h-4" />
+                      Schedule Report
+                    </button>
+                  )
+                )}
               </div>
             </div>
 
@@ -279,19 +455,19 @@ const ReportView = () => {
           {/* Visibility Analysis Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
             {/* Visibility Score by Platform */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-xl font-bold text-white mb-4">Visibility Score by Platform</h3>
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <h3 className="text-xl font-bold text-white mb-2">Visibility Score by Platform</h3>
               {platformChartData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={platformChartData}>
+                <ResponsiveContainer width="100%" height={450}>
+                  <BarChart data={platformChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="name" stroke="#9CA3AF" />
-                    <YAxis stroke="#9CA3AF" />
+                    <XAxis dataKey="name" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
                       labelStyle={{ color: '#F3F4F6' }}
                     />
-                    <Legend />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
                     <Bar dataKey="visibility" fill="#8B5CF6" name="Visibility %" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -300,25 +476,34 @@ const ReportView = () => {
                   No platform data available
                 </div>
               )}
-              <div className="mt-4 text-sm text-gray-400">
+              <div className="mt-2 text-sm text-gray-400">
                 <p>Overall Visibility Score: <span className="text-white font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
               </div>
             </div>
 
             {/* Category Visibility Trends */}
-            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-              <h3 className="text-xl font-bold text-white mb-4">Category Visibility Trends</h3>
+            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+              <h3 className="text-xl font-bold text-white mb-2">Category Visibility Trends</h3>
               {categoryChartData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={categoryChartData}>
+                <ResponsiveContainer width="100%" height={450}>
+                  <BarChart data={categoryChartData} margin={{ top: 5, right: 10, left: 0, bottom: 70 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="name" stroke="#9CA3AF" angle={-45} textAnchor="end" height={100} />
-                    <YAxis stroke="#9CA3AF" />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#9CA3AF" 
+                      angle={0}
+                      textAnchor="middle"
+                      height={70}
+                      interval={0}
+                      width={120}
+                      tick={<CustomCategoryTick />}
+                    />
+                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
                       labelStyle={{ color: '#F3F4F6' }}
                     />
-                    <Legend />
+                    <Legend wrapperStyle={{ paddingTop: '10px' }} />
                     <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
                   </BarChart>
                 </ResponsiveContainer>
@@ -327,7 +512,7 @@ const ReportView = () => {
                   No category data available
                 </div>
               )}
-              <div className="mt-4 text-sm text-gray-400">
+              <div className="mt-2 text-sm text-gray-400">
                 <p>Top performing category: <span className="text-white font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
               </div>
             </div>
@@ -385,30 +570,31 @@ const ReportView = () => {
           {/* Results Table */}
           <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full">
+              <table className="w-full table-auto">
                 <thead className="bg-gray-750">
                   <tr>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Prompt
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Category
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Platform
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       Found
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Index
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Website
                     </th>
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
-                      Citation
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                      Brand Mention
                     </th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Citation</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-700">
@@ -417,44 +603,63 @@ const ReportView = () => {
                       item.response.map((platformData, pIdx) => (
                         <tr key={`${idx}-${pIdx}`} className="hover:bg-gray-750 transition-colors">
                           {pIdx === 0 && (
-                            <td className="px-6 py-4 text-sm text-gray-300" rowSpan={item.response.length}>
+                            <td className="px-3 py-3 text-sm text-gray-300" rowSpan={item.response.length}>
                               {item.prompt}
                             </td>
                           )}
                           {pIdx === 0 && (
-                            <td className="px-6 py-4 text-sm text-gray-400" rowSpan={item.response.length}>
+                            <td className="px-3 py-3 text-sm text-gray-400" rowSpan={item.response.length}>
                               <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
                                 {item.category}
                               </span>
                             </td>
                           )}
-                          <td className="px-6 py-4 text-sm text-gray-300 capitalize">
+                          <td className="px-3 py-3 text-sm text-gray-300 capitalize whitespace-nowrap">
                             {platformData.src === 'google_ai_overviews' ? 'Google AI' : platformData.src}
                           </td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.found ? (
-                              <span className="px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
+                              <span className="inline-flex items-center px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
                                 ✓ Yes
                               </span>
                             ) : (
-                              <span className="px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
+                              <span className="inline-flex items-center px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
                                 ✗ No
                               </span>
                             )}
                           </td>
-                          <td className="px-6 py-4 text-sm text-gray-300">
+                          <td className="px-3 py-3 text-sm text-gray-300 whitespace-nowrap">
                             {platformData.index !== null ? `#${platformData.index}` : '-'}
                           </td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.details?.websiteFound ? (
-                              <span className="text-green-400">✓ Yes</span>
+                              platformData.details?.website ? (
+                                <a href={platformData.details.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline text-xs">View Source</a>
+                              ) : (
+                                <span className="text-green-400">✓ Yes</span>
+                              )
                             ) : (
                               <span className="text-gray-500">-</span>
                             )}
                           </td>
-                          <td className="px-6 py-4 text-sm">
+                          <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.details?.brandMentionFound ? (
                               <span className="text-blue-400">✓ Yes</span>
+                            ) : (
+                              <span className="text-gray-500">-</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 text-sm whitespace-nowrap">
+                            {(platformData.details?.citation || platformData.details?.snippet || platformData.details?.website) ? (
+                              <button
+                                onClick={() => setCitationContent({
+                                  citation: platformData.details?.citation || platformData.details?.snippet || '',
+                                  website: platformData.details?.website || null,
+                                })}
+                                className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded whitespace-nowrap"
+                              >
+                                View Citation
+                              </button>
                             ) : (
                               <span className="text-gray-500">-</span>
                             )}
@@ -463,7 +668,7 @@ const ReportView = () => {
                       ))
                     ) : (
                       <tr key={idx} className="hover:bg-gray-750">
-                        <td colSpan="7" className="px-6 py-4 text-sm text-gray-500 text-center">
+                        <td colSpan="8" className="px-3 py-3 text-sm text-gray-500 text-center">
                           No response data
                         </td>
                       </tr>
@@ -479,6 +684,48 @@ const ReportView = () => {
               </div>
             )}
           </div>
+          {/* Schedule Modal */}
+          {showScheduleModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
+                <h3 className="text-lg font-semibold text-white mb-4">Schedule this report</h3>
+                <label className="block text-sm text-gray-300 mb-2">Frequency</label>
+                <select
+                  value={scheduleFrequency}
+                  onChange={(e) => setScheduleFrequency(e.target.value)}
+                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none mb-4"
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+                <div className="flex justify-end gap-3">
+                  <button onClick={() => setShowScheduleModal(false)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Cancel</button>
+                  <button onClick={handleSchedule} disabled={scheduling} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">{scheduling ? 'Scheduling...' : 'Confirm'}</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Citation Modal */}
+          {citationContent && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-xl">
+                <h3 className="text-lg font-semibold text-white mb-4">Citation</h3>
+                {citationContent.citation ? (
+                  <p className="text-sm text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>
+                ) : (
+                  <p className="text-sm text-gray-400 mb-4">No citation text available.</p>
+                )}
+                {citationContent.website && (
+                  <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">Open Source</a>
+                )}
+                <div className="flex justify-end mt-6">
+                  <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Close</button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

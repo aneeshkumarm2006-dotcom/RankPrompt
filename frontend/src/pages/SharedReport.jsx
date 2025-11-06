@@ -15,6 +15,7 @@ const SharedReport = () => {
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [selectedPlatform, setSelectedPlatform] = useState('All Platforms');
   const [searchQuery, setSearchQuery] = useState('');
+  const [citationContent, setCitationContent] = useState(null);
 
   useEffect(() => {
     const fetchSharedReport = async () => {
@@ -121,6 +122,43 @@ const SharedReport = () => {
     const unique = new Set(reportData.map(item => item.category).filter(Boolean));
     return ['All Categories', ...unique];
   }, [reportData]);
+
+  // Custom tick component for multiline category names
+  const CustomCategoryTick = ({ x, y, payload }) => {
+    const name = payload.value || '';
+    // Split long category names into multiple lines (max 18 chars per line)
+    const maxLength = 18;
+    let lines = [];
+    
+    if (name.length <= maxLength) {
+      lines = [name];
+    } else {
+      const words = name.split(' ');
+      let currentLine = '';
+      
+      words.forEach(word => {
+        if ((currentLine + word).length <= maxLength) {
+          currentLine += (currentLine ? ' ' : '') + word;
+        } else {
+          if (currentLine) lines.push(currentLine);
+          currentLine = word;
+        }
+      });
+      if (currentLine) lines.push(currentLine);
+    }
+    
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text x={0} y={0} dy={16} textAnchor="middle" fill="#9CA3AF" fontSize={11}>
+          {lines.map((line, index) => (
+            <tspan x={0} dy={index === 0 ? 0 : 14} key={index}>
+              {line}
+            </tspan>
+          ))}
+        </text>
+      </g>
+    );
+  };
 
   const filteredData = useMemo(() => {
     return reportData.filter(item => {
@@ -244,19 +282,19 @@ const SharedReport = () => {
         {/* Visibility Analysis Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Visibility Score by Platform */}
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Visibility Score by Platform</h3>
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4">
+            <h3 className="text-xl font-bold text-white mb-2">Visibility Score by Platform</h3>
             {platformChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={platformChartData}>
+              <ResponsiveContainer width="100%" height={450}>
+                <BarChart data={platformChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="name" stroke="#9CA3AF" />
-                  <YAxis stroke="#9CA3AF" />
+                  <XAxis dataKey="name" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                  <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
                     labelStyle={{ color: '#F3F4F6' }}
                   />
-                  <Legend />
+                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
                   <Bar dataKey="visibility" fill="#8B5CF6" name="Visibility %" />
                 </BarChart>
               </ResponsiveContainer>
@@ -265,25 +303,34 @@ const SharedReport = () => {
                 No platform data available
               </div>
             )}
-            <div className="mt-4 text-sm text-gray-400">
+            <div className="mt-2 text-sm text-gray-400">
               <p>Overall Visibility Score: <span className="text-white font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
             </div>
           </div>
 
           {/* Category Visibility Trends */}
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Category Visibility Trends</h3>
+          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4">
+            <h3 className="text-xl font-bold text-white mb-2">Category Visibility Trends</h3>
             {categoryChartData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={categoryChartData}>
+              <ResponsiveContainer width="100%" height={450}>
+                <BarChart data={categoryChartData} margin={{ top: 5, right: 10, left: 0, bottom: 70 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="name" stroke="#9CA3AF" angle={-45} textAnchor="end" height={100} />
-                  <YAxis stroke="#9CA3AF" />
+                  <XAxis 
+                    dataKey="name" 
+                    stroke="#9CA3AF" 
+                    angle={0}
+                    textAnchor="middle"
+                    height={70}
+                    interval={0}
+                    width={120}
+                    tick={<CustomCategoryTick />}
+                  />
+                  <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                   <Tooltip 
                     contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
                     labelStyle={{ color: '#F3F4F6' }}
                   />
-                  <Legend />
+                  <Legend wrapperStyle={{ paddingTop: '10px' }} />
                   <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
                 </BarChart>
               </ResponsiveContainer>
@@ -292,7 +339,7 @@ const SharedReport = () => {
                 No category data available
               </div>
             )}
-            <div className="mt-4 text-sm text-gray-400">
+            <div className="mt-2 text-sm text-gray-400">
               <p>Top performing category: <span className="text-white font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
             </div>
           </div>
@@ -385,16 +432,26 @@ const SharedReport = () => {
                                 <span className="text-sm font-semibold text-primary-400 uppercase tracking-wide">
                                   {platform.src}
                                 </span>
-                                {platform.details?.website && (
-                                  <a
-                                    href={platform.details.website}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-xs text-blue-400 hover:text-blue-300 underline"
-                                  >
-                                    View Source
-                                  </a>
-                                )}
+                                <div className="flex items-center gap-3">
+                                  {(platform.details?.citation || platform.details?.snippet || platform.details?.website) && (
+                                    <button
+                                      onClick={() => setCitationContent({ citation: platform.details?.citation || platform.details?.snippet || '', website: platform.details?.website || null })}
+                                      className="text-xs px-2 py-1 rounded bg-gray-800 border border-gray-700 hover:bg-gray-700"
+                                    >
+                                      View Citation
+                                    </button>
+                                  )}
+                                  {platform.details?.website && (
+                                    <a
+                                      href={platform.details.website}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-xs text-blue-400 hover:text-blue-300 underline"
+                                    >
+                                      View Source
+                                    </a>
+                                  )}
+                                </div>
                               </div>
                               {platform.answer && (
                                 <p className="text-sm text-gray-200 whitespace-pre-line">{platform.answer}</p>
@@ -421,6 +478,26 @@ const SharedReport = () => {
             </table>
           </div>
         </div>
+
+        {/* Citation Modal */}
+        {citationContent && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-xl">
+              <h3 className="text-lg font-semibold text-white mb-4">Citation</h3>
+              {citationContent.citation ? (
+                <p className="text-sm text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>
+              ) : (
+                <p className="text-sm text-gray-400 mb-4">No citation text available.</p>
+              )}
+              {citationContent.website && (
+                <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">Open Source</a>
+              )}
+              <div className="flex justify-end mt-6">
+                <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Close</button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mt-12 text-center text-gray-500 text-sm">
           <p>

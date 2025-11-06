@@ -482,3 +482,36 @@ export const getReportByBrandId = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc    Get all reports for a brand
+ * @route   GET /api/reports/brand/:brandId/all
+ * @access  Private
+ */
+export const getReportsByBrand = async (req, res) => {
+  try {
+    const { brandId } = req.params;
+    const userId = req.user._id;
+
+    const reports = await Report.find({ 
+      brandId, 
+      userId,
+      status: 'completed'
+    })
+      .sort({ createdAt: -1 })
+      .select('-reportData'); // Exclude large reportData field for list view
+
+    res.status(200).json({
+      success: true,
+      count: reports.length,
+      data: reports,
+    });
+  } catch (error) {
+    console.error('Error fetching reports by brand:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching reports',
+      error: error.message,
+    });
+  }
+};

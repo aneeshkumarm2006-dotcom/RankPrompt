@@ -7,6 +7,11 @@ const promptSentSchema = new mongoose.Schema(
       ref: 'User',
       required: true,
     },
+    brandId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Brand',
+      default: null,
+    },
     reportId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Report',
@@ -68,6 +73,7 @@ const promptSentSchema = new mongoose.Schema(
 
 // Indexes for faster queries
 promptSentSchema.index({ userId: 1, createdAt: -1 });
+promptSentSchema.index({ brandId: 1, createdAt: -1 });
 promptSentSchema.index({ reportId: 1 });
 promptSentSchema.index({ reportId: 1, promptIndex: 1 });
 
