@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { Eye, Trash2, Share2, Calendar, TrendingUp, PlayCircle, Clock } from 'lucide-react';
 
@@ -48,25 +49,27 @@ const AllReports = () => {
     if (!confirm('Are you sure you want to delete this report?')) return;
 
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    try {
-      const response = await fetch(`${API_URL}/reports/${reportId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
+    
+    const deletePromise = fetch(`${API_URL}/reports/${reportId}`, {
+      method: 'DELETE',
+      credentials: 'include',
+    }).then(async (response) => {
       if (response.ok) {
         // Update state immediately to remove from UI
         setReports(prevReports => prevReports.filter(r => r._id !== reportId));
         setInProgressReports(prev => prev.filter(r => r._id !== reportId));
         setCompletedReports(prev => prev.filter(r => r._id !== reportId));
-        alert('Report deleted successfully');
+        return 'Report deleted successfully';
       } else {
-        alert('Failed to delete report');
+        throw new Error('Failed to delete report');
       }
-    } catch (error) {
-      console.error('Error deleting report:', error);
-      alert('Error deleting report');
-    }
+    });
+
+    toast.promise(deletePromise, {
+      loading: 'Deleting report...',
+      success: (msg) => msg,
+      error: (err) => err.message || 'Error deleting report',
+    });
   };
 
   const handleShareReport = async (reportId) => {
@@ -80,13 +83,15 @@ const AllReports = () => {
       if (response.ok) {
         const { data } = await response.json();
         navigator.clipboard.writeText(data.shareUrl);
-        alert(`✅ Share link copied!\n\n${data.shareUrl}`);
+        toast.success('Share link copied to clipboard!', {
+          duration: 5000,
+        });
       } else {
-        alert('Failed to generate share link');
+        toast.error('Failed to generate share link');
       }
     } catch (error) {
       console.error('Error sharing report:', error);
-      alert('Error generating share link');
+      toast.error('Error generating share link');
     }
   };
 

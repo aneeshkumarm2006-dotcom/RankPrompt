@@ -13,6 +13,7 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 const Sidebar = () => {
@@ -64,12 +65,12 @@ const Sidebar = () => {
       } else {
         // No report found for this brand
         const errorData = await response.json();
-        alert(`No completed report found for this brand. Create a new report to see visibility analysis.`);
+        toast.error('No completed report found for this brand. Create a new report to see visibility analysis.');
         navigate('/reports/new');
       }
     } catch (error) {
       console.error('Error fetching brand report:', error);
-      alert('Error loading brand report. Please try again.');
+      toast.error('Error loading brand report. Please try again.');
     }
   };
 

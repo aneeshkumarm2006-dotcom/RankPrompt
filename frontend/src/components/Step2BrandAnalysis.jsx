@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Plus, Check, Loader, ExternalLink } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
 const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
@@ -143,7 +144,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   const handleGeneratePrompts = () => {
     if (activeTab === 'generate') {
       if (selectedCategories.length === 0) {
-        alert('Please select at least one category');
+        toast.error('Please select at least one category');
         return;
       }
       onComplete({
@@ -155,7 +156,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
     } else {
       const validPrompts = customPrompts.filter((p) => p.trim() !== '');
       if (validPrompts.length === 0) {
-        alert('Please add at least one prompt');
+        toast.error('Please add at least one prompt');
         return;
       }
       onComplete({

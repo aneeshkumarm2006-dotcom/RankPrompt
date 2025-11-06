@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import { Search, Globe, X, Check } from 'lucide-react';
@@ -217,7 +218,7 @@ const Reports = () => {
 
   const handleAnalyzeBrand = async () => {
     if (!formData.brandName || !formData.websiteUrl) {
-      alert('Please fill in Brand Name and Website URL');
+      toast.error('Please fill in Brand Name and Website URL');
       return;
     }
 
@@ -299,7 +300,7 @@ const Reports = () => {
       if (formData.platforms.googleAiOverviews) selectedAiModels.push('google_ai_overview');
 
       if (selectedAiModels.length === 0) {
-        alert('Please select at least one AI platform (ChatGPT, Perplexity, or Google AI Overview)');
+        toast.error('Please select at least one AI platform (ChatGPT, Perplexity, or Google AI Overview)');
         setIsAnalyzing(false);
         return;
       }
@@ -541,7 +542,7 @@ const Reports = () => {
 
     } catch (error) {
       console.error('❌ Error:', error);
-      alert(`Error: ${error.message}`);
+      toast.error(`Error: ${error.message}`);
       setIsAnalyzing(false);
     }
   };

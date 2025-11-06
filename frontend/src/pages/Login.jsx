@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, Zap, Eye, EyeOff, ArrowRight } from 'lucide-react';
@@ -31,6 +32,7 @@ const Login = () => {
     const result = await login(formData);
 
     if (result.success) {
+      toast.success('Welcome back!');
       navigate('/reports/new');
     } else {
       setError(result.error);
@@ -45,6 +47,7 @@ const Login = () => {
     const result = await googleLogin(credentialResponse.credential);
 
     if (result.success) {
+      toast.success('Welcome back!');
       navigate('/reports/new');
     } else {
       setError(result.error || 'Google login failed');

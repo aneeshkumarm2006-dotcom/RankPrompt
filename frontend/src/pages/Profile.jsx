@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import Sidebar from '../components/Sidebar';
+import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import Sidebar from '../components/Sidebar';
 import { 
   CreditCard, 
   Zap, 
@@ -86,7 +87,7 @@ const Profile = () => {
       window.open(stripeSessionUrl, '_blank');
     } catch (error) {
       console.error('Error opening billing portal:', error);
-      alert('Failed to open billing portal. Please try again.');
+      toast.error('Failed to open billing portal. Please try again.');
     }
   };
 

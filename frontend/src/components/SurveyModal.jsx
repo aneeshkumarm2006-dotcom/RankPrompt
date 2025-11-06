@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const SurveyModal = ({ onClose, onComplete }) => {
   const [currentQuestion, setCurrentQuestion] = useState(1);
@@ -149,14 +150,14 @@ const SurveyModal = ({ onClose, onComplete }) => {
       const data = await response.json();
 
       if (data.success) {
-        alert('Survey submitted successfully! 50 credits have been added to your account.');
+        toast.success('Survey submitted successfully! 50 credits have been added to your account.');
         onComplete();
       } else {
-        alert(data.message || 'Failed to submit survey');
+        toast.error(data.message || 'Failed to submit survey');
       }
     } catch (error) {
       console.error('Error submitting survey:', error);
-      alert('Failed to submit survey. Please try again.');
+      toast.error('Failed to submit survey. Please try again.');
     }
   };
 

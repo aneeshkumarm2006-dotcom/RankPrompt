@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar } from 'lucide-react';
 import html2pdf from 'html2pdf.js';
@@ -326,7 +327,7 @@ const ReportView = () => {
   // Share report (generate shareable link)
   const handleShareReport = async () => {
     if (!reportId) {
-      alert('Report must be saved first before sharing');
+      toast.error('Report must be saved first before sharing');
       return;
     }
 
@@ -340,13 +341,15 @@ const ReportView = () => {
       if (response.ok) {
         const { data } = await response.json();
         navigator.clipboard.writeText(data.shareUrl);
-        alert(`✅ Share link copied to clipboard!\n\n${data.shareUrl}\n\nAnyone with this link can view your report.`);
+        toast.success('Share link copied to clipboard! Anyone with this link can view your report.', {
+          duration: 5000,
+        });
       } else {
-        alert('Failed to generate share link');
+        toast.error('Failed to generate share link');
       }
     } catch (error) {
       console.error('Error sharing report:', error);
-      alert('Error generating share link');
+      toast.error('Error generating share link');
     }
   };
 
@@ -369,9 +372,9 @@ const ReportView = () => {
       }
       setShowScheduleModal(false);
       setHasScheduledReport(true); // Update state after successful scheduling
-      alert('✅ Report scheduled successfully');
+      toast.success('Report scheduled successfully');
     } catch (e) {
-      alert(e.message);
+      toast.error(e.message);
     } finally {
       setScheduling(false);
     }

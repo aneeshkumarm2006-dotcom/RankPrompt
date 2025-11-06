@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, User, Zap, Eye, EyeOff, ArrowRight, Gift } from 'lucide-react';
@@ -63,6 +64,7 @@ const Register = () => {
     const result = await register(dataToSend);
 
     if (result.success) {
+      toast.success('Account created successfully! Welcome to RankPrompt!');
       navigate('/reports/new');
     } else {
       setError(result.error);
@@ -78,6 +80,7 @@ const Register = () => {
     const result = await googleLogin(credentialResponse.credential, referralCode);
 
     if (result.success) {
+      toast.success('Account created successfully! Welcome to RankPrompt!');
       navigate('/reports/new');
     } else {
       setError(result.error || 'Google sign up failed');
