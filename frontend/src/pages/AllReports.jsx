@@ -55,7 +55,10 @@ const AllReports = () => {
       });
 
       if (response.ok) {
-        setReports(reports.filter(r => r._id !== reportId));
+        // Update state immediately to remove from UI
+        setReports(prevReports => prevReports.filter(r => r._id !== reportId));
+        setInProgressReports(prev => prev.filter(r => r._id !== reportId));
+        setCompletedReports(prev => prev.filter(r => r._id !== reportId));
         alert('Report deleted successfully');
       } else {
         alert('Failed to delete report');

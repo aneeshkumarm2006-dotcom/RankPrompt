@@ -371,6 +371,7 @@ const Reports = () => {
         category: prompt.category,
         brand: formData.brandName,
         brandUrl: cleanedBrandUrl,
+        brandId: savedBrandId, // Include brandId
         chatgpt: formData.platforms.chatgpt,
         perplexity: formData.platforms.perplexity,
         google_ai_overviews: formData.platforms.googleAiOverviews,
