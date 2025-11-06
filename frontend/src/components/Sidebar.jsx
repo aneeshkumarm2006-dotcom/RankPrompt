@@ -23,12 +23,10 @@ const Sidebar = () => {
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
   const [brands, setBrands] = useState([]);
 
-  // Fetch user brands when dropdown is opened
+  // Fetch user brands on component mount (not when dropdown is opened)
   useEffect(() => {
-    if (isBrandsOpen && brands.length === 0) {
-      fetchBrands();
-    }
-  }, [isBrandsOpen]);
+    fetchBrands();
+  }, []);
 
   const fetchBrands = async () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';

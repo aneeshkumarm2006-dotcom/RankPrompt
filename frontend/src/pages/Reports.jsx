@@ -12,7 +12,7 @@ import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
 
 const Reports = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [searchParams] = useSearchParams();
   const continueReportId = searchParams.get('continue');
   
@@ -500,6 +500,9 @@ const Reports = () => {
         if (saveResponse.ok) {
           const { data: savedReport } = await saveResponse.json();
           console.log('✅ Report saved successfully:', savedReport._id);
+          
+          // Refresh user data to update credits in sidebar
+          await refreshUser();
           
           // Navigate to report view with saved report ID
           navigate(`/reports/${savedReport._id}`);

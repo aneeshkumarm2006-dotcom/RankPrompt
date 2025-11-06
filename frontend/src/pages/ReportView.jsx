@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
 import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
+import { generateReportPDF } from '../utils/pdfGenerator';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const ReportView = () => {
@@ -57,6 +58,7 @@ const ReportView = () => {
               country: data.country,
               platforms: data.platforms,
               brandId: currentBrandId,
+              reportDate: data.reportDate || data.createdAt,
             });
 
             // Check if THIS specific brand has scheduled reports
@@ -114,6 +116,7 @@ const ReportView = () => {
               country: data.country,
               platforms: data.platforms,
               brandId: data.brandId,
+              reportDate: data.reportDate || data.createdAt,
             });
 
             // Check if THIS specific brand has scheduled reports
@@ -311,17 +314,21 @@ const ReportView = () => {
     return matchesCategory && matchesSearch && matchesPlatform;
   });
 
-  // Download report as PDF
-  const handleDownloadPDF = () => {
-    const element = document.getElementById('report-content');
-    const opt = {
-      margin: 10,
-      filename: `${brandData?.brandName || 'Report'}_Visibility_Analysis.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-    html2pdf().set(opt).from(element).save();
+  // Download report as PDF with much better quality
+  const handleDownloadPDF = async () => {
+    try {
+      await generateReportPDF(
+        brandData?.brandName || 'Brand',
+        filteredData,
+        stats,
+        platformChartData,
+        categoryChartData
+      );
+      toast.success('PDF downloaded successfully!');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF. Please try again.');
+    }
   };
 
   // Share report (generate shareable link)
@@ -394,7 +401,7 @@ const ReportView = () => {
                   {brandData?.brandName || 'Brand'} - Visibility Analysis
                 </h1>
                 <p className="text-gray-400">
-                  {brandData?.websiteUrl || 'N/A'} • {new Date().toLocaleDateString()}
+                  {brandData?.websiteUrl || 'N/A'} • {brandData?.reportDate ? new Date(brandData.reportDate).toLocaleString() : 'N/A'}
                 </p>
               </div>
               <div className="flex gap-3">

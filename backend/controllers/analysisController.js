@@ -571,3 +571,90 @@ export const scheduleFromReport = async (req, res) => {
     return res.status(500).json({ success: false, message: 'Failed to schedule from report', error: error.message });
   }
 };
+
+/**
+ * Pause or resume a scheduled report
+ * @route PUT /api/analysis/scheduled-prompts/:id/toggle
+ * @access Private
+ */
+export const toggleScheduledPrompt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const scheduledPrompt = await ScheduledPrompt.findById(id);
+
+    if (!scheduledPrompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Scheduled report not found',
+      });
+    }
+
+    // Verify ownership
+    if (scheduledPrompt.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to modify this scheduled report',
+      });
+    }
+
+    // Toggle the isActive status
+    scheduledPrompt.isActive = !scheduledPrompt.isActive;
+    scheduledPrompt.lastUpdated = new Date();
+    
+    await scheduledPrompt.save();
+
+    res.status(200).json({
+      success: true,
+      data: scheduledPrompt,
+      message: scheduledPrompt.isActive ? 'Scheduled report resumed' : 'Scheduled report paused',
+    });
+  } catch (error) {
+    console.error('Toggle scheduled prompt error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to toggle scheduled report',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Delete a scheduled report
+ * @route DELETE /api/analysis/scheduled-prompts/:id
+ * @access Private
+ */
+export const deleteScheduledPrompt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const scheduledPrompt = await ScheduledPrompt.findById(id);
+
+    if (!scheduledPrompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Scheduled report not found',
+      });
+    }
+
+    // Verify ownership
+    if (scheduledPrompt.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to delete this scheduled report',
+      });
+    }
+
+    await ScheduledPrompt.findByIdAndDelete(id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Scheduled report deleted successfully',
+    });
+  } catch (error) {
+    console.error('Delete scheduled prompt error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to delete scheduled report',
+      error: error.message,
+    });
+  }
+};

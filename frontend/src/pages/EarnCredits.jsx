@@ -5,7 +5,7 @@ import { Gift, Users, Copy, Check, Sparkles, X } from 'lucide-react';
 import SurveyModal from '../components/SurveyModal';
 
 const EarnCredits = () => {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [showSurveyModal, setShowSurveyModal] = useState(false);
   const [referralData, setReferralData] = useState(null);
   const [surveyStatus, setSurveyStatus] = useState(null);
@@ -64,11 +64,11 @@ const EarnCredits = () => {
     }
   };
 
-  const handleSurveyComplete = () => {
+  const handleSurveyComplete = async () => {
     setShowSurveyModal(false);
     fetchSurveyStatus();
     // Refresh user data to update credits
-    window.location.reload();
+    await refreshUser();
   };
 
   return (

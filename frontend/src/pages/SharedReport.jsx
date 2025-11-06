@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Download, Search, ExternalLink } from 'lucide-react';
-import html2pdf from 'html2pdf.js';
+import { generateReportPDF } from '../utils/pdfGenerator';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const SharedReport = () => {
@@ -174,16 +174,19 @@ const SharedReport = () => {
     });
   }, [reportData, selectedCategory, searchQuery, selectedPlatform]);
 
-  const handleDownloadPDF = () => {
-    const element = document.getElementById('shared-report-content');
-    const opt = {
-      margin: 10,
-      filename: `${report?.brandName || 'Report'}_Visibility_Analysis.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    };
-    html2pdf().set(opt).from(element).save();
+  const handleDownloadPDF = async () => {
+    try {
+      await generateReportPDF(
+        report?.brandName || 'Brand',
+        filteredData,
+        stats,
+        platformChartData,
+        categoryChartData
+      );
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    }
   };
 
   if (loading) {
@@ -391,89 +394,114 @@ const SharedReport = () => {
           </div>
         </div>
 
-        {/* Results table */}
-        <div className="bg-gray-800 border border-gray-700 rounded-2xl overflow-hidden">
+        {/* Results Table - Identical to ReportView */}
+        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-full">
-              <thead className="bg-gray-850">
+            <table className="w-full table-auto">
+              <thead className="bg-gray-750">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Prompt</th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Category</th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Platform Responses</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Prompt
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Category
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Platform
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                    Found
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Index
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Website
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    Brand Mention
+                  </th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Citation</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-750">
-                {filteredData.length === 0 ? (
-                  <tr>
-                    <td colSpan="3" className="px-6 py-12 text-center text-gray-400">
-                      No results found. Try different filters.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredData.map((item, idx) => (
-                    <tr key={`${item.prompt}-${idx}`} className="hover:bg-white/5 transition-colors">
-                      <td className="px-6 py-4 align-top">
-                        <p className="text-white font-medium mb-2">{item.prompt}</p>
-                        {item.success === false && (
-                          <p className="text-sm text-red-400">Request failed: {item.error || 'Unknown error'}</p>
+              <tbody className="divide-y divide-gray-700">
+                {filteredData.map((item, idx) => (
+                  item.response && Array.isArray(item.response) ? (
+                    item.response.map((platformData, pIdx) => (
+                      <tr key={`${idx}-${pIdx}`} className="hover:bg-gray-750 transition-colors">
+                        {pIdx === 0 && (
+                          <td className="px-3 py-3 text-sm text-gray-300" rowSpan={item.response.length}>
+                            {item.prompt}
+                          </td>
                         )}
-                      </td>
-                      <td className="px-6 py-4 align-top text-gray-300">
-                        {item.category || '—'}
-                      </td>
-                      <td className="px-6 py-4 space-y-4">
-                        {Array.isArray(item.response) ? (
-                          item.response.map((platform, platformIdx) => (
-                            <div
-                              key={`${platform.src}-${platformIdx}`}
-                              className="bg-gray-900 border border-gray-750 rounded-xl p-4"
+                        {pIdx === 0 && (
+                          <td className="px-3 py-3 text-sm text-gray-400" rowSpan={item.response.length}>
+                            <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
+                              {item.category}
+                            </span>
+                          </td>
+                        )}
+                        <td className="px-3 py-3 text-sm text-gray-300 capitalize whitespace-nowrap">
+                          {platformData.src === 'google_ai_overviews' ? 'Google AI' : platformData.src}
+                        </td>
+                        <td className="px-3 py-3 text-sm whitespace-nowrap">
+                          {platformData.found ? (
+                            <span className="inline-flex items-center px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
+                              ✓ Yes
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
+                              ✗ No
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-sm text-gray-300 whitespace-nowrap">
+                          {platformData.index !== null ? `#${platformData.index}` : '-'}
+                        </td>
+                        <td className="px-3 py-3 text-sm whitespace-nowrap">
+                          {platformData.details?.websiteFound ? (
+                            platformData.details?.website ? (
+                              <a href={platformData.details.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline text-xs">View Source</a>
+                            ) : (
+                              <span className="text-green-400">✓ Yes</span>
+                            )
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-sm whitespace-nowrap">
+                          {platformData.details?.brandMentionFound ? (
+                            <span className="text-blue-400">✓ Yes</span>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-3 text-sm whitespace-nowrap">
+                          {(platformData.details?.citation || platformData.details?.snippet || platformData.details?.website) ? (
+                            <button
+                              onClick={() => setCitationContent({ 
+                                citation: platformData.details?.citation || platformData.details?.snippet || '', 
+                                website: platformData.details?.website || null 
+                              })}
+                              className="text-xs text-primary-400 hover:text-primary-300 underline"
                             >
-                              <div className="flex items-center justify-between mb-2">
-                                <span className="text-sm font-semibold text-primary-400 uppercase tracking-wide">
-                                  {platform.src}
-                                </span>
-                                <div className="flex items-center gap-3">
-                                  {(platform.details?.citation || platform.details?.snippet || platform.details?.website) && (
-                                    <button
-                                      onClick={() => setCitationContent({ citation: platform.details?.citation || platform.details?.snippet || '', website: platform.details?.website || null })}
-                                      className="text-xs px-2 py-1 rounded bg-gray-800 border border-gray-700 hover:bg-gray-700"
-                                    >
-                                      View Citation
-                                    </button>
-                                  )}
-                                  {platform.details?.website && (
-                                    <a
-                                      href={platform.details.website}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="text-xs text-blue-400 hover:text-blue-300 underline"
-                                    >
-                                      View Source
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                              {platform.answer && (
-                                <p className="text-sm text-gray-200 whitespace-pre-line">{platform.answer}</p>
-                              )}
-                              <div className="flex flex-wrap gap-4 mt-3 text-xs text-gray-400">
-                                {platform.details?.websiteFound && <span>✅ Website found</span>}
-                                {platform.details?.brandMentionFound && <span>💬 Brand mentioned</span>}
-                                {platform.details?.snippet && (
-                                  <span className="italic text-gray-300">
-                                    “{platform.details.snippet}”
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-sm text-gray-400">No platform response captured.</p>
-                        )}
+                              View
+                            </button>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr key={idx} className="hover:bg-gray-750 transition-colors">
+                      <td colSpan="8" className="px-3 py-3 text-sm text-gray-400">
+                        <div className="text-gray-300">{item.prompt}</div>
+                        <div className="text-red-400 text-xs mt-1">No platform response captured</div>
                       </td>
                     </tr>
-                  ))
-                )}
+                  )
+                ))}
               </tbody>
             </table>
           </div>

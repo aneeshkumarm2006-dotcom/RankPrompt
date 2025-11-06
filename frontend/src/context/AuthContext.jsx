@@ -79,6 +79,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshUser = async () => {
+    try {
+      const data = await authAPI.getCurrentUser();
+      setUser(data.user);
+      return { success: true };
+    } catch (err) {
+      console.error('Error refreshing user:', err);
+      return { success: false, error: err.message };
+    }
+  };
+
   const value = {
     user,
     loading,
@@ -87,6 +98,7 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     googleLogin,
+    refreshUser,
     isAuthenticated: !!user,
   };
 
