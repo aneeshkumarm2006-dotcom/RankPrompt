@@ -6,11 +6,11 @@ const connectDB = async () => {
       serverSelectionTimeoutMS: 10000,
     });
 
-    console.log(`✅ MongoDB Connected: ${conn.connection.host}`);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`❌ MongoDB Failed: ${error.message}`);
-    console.warn('⚠️  Server will start WITHOUT MongoDB');
-    console.warn('⚠️  OpenAI and n8n calls will work, data just won\'t be saved');
+    console.error(`MongoDB Failed: ${error.message}`);
+    console.warn('Server will start WITHOUT MongoDB');
+    console.warn('OpenAI and n8n calls will work, data just won\'t be saved');
   }
 };
 

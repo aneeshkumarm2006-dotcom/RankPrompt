@@ -75,8 +75,6 @@ const Reports = () => {
           // Set current step
           setCurrentStep(report.progress.currentStep || 1);
           setInProgressReportId(reportId);
-          
-          console.log('✅ Loaded in-progress report:', reportId);
         }
       }
     } catch (error) {
@@ -114,7 +112,6 @@ const Reports = () => {
         if (!inProgressReportId) {
           setInProgressReportId(savedReport._id);
         }
-        console.log('✅ Progress saved');
       }
     } catch (error) {
       console.error('Error saving progress:', error);
@@ -252,13 +249,12 @@ const Reports = () => {
       if (response.ok) {
         const { data: savedBrand } = await response.json();
         setSavedBrandId(savedBrand._id);
-        console.log('✅ Brand saved successfully with ID:', savedBrand._id);
       } else {
         const error = await response.json();
-        console.error('❌ Failed to save brand:', error.message);
+        console.error('Failed to save brand:', error.message);
       }
     } catch (error) {
-      console.error('❌ Error saving brand:', error);
+      console.error('Error saving brand:', error);
     }
 
     setShowSaveBrandModal(false);
@@ -324,7 +320,6 @@ const Reports = () => {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       
       // Generate authentication token for n8n webhook
-      console.log('🔐 Generating authentication token...');
       const tokenResponse = await fetch(`${API_URL}/analysis/generate-webhook-token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -336,21 +331,9 @@ const Reports = () => {
       }
 
       const { data: { token } } = await tokenResponse.json();
-      console.log('✅ Authentication token generated');
 
       const totalJobs = finalPrompts.length;
 
-      console.log('\n' + '='.repeat(80));
-      console.log(`🚀 STARTING ANALYSIS - SENDING ALL REQUESTS IN PARALLEL`);
-      console.log('='.repeat(80));
-      console.log(`Brand: ${formData.brandName}`);
-      console.log(`Brand URL: ${cleanedBrandUrl}`);
-      console.log(`Prompts: ${finalPrompts.length}`);
-      console.log(`AI Models: ${selectedAiModels.join(', ')}`);
-      console.log(`Total API Calls: ${totalJobs} (all sent simultaneously)`);
-      console.log(`🔐 Authentication: JWT Bearer token`);
-      console.log(`⏱️  Expected time: ~40 seconds (not ${Math.round(totalJobs * 40 / 60)} minutes!)`);
-      console.log('='.repeat(80) + '\n');
 
       // Determine location and country based on search scope
       let location = null;
@@ -364,8 +347,6 @@ const Reports = () => {
         location = null;
         country = formData.targetCountry; // 2-letter country code
       }
-
-      console.log(`📍 Location: ${location || 'null'}, Country: ${country}`);
 
       const promptsSentPayloads = finalPrompts.map((prompt, index) => ({
         prompt: prompt.text,
@@ -382,15 +363,11 @@ const Reports = () => {
         status: 'sent',
       }));
 
-      console.log(`\n🚀 Sending ${totalJobs} requests to n8n webhook NOW...\n`);
-
       // Set initial progress
       setAnalysisProgress({ total: totalJobs, completed: 0 });
 
       // Send ALL requests in parallel using Promise.all
-      const n8nPromises = finalPrompts.map((prompt, index) => {
-        console.log(`[${index + 1}/${totalJobs}] Queuing: "${prompt.text.substring(0, 50)}..."`);
-        
+      const n8nPromises = finalPrompts.map((prompt, index) => {        
         const payload = promptsSentPayloads[index];
 
         return fetch(N8N_WEBHOOK_URL, {
@@ -411,9 +388,7 @@ const Reports = () => {
           }),
         })
         .then(async (response) => {
-          const data = await response.json().catch(() => null);
-          console.log(`✅ [${index + 1}/${totalJobs}] Response received: ${response.status}`);
-          
+          const data = await response.json().catch(() => null);          
           // Update progress
           setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
           
@@ -427,7 +402,7 @@ const Reports = () => {
           };
         })
         .catch((error) => {
-          console.log(`❌ [${index + 1}/${totalJobs}] Error: ${error.message}`);
+          console.log(`[${index + 1}/${totalJobs}] Error: ${error.message}`);
           
           // Update progress even on error
           setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
@@ -442,23 +417,13 @@ const Reports = () => {
         });
       });
 
-      console.log(`\n⏳ Waiting for all ${totalJobs} requests to complete...\n`);
+      console.log(`\nWaiting for all ${totalJobs} requests to complete...\n`);
 
       // Wait for ALL requests to complete
       const results = await Promise.all(n8nPromises);
 
-      console.log('\n' + '='.repeat(80));
-      console.log(`✅ ANALYSIS COMPLETE - ALL RESPONSES COLLECTED`);
-      console.log('='.repeat(80));
-      console.log(`Total prompts sent: ${totalJobs}`);
-      console.log(`Successful: ${results.filter(r => r.success).length}`);
-      console.log(`Failed: ${results.filter(r => !r.success).length}`);
-      console.log('\n📦 Clubbed responses:');
-      console.log(JSON.stringify(results, null, 2));
-      console.log('='.repeat(80) + '\n');
-
       // Save report to database
-      console.log('💾 Saving report to database...');
+      console.log('Saving report to database...');
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         const promptsResponsesPayloads = results.map((result, index) => ({
@@ -499,7 +464,7 @@ const Reports = () => {
 
         if (saveResponse.ok) {
           const { data: savedReport } = await saveResponse.json();
-          console.log('✅ Report saved successfully:', savedReport._id);
+          console.log('Report saved successfully:', savedReport._id);
           
           // Refresh user data to update credits in sidebar
           await refreshUser();
@@ -507,7 +472,7 @@ const Reports = () => {
           // Navigate to report view with saved report ID
           navigate(`/reports/${savedReport._id}`);
         } else {
-          console.error('❌ Failed to save report');
+          console.error('Failed to save report');
           // Still navigate to view with in-memory data
           navigate('/reports/view', {
             state: {
@@ -524,7 +489,7 @@ const Reports = () => {
           });
         }
       } catch (saveError) {
-        console.error('❌ Error saving report:', saveError);
+        console.error('Error saving report:', saveError);
         // Still navigate to view with in-memory data
         navigate('/reports/view', {
           state: {
@@ -544,7 +509,7 @@ const Reports = () => {
       setIsAnalyzing(false);
 
     } catch (error) {
-      console.error('❌ Error:', error);
+      console.error('Error:', error);
       toast.error(`Error: ${error.message}`);
       setIsAnalyzing(false);
     }
@@ -1001,7 +966,7 @@ const Reports = () => {
                 }}
                 className="w-full bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center space-x-2"
               >
-                <span>✅ Yes, add to this brand</span>
+                <span>Yes, add to this brand</span>
               </button>
               
               <button

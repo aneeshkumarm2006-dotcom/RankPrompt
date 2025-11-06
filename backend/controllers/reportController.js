@@ -54,8 +54,6 @@ export const saveReport = async (req, res) => {
       user.credits -= promptsCount;
       user.creditsUsed += promptsCount;
       await user.save();
-
-      console.log(`✅ Deducted ${promptsCount} credits from user ${userId}. Remaining: ${user.credits}`);
     }
 
     // Calculate statistics

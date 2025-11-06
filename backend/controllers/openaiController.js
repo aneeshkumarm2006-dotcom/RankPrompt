@@ -115,8 +115,6 @@ IMPORTANT: Return exactly 10 categories, no more, no less.`,
       response_format: { type: "json_object" },
     });
 
-    console.log('📝 Generating categories for:', brandName);
-
     let responseContent = completion.choices[0].message.content;
     
     // Try to parse the response
@@ -127,18 +125,15 @@ IMPORTANT: Return exactly 10 categories, no more, no less.`,
       // Handle if response has categories key (expected)
       if (parsed.categories && Array.isArray(parsed.categories)) {
         categories = parsed.categories;
-        console.log(`✓ Successfully parsed ${categories.length} categories`);
       } else if (Array.isArray(parsed)) {
         // Direct array response (fallback)
         categories = parsed;
-        console.log(`✓ Got direct array with ${categories.length} categories`);
       } else {
         // Try to find any array in the object
         const values = Object.values(parsed);
         for (const value of values) {
           if (Array.isArray(value)) {
             categories = value;
-            console.log(`✓ Found array with ${categories.length} categories in object`);
             break;
           }
         }
@@ -148,7 +143,6 @@ IMPORTANT: Return exactly 10 categories, no more, no less.`,
       categories = categories.filter(cat => cat.name && cat.description);
       
     } catch (parseError) {
-      console.error('❌ Failed to parse OpenAI response:', parseError.message);
       console.error('Raw response:', responseContent);
       
       return res.status(500).json({
@@ -160,7 +154,6 @@ IMPORTANT: Return exactly 10 categories, no more, no less.`,
 
     // Ensure we have categories array
     if (!Array.isArray(categories) || categories.length === 0) {
-      console.error('❌ No valid categories generated');
       console.error('Parsed data:', categories);
       
       return res.status(500).json({
@@ -171,13 +164,11 @@ IMPORTANT: Return exactly 10 categories, no more, no less.`,
 
     // If we don't have exactly 10, pad or trim
     if (categories.length < 10) {
-      console.warn(`⚠️ Only generated ${categories.length} categories instead of 10`);
+      console.warn(`Only generated ${categories.length} categories instead of 10`);
     } else if (categories.length > 10) {
       console.log(`Trimming from ${categories.length} to 10 categories`);
       categories = categories.slice(0, 10);
     }
-
-    console.log(`✅ Successfully generated ${categories.length} categories for ${brandName}`);
     
     res.status(200).json({
       success: true,
@@ -188,7 +179,7 @@ IMPORTANT: Return exactly 10 categories, no more, no less.`,
       },
     });
   } catch (error) {
-    console.error('❌ Generate categories error:', error.message);
+    console.error('Generate categories error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to generate categories',
@@ -309,10 +300,7 @@ IMPORTANT: Generate exactly ${promptCount} prompts, no markdown, no code blocks,
               break;
             }
           }
-        }
-
-        console.log(`✓ Category "${category.name}": Generated ${prompts.length}/${promptCount} prompts`);
-        
+        }        
         // Warn if we didn't get the expected number
         if (prompts.length < promptCount) {
           console.warn(`⚠️ Warning: Expected ${promptCount} prompts for "${category.name}", got ${prompts.length}`);
@@ -341,14 +329,6 @@ IMPORTANT: Generate exactly ${promptCount} prompts, no markdown, no code blocks,
         }
       });
     }
-
-    // Log final summary
-    console.log('\n' + '='.repeat(60));
-    console.log(`📊 PROMPT GENERATION SUMMARY`);
-    console.log('='.repeat(60));
-    console.log(`Requested: ${numberOfPrompts} prompts across ${categories.length} categories`);
-    console.log(`Generated: ${allPrompts.length} prompts`);
-    console.log(`Success Rate: ${Math.round((allPrompts.length / numberOfPrompts) * 100)}%`);
     
     // Show breakdown by category
     const categoryBreakdown = {};

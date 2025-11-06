@@ -117,16 +117,6 @@ export const initiateAnalysis = async (req, res) => {
     }
 
     const totalCalls = prompts.length * aiModels.length;
-    console.log('\n' + '='.repeat(80));
-    console.log(`📊 STARTING ANALYSIS`);
-    console.log('='.repeat(80));
-    console.log(`Brand: ${brandName}`);
-    console.log(`Prompts: ${prompts.length}`);
-    console.log(`AI Models: ${aiModels.length}`);
-    console.log(`n8n-proxy Calls: ${totalCalls}`);
-    console.log(`track_prompt_processing Calls: ${totalCalls}`);
-    console.log(`TOTAL API CALLS: ${totalCalls * 2}`);
-    console.log('='.repeat(80) + '\n');
 
     // Send response immediately
     res.status(200).json({
@@ -145,11 +135,6 @@ export const initiateAnalysis = async (req, res) => {
 
     for (const prompt of prompts) {
       for (const aiModel of aiModels) {
-        // CALL 1: n8n-proxy
-        console.log(`\n[${++completedCalls}/${totalCalls}] n8n-proxy call`);
-        console.log(`  Prompt: "${prompt.text.substring(0, 60)}..."`);
-        console.log(`  AI Model: ${aiModel}`);
-        console.log(`  Brand: ${brandName}`);
         
         try {
           const n8nResponse = await axios.get(n8nWebhookUrl, {
@@ -162,13 +147,6 @@ export const initiateAnalysis = async (req, res) => {
             timeout: 60000,
           });
 
-          // CALL 2: track_prompt_processing
-          console.log(`  ✓ n8n-proxy responded`);
-          console.log(`  → tracker: validating response...`);
-          
-          const hasValidResponse = n8nResponse?.data && typeof n8nResponse.data === 'object';
-          console.log(`  ✓ tracker: ${hasValidResponse ? 'valid response' : 'invalid response'}`);
-
           results.push({
             prompt: prompt.text,
             aiModel,
@@ -176,7 +154,7 @@ export const initiateAnalysis = async (req, res) => {
             response: n8nResponse.data,
           });
         } catch (error) {
-          console.log(`  ✗ Error: ${error.message}`);
+          console.log(`Error: ${error.message}`);
           results.push({
             prompt: prompt.text,
             aiModel,
@@ -186,14 +164,6 @@ export const initiateAnalysis = async (req, res) => {
         }
       }
     }
-
-    console.log('\n' + '='.repeat(80));
-    console.log(`✅ ANALYSIS COMPLETE`);
-    console.log('='.repeat(80));
-    console.log(`Total calls made: ${totalCalls * 2}`);
-    console.log(`Successful: ${results.filter(r => r.success).length}`);
-    console.log(`Failed: ${results.filter(r => !r.success).length}`);
-    console.log('='.repeat(80) + '\n');
 
   } catch (error) {
     console.error('Initiate analysis error:', error);

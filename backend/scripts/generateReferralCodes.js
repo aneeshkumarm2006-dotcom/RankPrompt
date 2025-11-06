@@ -14,7 +14,7 @@ const generateReferralCodes = async () => {
   try {
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('✅ MongoDB Connected');
+    console.log('MongoDB Connected');
 
     // Find all users without referral codes
     const usersWithoutCodes = await User.find({ 
@@ -24,10 +24,7 @@ const generateReferralCodes = async () => {
       ]
     });
 
-    console.log(`📊 Found ${usersWithoutCodes.length} users without referral codes`);
-
     if (usersWithoutCodes.length === 0) {
-      console.log('✅ All users already have referral codes!');
       process.exit(0);
     }
 
@@ -55,10 +52,7 @@ const generateReferralCodes = async () => {
       user.referralCode = code;
       await user.save();
       updated++;
-      console.log(`✅ Updated ${user.email} with code: ${code}`);
     }
-
-    console.log(`\n🎉 Successfully generated referral codes for ${updated} users!`);
     process.exit(0);
   } catch (error) {
     console.error('❌ Error generating referral codes:', error);
