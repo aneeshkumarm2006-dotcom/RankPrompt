@@ -61,9 +61,7 @@ const Sidebar = () => {
           navigate(`/reports/${report._id}`);
         }
       } else {
-        // No report found for this brand
-        const errorData = await response.json();
-        toast.error('No completed report found for this brand. Create a new report to see visibility analysis.');
+        // No report found for this brand at all - navigate to new report
         navigate('/reports/new');
       }
     } catch (error) {
@@ -92,12 +90,12 @@ const Sidebar = () => {
       gradient: 'from-purple-500 to-indigo-500',
       hasDropdown: true
     },
-    { 
-      name: 'Earn Free Credits', 
-      path: '/earn-credits', 
-      icon: Gift, 
-      gradient: 'from-orange-500 to-amber-500'
-    },
+    // { 
+    //   name: 'Earn Free Credits', 
+    //   path: '/earn-credits', 
+    //   icon: Gift, 
+    //   gradient: 'from-orange-500 to-amber-500'
+    // },
     { 
       name: 'Buy Credits', 
       path: '/buy-credits', 

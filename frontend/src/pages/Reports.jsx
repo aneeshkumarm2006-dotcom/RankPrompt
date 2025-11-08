@@ -72,6 +72,11 @@ const Reports = () => {
             setStep2Data(report.progress.step2Data);
           }
           
+          // Restore saved brand ID if exists
+          if (report.brandId) {
+            setSavedBrandId(report.brandId);
+          }
+          
           // Set current step
           setCurrentStep(report.progress.currentStep || 1);
           setInProgressReportId(reportId);
@@ -82,7 +87,7 @@ const Reports = () => {
     }
   };
 
-  const saveProgress = async (step, step2DataToSave = null) => {
+  const saveProgress = async (step, step2DataToSave = null, brandIdToSave = null) => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       const response = await fetch(`${API_URL}/reports/save-progress`, {
@@ -92,6 +97,7 @@ const Reports = () => {
         body: JSON.stringify({
           reportId: inProgressReportId,
           brandData: {
+            brandId: brandIdToSave || savedBrandId, // Use passed brandId or state
             brandName: formData.brandName,
             websiteUrl: formData.websiteUrl,
             favicon: formData.brandFavicon,
@@ -249,17 +255,20 @@ const Reports = () => {
       if (response.ok) {
         const { data: savedBrand } = await response.json();
         setSavedBrandId(savedBrand._id);
+        
+        // Pass brandId directly to saveProgress to avoid state timing issues
+        setShowSaveBrandModal(false);
+        setCurrentStep(2);
+        await saveProgress(2, null, savedBrand._id);
       } else {
         const error = await response.json();
         console.error('Failed to save brand:', error.message);
+        setShowSaveBrandModal(false);
       }
     } catch (error) {
       console.error('Error saving brand:', error);
+      setShowSaveBrandModal(false);
     }
-
-    setShowSaveBrandModal(false);
-    setCurrentStep(2);
-    await saveProgress(2);
   };
 
   const handleSkipSaveBrand = () => {

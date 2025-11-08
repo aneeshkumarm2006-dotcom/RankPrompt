@@ -379,6 +379,7 @@ export const saveInProgressReport = async (req, res) => {
       report = await Report.findOneAndUpdate(
         { _id: reportId, userId, status: 'in-progress' },
         {
+          brandId: brandData.brandId || null, // Update brandId when brand is saved
           brandName: brandData.brandName,
           brandUrl: brandData.websiteUrl,
           favicon: brandData.favicon,
@@ -451,19 +452,30 @@ export const getReportByBrandId = async (req, res) => {
     const { brandId } = req.params;
     const userId = req.user._id;
 
-    // Find the most recent completed report for this brand
-    const report = await Report.findOne({ 
+    // First, try to find the most recent completed report for this brand
+    let report = await Report.findOne({ 
       brandId, 
       userId,
-      status: 'completed' // Only fetch completed reports
+      status: 'completed'
     })
       .sort({ createdAt: -1 })
       .select('_id brandName status');
 
+    // If no completed report exists, check for in-progress report
+    if (!report) {
+      report = await Report.findOne({ 
+        brandId, 
+        userId,
+        status: 'in-progress'
+      })
+        .sort({ createdAt: -1 })
+        .select('_id brandName status');
+    }
+
     if (!report) {
       return res.status(404).json({
         success: false,
-        message: 'No completed report found for this brand',
+        message: 'No report found for this brand',
       });
     }
 
