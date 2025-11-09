@@ -2,11 +2,11 @@ import { Zap, Twitter, Linkedin, Github, Mail, Heart } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-dark-950 border-t border-white/5 py-16 px-4 sm:px-6 lg:px-8">
+    <footer className="bg-dark-950 border-t border-white/5 py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <div className="grid md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 sm:gap-10 md:gap-12 mb-8 sm:mb-12">
           {/* Brand Column */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6 sm:col-span-2 md:col-span-1">
             <div className="flex items-center space-x-3 group">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
@@ -14,14 +14,14 @@ const Footer = () => {
                   <Zap className="w-6 h-6 text-white" />
                 </div>
               </div>
-              <span className="text-2xl font-bold gradient-text">
+              <span className="text-xl sm:text-2xl font-bold gradient-text">
                 RankPrompt
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed">
               Monitor and optimize your brand's visibility across AI search platforms like ChatGPT, Gemini, Claude, and more.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3 sm:space-x-4">
               <a href="#" className="p-2.5 glass-light rounded-lg hover:bg-white/10 transition-all group">
                 <Twitter className="w-5 h-5 text-gray-400 group-hover:text-primary-400 transition-colors" />
               </a>
@@ -39,8 +39,8 @@ const Footer = () => {
 
           {/* Product Column */}
           <div>
-            <h3 className="text-white font-bold mb-6 text-lg">Product</h3>
-            <ul className="space-y-3 text-sm">
+            <h3 className="text-white font-bold mb-4 sm:mb-6 text-base sm:text-lg">Product</h3>
+            <ul className="space-y-2 sm:space-y-3 text-sm">
               <li><a href="#features" className="text-gray-400 hover:text-primary-400 transition-colors flex items-center space-x-2 group">
                 <span className="group-hover:translate-x-1 transition-transform">Features</span>
               </a></li>
@@ -61,8 +61,8 @@ const Footer = () => {
 
           {/* Company Column */}
           <div>
-            <h3 className="text-white font-bold mb-6 text-lg">Company</h3>
-            <ul className="space-y-3 text-sm">
+            <h3 className="text-white font-bold mb-4 sm:mb-6 text-base sm:text-lg">Company</h3>
+            <ul className="space-y-2 sm:space-y-3 text-sm">
               <li><a href="#" className="text-gray-400 hover:text-primary-400 transition-colors flex items-center space-x-2 group">
                 <span className="group-hover:translate-x-1 transition-transform">About</span>
               </a></li>
@@ -83,8 +83,8 @@ const Footer = () => {
 
           {/* Resources Column */}
           <div>
-            <h3 className="text-white font-bold mb-6 text-lg">Resources</h3>
-            <ul className="space-y-3 text-sm">
+            <h3 className="text-white font-bold mb-4 sm:mb-6 text-base sm:text-lg">Resources</h3>
+            <ul className="space-y-2 sm:space-y-3 text-sm">
               <li><a href="#" className="text-gray-400 hover:text-primary-400 transition-colors flex items-center space-x-2 group">
                 <span className="group-hover:translate-x-1 transition-transform">Documentation</span>
               </a></li>

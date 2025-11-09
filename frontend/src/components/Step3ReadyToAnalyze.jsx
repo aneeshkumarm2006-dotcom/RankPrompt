@@ -119,22 +119,22 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Brand Summary Card */}
-      <div className="glass-effect rounded-2xl border border-white/10 p-6">
-        <div className="flex items-start space-x-4">
+      <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4">
           {brandData.brandFavicon && (
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
               <img
                 src={brandData.brandFavicon}
                 alt={brandData.brandName}
-                className="w-12 h-12 rounded-lg"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg"
               />
             </div>
           )}
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-2xl font-bold text-white">{brandData.brandName}</h2>
+          <div className="flex-1 w-full">
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-white break-words">{brandData.brandName}</h2>
               <a
                 href={
                   brandData.websiteUrl.startsWith('http')
@@ -148,23 +148,23 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
                 <ExternalLink className="w-5 h-5" />
               </a>
             </div>
-            <p className="text-gray-400 text-sm">{brandData.websiteUrl}</p>
+            <p className="text-gray-400 text-xs sm:text-sm break-all">{brandData.websiteUrl}</p>
           </div>
         </div>
 
         {step2Data.summary && (
-          <p className="text-gray-300 text-sm mt-4 leading-relaxed">
+          <p className="text-gray-300 text-xs sm:text-sm mt-4 leading-relaxed">
             {step2Data.summary.substring(0, 200)}...
           </p>
         )}
       </div>
 
       {/* Ready to Analyze Section */}
-      <div className="glass-effect rounded-2xl border border-white/10 p-6">
-        <h3 className="text-2xl font-bold text-white mb-4">Ready to Analyze Visibility</h3>
+      <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6">
+        <h3 className="text-xl sm:text-2xl font-bold text-white mb-3 sm:mb-4">Ready to Analyze Visibility</h3>
 
         {/* Search and Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
           <div className="flex-1 relative">
             <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -179,7 +179,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full md:w-[200px] px-4 py-3 glass-light rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500 appearance-none cursor-pointer pr-10"
+              className="w-full sm:w-auto px-4 py-3 glass-light rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-primary-500 appearance-none cursor-pointer pr-10"
             >
               {getUniqueCategories().map((category) => (
                 <option key={category} value={category} className="bg-dark-800">
@@ -193,7 +193,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
 
         {/* Category Pills */}
         {step2Data.mode === 'generate' && (
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
             <button
               onClick={() => setSelectedCategory('All Categories')}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
@@ -208,7 +208,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
               <button
                 key={index}
                 onClick={() => setSelectedCategory(cat.name)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
                   selectedCategory === cat.name
                     ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
                     : 'glass-light text-gray-300 hover:bg-white/10'
@@ -221,7 +221,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
         )}
 
         {/* Prompts List */}
-        <div className="space-y-3 mb-6">
+        <div className="space-y-3 mb-4 sm:mb-6">
           {displayedPrompts.length === 0 ? (
             <div className="text-center py-8 text-gray-400">
               No prompts found matching your search
@@ -232,9 +232,9 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
               return (
               <div
                 key={actualIndex}
-                className="glass-light rounded-xl p-4 hover:bg-white/10 transition-all group"
+                className="glass-light rounded-xl p-3 sm:p-4 hover:bg-white/10 transition-all group"
               >
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
                   <div className="flex-1">
                     {editingIndex === actualIndex ? (
                       <input
@@ -259,7 +259,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
                       </p>
                     )}
                     <div className="flex items-center space-x-2">
-                      <span className="inline-block px-3 py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium">
+                      <span className="inline-block px-2 sm:px-3 py-0.5 sm:py-1 bg-purple-500/20 text-purple-400 rounded-full text-xs font-medium">
                         {prompt.category}
                       </span>
                     </div>

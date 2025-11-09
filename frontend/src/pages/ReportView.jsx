@@ -391,39 +391,39 @@ const ReportView = () => {
     <div className="flex h-screen bg-gray-900">
       <Sidebar />
       
-      <div className="flex-1 overflow-auto ml-64">
-        <div className="max-w-7xl mx-auto p-6" id="report-content">
+      <div className="flex-1 overflow-auto lg:ml-64 mt-16 lg:mt-0">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6" id="report-content">
           {/* Header */}
-          <div className="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h1 className="text-3xl font-bold text-white mb-2">
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-700">
+            <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-4">
+              <div className="min-w-0 w-full lg:w-auto">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 break-words">
                   {brandData?.brandName || 'Brand'} - Visibility Analysis
                 </h1>
-                <p className="text-gray-400">
+                <p className="text-sm sm:text-base text-gray-400 break-all">
                   {brandData?.websiteUrl || 'N/A'} • {brandData?.reportDate ? new Date(brandData.reportDate).toLocaleString() : 'N/A'}
                 </p>
               </div>
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full lg:w-auto">
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base whitespace-nowrap"
                 >
-                  <Download className="w-4 h-4" />
+                  <Download className="w-4 h-4 flex-shrink-0" />
                   Download PDF
                 </button>
                 <button
                   onClick={handleShareReport}
-                  className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm sm:text-base whitespace-nowrap"
                 >
-                  <Share2 className="w-4 h-4" />
+                  <Share2 className="w-4 h-4 flex-shrink-0" />
                   Share Report
                 </button>
                 {canSchedule && (
                   hasScheduledReport ? (
                     <button
                       onClick={() => navigate(`/scheduled-reports/${brandData.brandId}`)}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base whitespace-nowrap"
                     >
                       <Calendar className="w-4 h-4" />
                       View Scheduled Reports
@@ -431,7 +431,7 @@ const ReportView = () => {
                   ) : (
                     <button
                       onClick={() => setShowScheduleModal(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                      className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base whitespace-nowrap"
                     >
                       <Calendar className="w-4 h-4" />
                       Schedule Report
@@ -442,31 +442,31 @@ const ReportView = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
-              <div className="bg-gray-700 rounded-lg p-4">
-                <div className="text-gray-400 text-sm mb-1">Total Prompts</div>
-                <div className="text-3xl font-bold text-white">{totalPrompts}</div>
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-400 text-xs sm:text-sm mb-1">Total Prompts</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">{totalPrompts}</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-4">
-                <div className="text-gray-400 text-sm mb-1">Website Found</div>
-                <div className="text-3xl font-bold text-green-400">{stats.websiteFound}</div>
+              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-400 text-xs sm:text-sm mb-1">Website Found</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-400">{stats.websiteFound}</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-4">
-                <div className="text-gray-400 text-sm mb-1">Brand Mentioned</div>
-                <div className="text-3xl font-bold text-blue-400">{stats.brandMentioned}</div>
+              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-400 text-xs sm:text-sm mb-1">Brand Mentioned</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400">{stats.brandMentioned}</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-4">
-                <div className="text-gray-400 text-sm mb-1">Total Findings</div>
-                <div className="text-3xl font-bold text-purple-400">{stats.totalFindings}</div>
+              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-400 text-xs sm:text-sm mb-1">Total Findings</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-400">{stats.totalFindings}</div>
               </div>
             </div>
           </div>
 
           {/* Visibility Analysis Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
             {/* Visibility Score by Platform */}
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-              <h3 className="text-xl font-bold text-white mb-2">Visibility Score by Platform</h3>
+            <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-4">Visibility Score by Platform</h3>
               {platformChartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={450}>
                   <BarChart data={platformChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -492,8 +492,8 @@ const ReportView = () => {
             </div>
 
             {/* Category Visibility Trends */}
-            <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
-              <h3 className="text-xl font-bold text-white mb-2">Category Visibility Trends</h3>
+            <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+              <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-4">Category Visibility Trends</h3>
               {categoryChartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={450}>
                   <BarChart data={categoryChartData} margin={{ top: 5, right: 10, left: 0, bottom: 70 }}>
@@ -529,15 +529,15 @@ const ReportView = () => {
           </div>
 
           {/* Filters */}
-          <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-700">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {/* Category Filter */}
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-400 mb-2">Category</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Category</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none"
+                  className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
                 >
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -547,11 +547,11 @@ const ReportView = () => {
 
               {/* Platform Filter */}
               <div className="relative">
-                <label className="block text-sm font-medium text-gray-400 mb-2">Platform</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Platform</label>
                 <select
                   value={selectedPlatform}
                   onChange={(e) => setSelectedPlatform(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none"
+                  className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
                 >
                   <option value="All Platforms">All Platforms</option>
                   <option value="chatgpt">ChatGPT</option>
@@ -561,16 +561,16 @@ const ReportView = () => {
               </div>
 
               {/* Search */}
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-400 mb-2">Search Prompts</label>
+              <div className="relative sm:col-span-2 md:col-span-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Search Prompts</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search..."
-                    className="w-full bg-gray-700 text-white rounded-lg pl-10 pr-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none"
+                    className="w-full bg-gray-700 text-white rounded-lg pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -578,9 +578,9 @@ const ReportView = () => {
           </div>
 
           {/* Results Table */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+          <div className="bg-gray-800 rounded-lg border border-gray-700">
             <div className="overflow-x-auto">
-              <table className="w-full table-auto">
+              <table className="w-full min-w-[900px]">
                 <thead className="bg-gray-750">
                   <tr>
                     <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -696,8 +696,8 @@ const ReportView = () => {
           </div>
           {/* Schedule Modal */}
           {showScheduleModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-md">
                 <h3 className="text-lg font-semibold text-white mb-4">Schedule this report</h3>
                 <label className="block text-sm text-gray-300 mb-2">Frequency</label>
                 <select
@@ -719,8 +719,8 @@ const ReportView = () => {
 
           {/* Citation Modal */}
           {citationContent && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-xl">
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-xl">
                 <h3 className="text-lg font-semibold text-white mb-4">Citation</h3>
                 {citationContent.citation ? (
                   <p className="text-sm text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>

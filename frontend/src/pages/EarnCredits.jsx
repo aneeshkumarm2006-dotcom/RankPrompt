@@ -75,32 +75,32 @@ const EarnCredits = () => {
     <div className="flex min-h-screen gradient-bg">
       <Sidebar />
       
-      <div className="flex-1 ml-64 p-8">
+      <div className="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8 mt-16 lg:mt-0">
         <div className="max-w-4xl mx-auto">
           {/* Page Header */}
-          <div className="mb-8">
-            <div className="flex items-center space-x-3 mb-2">
-              <Gift className="w-8 h-8 text-primary-500" />
-              <h1 className="text-4xl font-black text-white">Earn Free Credits</h1>
+          <div className="mb-6 sm:mb-8">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-2">
+              <Gift className="w-6 h-6 sm:w-8 sm:h-8 text-primary-500" />
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white">Earn Free Credits</h1>
             </div>
           </div>
 
           {/* Quick Survey Section */}
-          <div className="glass-effect rounded-2xl border border-white/10 p-6 mb-6">
+          <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6 mb-6">
             <div className="flex items-start space-x-4">
               <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
                   <Sparkles className="w-5 h-5 text-purple-400" />
                   <h3 className="text-lg font-bold text-white">Quick Survey (2 minutes)</h3>
                 </div>
-                <p className="text-gray-300 text-sm mb-4">
+                <p className="text-gray-300 text-xs sm:text-sm mb-4">
                   Help us improve RankPrompt by sharing your feedback. You'll get{' '}
                   <span className="text-primary-400 font-semibold">50 free credits</span> instantly!
                 </p>
                 {!surveyStatus?.completed ? (
                   <button
                     onClick={() => setShowSurveyModal(true)}
-                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all inline-flex items-center space-x-2"
+                    className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all inline-flex items-center justify-center space-x-2 text-sm sm:text-base w-full sm:w-auto"
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>Take Survey</span>
@@ -116,12 +116,12 @@ const EarnCredits = () => {
           </div>
 
           {/* Invite Colleagues Section */}
-          <div className="glass-effect rounded-2xl border border-white/10 p-6">
+          <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6">
             <div className="flex items-center space-x-2 mb-4">
               <Users className="w-5 h-5 text-blue-400" />
               <h3 className="text-lg font-bold text-white">Invite Your Colleagues</h3>
             </div>
-            <p className="text-gray-300 text-sm mb-6">
+            <p className="text-gray-300 text-xs sm:text-sm mb-4 sm:mb-6">
               Share your referral link with colleagues and earn{' '}
               <span className="text-primary-400 font-semibold">10 free credits</span> for each person who signs up.
             </p>
@@ -131,15 +131,15 @@ const EarnCredits = () => {
                 {/* Referral Code */}
                 <div className="mb-4">
                   <label className="block text-gray-400 text-xs mb-2">Your Referral Code</label>
-                  <div className="flex items-center space-x-2">
-                    <div className="flex-1 glass-light rounded-xl p-4">
-                      <span className="text-white font-mono text-lg font-bold">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div className="flex-1 glass-light rounded-xl p-3 sm:p-4">
+                      <span className="text-white font-mono text-base sm:text-lg font-bold break-all">
                         {referralData.referralCode}
                       </span>
                     </div>
                     <button
                       onClick={() => copyToClipboard(referralData.referralCode, 'code')}
-                      className="glass-light hover:bg-white/10 p-4 rounded-xl transition-all"
+                      className="glass-light hover:bg-white/10 p-3 sm:p-4 rounded-xl transition-all flex items-center justify-center"
                     >
                       {copiedCode ? (
                         <Check className="w-5 h-5 text-green-400" />
@@ -151,31 +151,31 @@ const EarnCredits = () => {
                 </div>
 
                 {/* Shareable Link */}
-                <div className="mb-6">
+                <div className="mb-4 sm:mb-6">
                   <label className="block text-gray-400 text-xs mb-2">Shareable Link</label>
-                  <div className="flex items-center space-x-2">
-                    <div className="flex-1 glass-light rounded-xl p-4 overflow-hidden">
-                      <span className="text-white text-sm break-all">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <div className="flex-1 glass-light rounded-xl p-3 sm:p-4 overflow-hidden">
+                      <span className="text-white text-xs sm:text-sm break-all">
                         {referralData.shareableLink}
                       </span>
                     </div>
                     <button
                       onClick={() => copyToClipboard(referralData.shareableLink, 'link')}
-                      className="glass-light hover:bg-white/10 p-4 rounded-xl transition-all flex items-center space-x-2"
+                      className="glass-light hover:bg-white/10 p-3 sm:p-4 rounded-xl transition-all flex items-center justify-center space-x-2"
                     >
                       {copiedLink ? (
                         <Check className="w-5 h-5 text-green-400" />
                       ) : (
                         <Copy className="w-5 h-5 text-gray-400" />
                       )}
-                      <span className="text-gray-300 text-sm font-medium">Copy Link</span>
+                      <span className="text-gray-300 text-xs sm:text-sm font-medium">Copy Link</span>
                     </button>
                   </div>
                 </div>
 
                 {/* Your Referrals */}
-                <div className="glass-light rounded-xl p-4">
-                  <p className="text-gray-400 text-sm">
+                <div className="glass-light rounded-xl p-3 sm:p-4">
+                  <p className="text-gray-400 text-xs sm:text-sm">
                     {referralData.referralCount === 0
                       ? `No referrals yet. Share your code to start earning credits!`
                       : `You've referred ${referralData.referralCount} ${referralData.referralCount === 1 ? 'person' : 'people'}!`}

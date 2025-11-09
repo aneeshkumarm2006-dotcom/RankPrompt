@@ -44,16 +44,16 @@ const HowItWorks = () => {
 
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-20 space-y-6 animate-slide-up">
+        <div className="text-center mb-12 sm:mb-16 lg:mb-20 space-y-4 sm:space-y-6 animate-slide-up">
           <div className="inline-flex items-center space-x-2 glass-light px-4 py-2 rounded-full text-sm font-medium mb-4">
             <CheckCircle2 className="w-4 h-4 text-primary-400" />
             <span className="text-gray-300">Simple Process</span>
           </div>
-          <h2 className="text-5xl lg:text-6xl font-black text-white leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight">
             How It
             <span className="gradient-text"> Works</span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto px-4">
             Get started in minutes and watch your AI search rankings soar
           </p>
         </div>
@@ -63,34 +63,34 @@ const HowItWorks = () => {
           {/* Connection Line */}
           <div className="hidden lg:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-primary-500 via-purple-500 to-green-500 opacity-20 transform -translate-y-1/2"></div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {steps.map((step, index) => (
               <div key={index} className="relative group">
-                <div className="relative text-center space-y-4">
+                <div className="relative text-center space-y-3 sm:space-y-4">
                   {/* Number Badge with Glow */}
-                  <div className="relative inline-flex mb-6">
+                  <div className="relative inline-flex mb-4 sm:mb-6">
                     <div className={`absolute inset-0 bg-gradient-to-r ${step.color} rounded-full blur-xl opacity-50 group-hover:opacity-100 transition-opacity`}></div>
-                    <div className={`relative flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-r ${step.color} text-white text-3xl font-black shadow-2xl`}>
+                    <div className={`relative flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-r ${step.color} text-white text-2xl sm:text-3xl font-black shadow-2xl`}>
                       {step.number}
                     </div>
                   </div>
                   
                   {/* Icon Card */}
-                  <div className="flex justify-center mb-6">
+                  <div className="flex justify-center mb-4 sm:mb-6">
                     <div className="relative">
                       <div className={`absolute inset-0 bg-gradient-to-r ${step.color} rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity`}></div>
-                      <div className={`relative glass-effect p-5 rounded-2xl group-hover:scale-110 transition-transform duration-300 bg-gradient-to-r ${step.color}`}>
-                        <step.icon className="w-10 h-10 text-white" />
+                      <div className={`relative glass-effect p-4 sm:p-5 rounded-xl sm:rounded-2xl group-hover:scale-110 transition-transform duration-300 bg-gradient-to-r ${step.color}`}>
+                        <step.icon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                       </div>
                     </div>
                   </div>
                   
                   {/* Content */}
-                  <h3 className="text-2xl font-bold text-white mb-3 group-hover:gradient-text transition-all">
+                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:gradient-text transition-all">
                     {step.title}
                   </h3>
                   
-                  <p className="text-gray-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -100,15 +100,15 @@ const HowItWorks = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-20">
+        <div className="text-center mt-12 sm:mt-16 lg:mt-20">
           <button className="group relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 text-white px-10 py-5 rounded-2xl font-bold text-lg hover:shadow-2xl hover:shadow-primary-500/50 transition-all duration-300 flex items-center space-x-3">
+            <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:shadow-2xl hover:shadow-primary-500/50 transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3">
               <span>Start Your Free Trial</span>
-              <ArrowRight className="w-6 h-6 group-hover:translate-x-2 transition-transform" />
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
             </div>
           </button>
-          <p className="text-gray-400 text-sm mt-4">No credit card required • 14-day free trial</p>
+          <p className="text-gray-400 text-xs sm:text-sm mt-3 sm:mt-4">No credit card required • 14-day free trial</p>
         </div>
       </div>
     </section>

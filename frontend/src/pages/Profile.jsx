@@ -110,30 +110,30 @@ const Profile = () => {
     <div className="flex min-h-screen gradient-bg">
       <Sidebar />
       
-      <div className="flex-1 ml-64 p-8">
+      <div className="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8 mt-16 lg:mt-0">
         <div className="max-w-4xl mx-auto">
           {/* Page Header */}
-          <div className="mb-8">
-            <h1 className="text-4xl font-black text-white mb-2">Account Settings</h1>
+          <div className="mb-6 sm:mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white mb-2">Account Settings</h1>
           </div>
 
           {/* User Profile Card */}
-          <div className="glass-effect rounded-2xl border border-white/10 mb-6 overflow-hidden bg-gradient-to-r from-purple-500/10 to-pink-500/10">
-            <div className="p-6 flex items-center justify-between">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">
+          <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 mb-6 overflow-hidden bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+            <div className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 flex items-center justify-center flex-shrink-0">
+                  <span className="text-white font-bold text-lg sm:text-xl">
                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                   </span>
                 </div>
-                <div>
-                  <p className="text-white font-semibold text-lg">{user?.email}</p>
-                  <p className="text-gray-400 text-sm">Free Plan</p>
+                <div className="min-w-0">
+                  <p className="text-white font-semibold text-base sm:text-lg break-all">{user?.email}</p>
+                  <p className="text-gray-400 text-xs sm:text-sm">Free Plan</p>
                 </div>
               </div>
               <button
                 onClick={handleManageBilling}
-                className="flex items-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium px-6 py-3 rounded-xl transition-all"
+                className="flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl transition-all text-sm sm:text-base w-full sm:w-auto"
               >
                 <CreditCard className="w-4 h-4" />
                 <span>Manage Billing</span>
@@ -142,27 +142,27 @@ const Profile = () => {
           </div>
 
           {/* Tabs */}
-          <div className="glass-effect rounded-t-2xl border border-white/10 border-b-0">
-            <div className="flex space-x-1 p-2">
+          <div className="glass-effect rounded-t-xl sm:rounded-t-2xl border border-white/10 border-b-0">
+            <div className="flex overflow-x-auto space-x-1 p-2">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition-all ${
+                  className={`flex items-center space-x-2 px-3 sm:px-4 py-2.5 rounded-lg transition-all whitespace-nowrap ${
                     activeTab === tab.id
                       ? 'bg-white/10 text-white'
                       : 'text-gray-400 hover:text-white hover:bg-white/5'
                   }`}
                 >
                   <tab.icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{tab.label}</span>
+                  <span className="text-xs sm:text-sm font-medium">{tab.label}</span>
                 </button>
               ))}
             </div>
           </div>
 
           {/* Tab Content */}
-          <div className="glass-effect rounded-b-2xl border border-white/10 p-6">
+          <div className="glass-effect rounded-b-xl sm:rounded-b-2xl border border-white/10 p-4 sm:p-6">
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {/* Credits Overview */}
@@ -171,13 +171,13 @@ const Profile = () => {
                     <Zap className="w-5 h-5 text-primary-500" />
                     <h3 className="text-lg font-bold text-white">Credits Overview</h3>
                   </div>
-                  <div className="glass-light rounded-xl p-4 space-y-3">
+                  <div className="glass-light rounded-xl p-3 sm:p-4 space-y-3">
                     <div className="flex justify-between items-center">
                       <span className="text-gray-400">Available Credits</span>
                       <span className="text-2xl font-bold text-white">{creditData.availableCredits}</span>
                     </div>
                     <div className="h-px bg-white/10"></div>
-                    <div className="grid grid-cols-3 gap-4 text-sm">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-xs sm:text-sm">
                       <div>
                         <p className="text-gray-500">Billing Cycle Started</p>
                         <p className="text-white font-medium">{creditData.billingCycleStarted}</p>
@@ -201,12 +201,12 @@ const Profile = () => {
                     <h3 className="text-lg font-bold text-white">Unlock Your Free Trial</h3>
                   </div>
                   <div className="glass-light rounded-xl p-5">
-                    <p className="text-gray-300 mb-4">
+                    <p className="text-gray-300 text-sm sm:text-base mb-4">
                       Start your <span className="text-white font-semibold">7-Day Free Trial</span> and get{' '}
                       <span className="text-primary-400 font-semibold">10 bonus credits</span> to analyze your brand's AI visibility.{' '}
                       <span className="text-white font-semibold">No Credit</span> today, cancel anytime.
                     </p>
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 mb-4">
                       <div className="flex items-center space-x-4 text-sm">
                         <div className="flex items-center space-x-2">
                           <span className="text-green-400">✓</span>
@@ -224,7 +224,7 @@ const Profile = () => {
                     </div>
                     <button
                       onClick={handleStartTrial}
-                      className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-xl transition-all"
+                      className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all text-sm sm:text-base"
                     >
                       Start Free Trial
                     </button>

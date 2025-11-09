@@ -56,50 +56,48 @@ const Features = () => {
 
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-20 space-y-6 animate-slide-up">
+        <div className="text-center mb-12 sm:mb-16 lg:mb-20 space-y-4 sm:space-y-6 animate-slide-up">
           <div className="inline-flex items-center space-x-2 glass-light px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Shield className="w-4 h-4 text-primary-400" />
             <span className="text-gray-300">Powerful Features</span>
           </div>
-          <h2 className="text-5xl lg:text-6xl font-black text-white leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight">
             Everything You Need to
-            <span className="block gradient-text mt-2">
+            <span className="block gradient-text mt-1 sm:mt-2">
               Dominate AI Search
             </span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
             Comprehensive suite of tools to measure, track, and optimize your brand's presence in AI-generated answers
           </p>
         </div>
 
         {/* Features Grid with Varied Designs */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {features.map((feature, index) => (
             <div
               key={index}
-              className={`group glass-effect rounded-2xl p-8 card-hover border border-white/5 ${
-                feature.style === 'featured' ? 'md:col-span-2 lg:col-span-1' : ''
-              }`}
+              className="group glass-effect rounded-xl sm:rounded-2xl p-6 sm:p-8 card-hover border border-white/5"
             >
               {/* Icon */}
-              <div className="relative mb-6">
-                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity`}></div>
-                <div className={`relative inline-flex p-4 rounded-2xl bg-gradient-to-r ${feature.color}`}>
-                  <feature.icon className="w-8 h-8 text-white" />
+              <div className="relative mb-4 sm:mb-6">
+                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} rounded-xl sm:rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity`}></div>
+                <div className={`relative inline-flex p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r ${feature.color}`}>
+                  <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
               </div>
               
               {/* Content */}
-              <h3 className="text-2xl font-bold text-white mb-3 group-hover:gradient-text transition-all">
+              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:gradient-text transition-all">
                 {feature.title}
               </h3>
               
-              <p className="text-gray-400 leading-relaxed mb-6">
+              <p className="text-sm sm:text-base text-gray-400 leading-relaxed mb-4 sm:mb-6">
                 {feature.description}
               </p>
               
               {/* Hover Arrow */}
-              <div className="flex items-center space-x-2 text-primary-400 font-semibold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+              <div className="flex items-center space-x-2 text-primary-400 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
                 <span>Explore feature</span>
                 <span className="group-hover:translate-x-2 transition-transform">→</span>
               </div>
@@ -108,10 +106,10 @@ const Features = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-16 text-center">
+        <div className="mt-12 sm:mt-16 text-center">
           <button className="group relative">
             <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl blur-lg opacity-75 group-hover:opacity-50 transition-opacity"></div>
-            <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white px-8 py-4 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transition-all flex items-center space-x-2">
+            <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold shadow-xl hover:shadow-2xl transition-all flex items-center justify-center space-x-2 text-sm sm:text-base">
               <span>View All Features</span>
               <Zap className="w-5 h-5 group-hover:rotate-12 transition-transform" />
             </div>

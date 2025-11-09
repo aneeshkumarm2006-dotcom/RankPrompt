@@ -102,7 +102,7 @@ const ScheduledReportsManager = () => {
     return (
       <div className="flex h-screen bg-gray-900">
         <Sidebar />
-        <div className="flex-1 ml-64 flex items-center justify-center">
+        <div className="flex-1 lg:ml-64 mt-16 lg:mt-0 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4" />
             <p className="text-gray-400">Loading scheduled reports...</p>
@@ -116,41 +116,41 @@ const ScheduledReportsManager = () => {
     <div className="flex h-screen bg-gray-900">
       <Sidebar />
       
-      <div className="flex-1 ml-64 overflow-auto">
-        <div className="max-w-7xl mx-auto p-6">
+      <div className="flex-1 lg:ml-64 mt-16 lg:mt-0 overflow-auto">
+        <div className="max-w-7xl mx-auto p-4 sm:p-6">
           {/* Header */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <button
               onClick={() => navigate('/reports')}
-              className="flex items-center gap-2 text-gray-400 hover:text-white mb-4 transition-colors"
+              className="flex items-center gap-2 text-gray-400 hover:text-white mb-3 sm:mb-4 transition-colors text-sm sm:text-base"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Reports
             </button>
             
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
                   Scheduled Reports
                 </h1>
-                <p className="text-gray-400">
+                <p className="text-sm sm:text-base text-gray-400">
                   Manage automated reports for {brandName || 'your brand'}
                 </p>
               </div>
               
-              <div className="flex items-center gap-2 px-4 py-2 bg-gray-800 rounded-lg border border-gray-700">
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-800 rounded-lg border border-gray-700">
                 <Calendar className="w-5 h-5 text-primary-500" />
-                <span className="text-white font-medium">{scheduledReports.length} Active Schedule{scheduledReports.length !== 1 ? 's' : ''}</span>
+                <span className="text-white font-medium text-sm sm:text-base">{scheduledReports.length} Active Schedule{scheduledReports.length !== 1 ? 's' : ''}</span>
               </div>
             </div>
           </div>
 
           {/* Scheduled Reports List */}
           {scheduledReports.length === 0 ? (
-            <div className="bg-gray-800 rounded-lg p-12 text-center border border-gray-700">
+            <div className="bg-gray-800 rounded-lg p-8 sm:p-12 text-center border border-gray-700">
               <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">No Scheduled Reports</h3>
-              <p className="text-gray-400 mb-6">You haven't scheduled any reports for this brand yet.</p>
+              <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">No Scheduled Reports</h3>
+              <p className="text-sm sm:text-base text-gray-400 mb-6">You haven't scheduled any reports for this brand yet.</p>
               <button
                 onClick={() => navigate('/reports')}
                 className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
@@ -159,16 +159,16 @@ const ScheduledReportsManager = () => {
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {scheduledReports.map((report) => (
                 <div
                   key={report._id}
-                  className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-all"
+                  className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700 hover:border-gray-600 transition-all"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <h3 className="text-xl font-semibold text-white">
+                  <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0 w-full">
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-3">
+                        <h3 className="text-lg sm:text-xl font-semibold text-white break-words">
                           {report.brandName}
                         </h3>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -180,7 +180,7 @@ const ScheduledReportsManager = () => {
                         </span>
                       </div>
 
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-4">
                         <div className="flex items-center gap-2 text-gray-400">
                           <Clock className="w-4 h-4" />
                           <span className="text-sm">
@@ -203,8 +203,8 @@ const ScheduledReportsManager = () => {
                         </div>
                       </div>
 
-                      <div className="text-sm text-gray-400">
-                        <p className="mb-1">
+                      <div className="text-xs sm:text-sm text-gray-400">
+                        <p className="mb-1 break-all">
                           <span className="font-medium text-gray-300">URL:</span> {report.brandUrl}
                         </p>
                         <p className="mb-1">
@@ -216,10 +216,10 @@ const ScheduledReportsManager = () => {
                       </div>
                     </div>
 
-                    <div className="flex gap-2 ml-4">
+                    <div className="flex gap-2 w-full lg:w-auto">
                       <button
                         onClick={() => handleToggle(report._id, report.isActive)}
-                        className={`p-3 rounded-lg transition-all ${
+                        className={`p-2 sm:p-3 rounded-lg transition-all flex-1 lg:flex-initial ${
                           report.isActive
                             ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30 border border-yellow-500/30'
                             : 'bg-green-500/20 text-green-400 hover:bg-green-500/30 border border-green-500/30'
@@ -231,7 +231,7 @@ const ScheduledReportsManager = () => {
                       
                       <button
                         onClick={() => handleDelete(report._id)}
-                        className="p-3 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-all border border-red-500/30"
+                        className="p-2 sm:p-3 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-all border border-red-500/30 flex-1 lg:flex-initial"
                         title="Delete Schedule"
                       >
                         <Trash2 className="w-5 h-5" />

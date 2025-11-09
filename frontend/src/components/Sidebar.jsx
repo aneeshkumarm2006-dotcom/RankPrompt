@@ -11,7 +11,9 @@ import {
   User, 
   LogOut,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Menu,
+  X
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
@@ -22,6 +24,7 @@ const Sidebar = () => {
   const { user, logout } = useAuth();
   const [isBrandsOpen, setIsBrandsOpen] = useState(false);
   const [brands, setBrands] = useState([]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Fetch user brands on component mount (not when dropdown is opened)
   useEffect(() => {
@@ -112,8 +115,33 @@ const Sidebar = () => {
 
   const isActive = (path) => location.pathname === path;
 
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
+  };
+
   return (
-    <div className="h-screen w-64 glass-effect border-r border-white/10 flex flex-col fixed left-0 top-0 z-50">
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 glass-effect rounded-xl border border-white/10 text-white hover:bg-white/10 transition-all"
+        aria-label="Toggle menu"
+      >
+        {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+      </button>
+
+      {/* Overlay for mobile */}
+      {isMobileMenuOpen && (
+        <div
+          className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+          onClick={closeMobileMenu}
+        />
+      )}
+
+      {/* Sidebar */}
+      <div className={`h-screen w-64 glass-effect border-r border-white/10 flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      }`}>
       {/* Logo */}
       <div className="p-6 border-b border-white/10">
         <div className="flex items-center space-x-3">
@@ -156,6 +184,8 @@ const Sidebar = () => {
                     if (item.hasDropdown) {
                       e.preventDefault();
                       setIsBrandsOpen(!isBrandsOpen);
+                    } else {
+                      closeMobileMenu();
                     }
                   }}
                 >
@@ -192,7 +222,10 @@ const Sidebar = () => {
                       brands.map((brand) => (
                         <div
                           key={brand._id}
-                          onClick={() => handleBrandClick(brand._id)}
+                          onClick={() => {
+                            handleBrandClick(brand._id);
+                            closeMobileMenu();
+                          }}
                           className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
                         >
                           {brand.favicon ? (
@@ -264,6 +297,7 @@ const Sidebar = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

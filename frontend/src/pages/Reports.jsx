@@ -547,36 +547,36 @@ const Reports = () => {
     <div className="flex min-h-screen gradient-bg">
       <Sidebar />
       
-      <div className="flex-1 ml-64 p-8">
+      <div className="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">
+          <div className="text-center mb-6 sm:mb-8 mt-16 lg:mt-0">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-white mb-3 sm:mb-4 px-2">
               Check Your Client's Visibility
             </h1>
-            <h2 className="text-3xl md:text-4xl font-black mb-4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-3 sm:mb-4 px-2">
               <span className="gradient-text">in AI Assistants</span>
             </h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-400 text-xs sm:text-sm px-4">
               Find out if ChatGPT recommends your client - and what to do if it doesn't.
             </p>
           </div>
 
           {/* Step Indicators */}
-          <div className="flex items-center justify-center mb-12">
-            <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-center mb-8 sm:mb-12 overflow-x-auto px-2">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-max">
               {/* Step 1 */}
               <div className="flex items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
+                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${
                   currentStep === 1 
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : currentStep > 1
                     ? 'bg-green-500 border-green-500 text-white'
                     : 'border-gray-600 text-gray-600'
                 }`}>
-                  {currentStep > 1 ? <Check className="w-5 h-5" /> : '1'}
+                  {currentStep > 1 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '1'}
                 </div>
-                <span className={`ml-2 text-sm font-medium ${
+                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
                   currentStep >= 1 ? 'text-white' : 'text-gray-600'
                 }`}>
                   Brand Details
@@ -584,22 +584,22 @@ const Reports = () => {
               </div>
 
               {/* Connector */}
-              <div className={`w-16 h-0.5 ${
+              <div className={`w-8 sm:w-16 h-0.5 ${
                 currentStep > 1 ? 'bg-green-500' : 'bg-gray-600'
               }`}></div>
 
               {/* Step 2 */}
               <div className="flex items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
+                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${
                   currentStep === 2 
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : currentStep > 2
                     ? 'bg-green-500 border-green-500 text-white'
                     : 'border-gray-600 text-gray-600'
                 }`}>
-                  {currentStep > 2 ? <Check className="w-5 h-5" /> : '2'}
+                  {currentStep > 2 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '2'}
                 </div>
-                <span className={`ml-2 text-sm font-medium ${
+                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
                   currentStep >= 2 ? 'text-white' : 'text-gray-600'
                 }`}>
                   Generate Prompts
@@ -613,14 +613,14 @@ const Reports = () => {
 
               {/* Step 3 */}
               <div className="flex items-center">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all ${
+                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${
                   currentStep === 3 
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : 'border-gray-600 text-gray-600'
                 }`}>
                   3
                 </div>
-                <span className={`ml-2 text-sm font-medium ${
+                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
                   currentStep >= 3 ? 'text-white' : 'text-gray-600'
                 }`}>
                   Test Visibility
@@ -631,8 +631,8 @@ const Reports = () => {
 
           {/* Step 1: Brand Details Form */}
           {currentStep === 1 && (
-          <div className="glass-effect rounded-2xl p-8 border border-white/10">
-            <div className="space-y-6">
+          <div className="glass-effect rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 border border-white/10">
+            <div className="space-y-4 sm:space-y-6">
               {/* Brand Name */}
               <div>
                 <label className="block text-gray-300 text-sm font-medium mb-2">
@@ -671,7 +671,7 @@ const Reports = () => {
                 <label className="block text-gray-300 text-sm font-medium mb-2">
                   Prompt/Search Scope
                 </label>
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   <button
                     onClick={() => setFormData(prev => ({ ...prev, searchScope: 'local' }))}
                     className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${
@@ -680,8 +680,8 @@ const Reports = () => {
                         : 'glass-light text-gray-400 hover:text-white'
                     }`}
                   >
-                    <Search className="w-5 h-5" />
-                    <span className="font-medium">Local Search</span>
+                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-sm sm:text-base font-medium">Local Search</span>
                   </button>
                   <button
                     onClick={() => setFormData(prev => ({ ...prev, searchScope: 'national' }))}
@@ -691,8 +691,8 @@ const Reports = () => {
                         : 'glass-light text-gray-400 hover:text-white'
                     }`}
                   >
-                    <Globe className="w-5 h-5" />
-                    <span className="font-medium">National Search</span>
+                    <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="text-sm sm:text-base font-medium">National Search</span>
                   </button>
                 </div>
                 <p className="text-gray-500 text-xs mt-2">

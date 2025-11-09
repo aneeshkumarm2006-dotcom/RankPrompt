@@ -80,8 +80,8 @@ const AnalysisProgressModal = ({ isOpen, batchId, onComplete, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="glass-effect rounded-2xl border border-white/10 p-8 max-w-2xl w-full mx-4 animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+      <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6 md:p-8 max-w-2xl w-full animate-fade-in">
         {loading && !status ? (
           <div className="text-center py-8">
             <Loader className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />

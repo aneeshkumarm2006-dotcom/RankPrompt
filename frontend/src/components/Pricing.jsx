@@ -61,22 +61,22 @@ const Pricing = () => {
 
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="text-center mb-20 space-y-6 animate-slide-up">
+        <div className="text-center mb-12 sm:mb-16 lg:mb-20 space-y-4 sm:space-y-6 animate-slide-up">
           <div className="inline-flex items-center space-x-2 glass-light px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Sparkles className="w-4 h-4 text-primary-400" />
             <span className="text-gray-300">Flexible Pricing</span>
           </div>
-          <h2 className="text-5xl lg:text-6xl font-black text-white leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight">
             Choose Your
             <span className="gradient-text"> Plan</span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto px-4">
             Start free, upgrade when you're ready. No hidden fees, cancel anytime.
           </p>
         </div>
 
         {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
           {plans.map((plan, index) => (
             <div
               key={index}

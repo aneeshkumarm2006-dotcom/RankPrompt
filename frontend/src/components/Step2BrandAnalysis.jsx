@@ -192,22 +192,22 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Brand Summary Card */}
-      <div className="glass-effect rounded-2xl border border-white/10 p-6">
-        <div className="flex items-start space-x-4 mb-4">
+      <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4 mb-4">
           {brandData.brandFavicon && (
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
               <img
                 src={brandData.brandFavicon}
                 alt={brandData.brandName}
-                className="w-12 h-12 rounded-lg"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg"
               />
             </div>
           )}
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-2xl font-bold text-white">{brandData.brandName}</h2>
+          <div className="flex-1 w-full">
+            <div className="flex items-center justify-between mb-2 gap-2">
+              <h2 className="text-xl sm:text-2xl font-bold text-white break-words">{brandData.brandName}</h2>
               <a
                 href={brandData.websiteUrl.startsWith('http') ? brandData.websiteUrl : `https://${brandData.websiteUrl}`}
                 target="_blank"
@@ -217,12 +217,12 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                 <ExternalLink className="w-5 h-5" />
               </a>
             </div>
-            <p className="text-gray-400 text-sm mb-1">{brandData.websiteUrl}</p>
+            <p className="text-gray-400 text-xs sm:text-sm mb-1 break-all">{brandData.websiteUrl}</p>
           </div>
         </div>
 
         <div>
-          <p className="text-gray-300 text-sm leading-relaxed">
+          <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
             {showMore || brandSummary.length < 300
               ? brandSummary
               : `${brandSummary.substring(0, 300)}...`}
@@ -244,17 +244,17 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
       </div>
 
       {/* Initial Analysis Complete Section */}
-      <div className="glass-effect rounded-2xl border border-green-500/30 p-6">
-        <h3 className="text-xl font-bold text-white mb-2">Initial Analysis Complete</h3>
-        <p className="text-gray-300 text-sm mb-4">
+      <div className="glass-effect rounded-xl sm:rounded-2xl border border-green-500/30 p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Initial Analysis Complete</h3>
+        <p className="text-gray-300 text-xs sm:text-sm mb-4">
           We've analyzed your brand's visibility. Select business categories and how many prompts you'd like to generate for a detailed analysis.
         </p>
 
         {/* Tabs */}
-        <div className="flex space-x-2 mb-6 border-b border-white/10">
+        <div className="flex flex-col sm:flex-row space-y-0 sm:space-x-2 mb-4 sm:mb-6 border-b border-white/10">
           <button
             onClick={() => setActiveTab('generate')}
-            className={`pb-3 px-4 font-medium transition-colors relative ${
+            className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${
               activeTab === 'generate'
                 ? 'text-primary-400'
                 : 'text-gray-400 hover:text-gray-300'
@@ -267,7 +267,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
           </button>
           <button
             onClick={() => setActiveTab('custom')}
-            className={`pb-3 px-4 font-medium transition-colors relative ${
+            className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${
               activeTab === 'custom'
                 ? 'text-primary-400'
                 : 'text-gray-400 hover:text-gray-300'
@@ -284,11 +284,11 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
         {activeTab === 'generate' && (
           <div>
             <div className="mb-6">
-              <div className="flex items-center justify-between mb-3">
-                <label className="text-gray-300 font-medium">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+                <label className="text-gray-300 text-sm sm:text-base font-medium">
                   Select Business Categories (up to {maxCategories})
                 </label>
-                <span className="text-primary-400 text-sm font-semibold">
+                <span className="text-primary-400 text-xs sm:text-sm font-semibold">
                   {selectedCategories.length}/{maxCategories} selected
                 </span>
               </div>

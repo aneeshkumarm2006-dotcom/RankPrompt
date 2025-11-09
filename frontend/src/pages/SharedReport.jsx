@@ -221,15 +221,15 @@ const SharedReport = () => {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
-      <div className="max-w-6xl mx-auto px-4 py-10" id="shared-report-content">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10" id="shared-report-content">
         {/* Header */}
-        <div className="bg-gray-800 border border-gray-700 rounded-2xl p-6 mb-8 shadow-lg">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
-            <div>
-              <p className="text-sm uppercase tracking-wider text-primary-400 mb-1">Shared Visibility Report</p>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">{report.brandName} - Visibility Analysis</h1>
-              <div className="flex flex-wrap items-center gap-3 text-gray-400">
-                <span>{report.brandUrl}</span>
+        <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-lg">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6">
+            <div className="min-w-0">
+              <p className="text-xs sm:text-sm uppercase tracking-wider text-primary-400 mb-1">Shared Visibility Report</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 break-words">{report.brandName} - Visibility Analysis</h1>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-400">
+                <span className="break-all">{report.brandUrl}</span>
                 <span className="hidden md:inline">•</span>
                 <span>{new Date(report.reportDate || report.createdAt).toLocaleString()}</span>
                 <span className="hidden md:inline">•</span>
@@ -243,17 +243,17 @@ const SharedReport = () => {
               </div>
             </div>
 
-            <div className="flex flex-col md:items-end gap-3">
+            <div className="flex flex-col sm:flex-row lg:flex-col lg:items-end gap-2 sm:gap-3 w-full lg:w-auto">
               <button
                 onClick={handleDownloadPDF}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-700 hover:bg-gray-600 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gray-700 hover:bg-gray-600 transition-colors text-sm sm:text-base whitespace-nowrap"
               >
                 <Download className="w-4 h-4" />
                 Download PDF
               </button>
               <button
                 onClick={() => navigate('/login')}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 transition-colors"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary-500 hover:bg-primary-600 transition-colors text-sm sm:text-base whitespace-nowrap"
               >
                 <ExternalLink className="w-4 h-4" />
                 Create Your Own Report
@@ -263,30 +263,30 @@ const SharedReport = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5">
-            <p className="text-sm text-gray-400 mb-1">Total Prompts</p>
-            <p className="text-3xl font-semibold">{totalPrompts}</p>
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-400 mb-1">Total Prompts</p>
+            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold">{totalPrompts}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5">
-            <p className="text-sm text-gray-400 mb-1">Website Found</p>
-            <p className="text-3xl font-semibold text-green-400">{stats.websiteFound ?? 0}</p>
+          <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-400 mb-1">Website Found</p>
+            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-green-400">{stats.websiteFound ?? 0}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5">
-            <p className="text-sm text-gray-400 mb-1">Brand Mentioned</p>
-            <p className="text-3xl font-semibold text-blue-400">{stats.brandMentioned ?? 0}</p>
+          <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-400 mb-1">Brand Mentioned</p>
+            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-blue-400">{stats.brandMentioned ?? 0}</p>
           </div>
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5">
-            <p className="text-sm text-gray-400 mb-1">Total Findings</p>
-            <p className="text-3xl font-semibold text-purple-400">{stats.totalFindings ?? 0}</p>
+          <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-400 mb-1">Total Findings</p>
+            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-purple-400">{stats.totalFindings ?? 0}</p>
           </div>
         </div>
 
         {/* Visibility Analysis Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Visibility Score by Platform */}
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4">
-            <h3 className="text-xl font-bold text-white mb-2">Visibility Score by Platform</h3>
+          <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-4">Visibility Score by Platform</h3>
             {platformChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={450}>
                 <BarChart data={platformChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
@@ -312,8 +312,8 @@ const SharedReport = () => {
           </div>
 
           {/* Category Visibility Trends */}
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl p-4">
-            <h3 className="text-xl font-bold text-white mb-2">Category Visibility Trends</h3>
+          <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-4">Category Visibility Trends</h3>
             {categoryChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={450}>
                 <BarChart data={categoryChartData} margin={{ top: 5, right: 10, left: 0, bottom: 70 }}>
@@ -349,14 +349,14 @@ const SharedReport = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800 border border-gray-700 rounded-2xl p-5 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-gray-800 border border-gray-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Category</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Category</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-primary-500"
+                className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 sm:px-4 py-2 text-white focus:outline-none focus:border-primary-500 text-sm sm:text-base"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
@@ -365,11 +365,11 @@ const SharedReport = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Platform</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Platform</label>
               <select
                 value={selectedPlatform}
                 onChange={(e) => setSelectedPlatform(e.target.value)}
-                className="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-2 text-white focus:outline-none focus:border-primary-500"
+                className="w-full bg-gray-900 border border-gray-700 rounded-xl px-3 sm:px-4 py-2 text-white focus:outline-none focus:border-primary-500 text-sm sm:text-base"
               >
                 <option value="All Platforms">All Platforms</option>
                 <option value="chatgpt">ChatGPT</option>
@@ -378,16 +378,16 @@ const SharedReport = () => {
               </select>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-400 mb-2">Search Prompts</label>
+            <div className="sm:col-span-2 md:col-span-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Search Prompts</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search..."
-                  className="w-full bg-gray-900 border border-gray-700 rounded-xl pl-10 pr-4 py-2 text-white focus:outline-none focus:border-primary-500"
+                  className="w-full bg-gray-900 border border-gray-700 rounded-xl pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 text-white focus:outline-none focus:border-primary-500 text-sm sm:text-base"
                 />
               </div>
             </div>
@@ -395,9 +395,9 @@ const SharedReport = () => {
         </div>
 
         {/* Results Table - Identical to ReportView */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+        <div className="bg-gray-800 rounded-lg border border-gray-700">
           <div className="overflow-x-auto">
-            <table className="w-full table-auto">
+            <table className="w-full min-w-[900px]">
               <thead className="bg-gray-750">
                 <tr>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
