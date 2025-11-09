@@ -21,6 +21,7 @@ const ReportView = () => {
   const [selectedPlatform, setSelectedPlatform] = useState('All Platforms');
   const [searchQuery, setSearchQuery] = useState('');
   const [citationContent, setCitationContent] = useState(null);
+  const [aiAnswerContent, setAiAnswerContent] = useState(null);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [scheduleFrequency, setScheduleFrequency] = useState('weekly');
   const [scheduling, setScheduling] = useState(false);
@@ -580,7 +581,7 @@ const ReportView = () => {
           {/* Results Table */}
           <div className="bg-gray-800 rounded-lg border border-gray-700">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[900px]">
+              <table className="w-full min-w-[1100px]">
                 <thead className="bg-gray-750">
                   <tr>
                     <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -604,6 +605,8 @@ const ReportView = () => {
                     <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                       Brand Mention
                     </th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">AI Response</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Snippet</th>
                     <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Citation</th>
                   </tr>
                 </thead>
@@ -660,16 +663,47 @@ const ReportView = () => {
                             )}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
-                            {(platformData.details?.citation || platformData.details?.snippet || platformData.details?.website) ? (
+                            {platformData.aianswer ? (
+                              <button
+                                onClick={() => setAiAnswerContent({
+                                  platform: platformData.src === 'google_ai_overviews' ? 'Google AI' : platformData.src,
+                                  answer: platformData.aianswer,
+                                  prompt: item.prompt
+                                })}
+                                className="px-2 py-1 text-xs bg-primary-600 hover:bg-primary-700 text-white rounded whitespace-nowrap"
+                              >
+                                View Response
+                              </button>
+                            ) : (
+                              <span className="text-gray-500">-</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 text-sm whitespace-nowrap">
+                            {platformData.details?.snippet ? (
                               <button
                                 onClick={() => setCitationContent({
-                                  citation: platformData.details?.citation || platformData.details?.snippet || '',
-                                  website: platformData.details?.website || null,
+                                  citation: platformData.details?.snippet || '',
+                                  website: platformData.details?.website || platformData.details?.matchedUrl || null,
                                 })}
                                 className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded whitespace-nowrap"
                               >
-                                View Citation
+                                View Snippet
                               </button>
+                            ) : (
+                              <span className="text-gray-500">-</span>
+                            )}
+                          </td>
+                          <td className="px-3 py-3 text-sm whitespace-nowrap">
+                            {platformData.details?.website || platformData.details?.matchedUrl ? (
+                              <a 
+                                href={platformData.details?.website || platformData.details?.matchedUrl} 
+                                target="_blank" 
+                                rel="noopener noreferrer" 
+                                className="text-blue-400 hover:text-blue-300 underline text-xs flex items-center gap-1"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                Link
+                              </a>
                             ) : (
                               <span className="text-gray-500">-</span>
                             )}
@@ -678,7 +712,7 @@ const ReportView = () => {
                       ))
                     ) : (
                       <tr key={idx} className="hover:bg-gray-750">
-                        <td colSpan="8" className="px-3 py-3 text-sm text-gray-500 text-center">
+                        <td colSpan="11" className="px-3 py-3 text-sm text-gray-500 text-center">
                           No response data
                         </td>
                       </tr>
@@ -720,18 +754,46 @@ const ReportView = () => {
           {/* Citation Modal */}
           {citationContent && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-xl">
-                <h3 className="text-lg font-semibold text-white mb-4">Citation</h3>
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+                <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">Snippet</h3>
                 {citationContent.citation ? (
-                  <p className="text-sm text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>
+                  <p className="text-sm sm:text-base text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>
                 ) : (
-                  <p className="text-sm text-gray-400 mb-4">No citation text available.</p>
+                  <p className="text-sm text-gray-400 mb-4">No snippet available.</p>
                 )}
                 {citationContent.website && (
-                  <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline">Open Source</a>
+                  <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 underline text-sm sm:text-base">
+                    <ExternalLink className="w-4 h-4" />
+                    Open Source
+                  </a>
                 )}
                 <div className="flex justify-end mt-6">
-                  <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Close</button>
+                  <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base">Close</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* AI Answer Modal */}
+          {aiAnswerContent && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[85vh] overflow-y-auto">
+                <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">AI Response</h3>
+                    <p className="text-xs sm:text-sm text-gray-400 break-words">
+                      <span className="font-medium text-gray-300">Platform:</span> <span className="capitalize">{aiAnswerContent.platform}</span>
+                    </p>
+                    <p className="text-xs sm:text-sm text-gray-400 mt-1 break-words">
+                      <span className="font-medium text-gray-300">Prompt:</span> {aiAnswerContent.prompt}
+                    </p>
+                  </div>
+                </div>
+                <div className="bg-gray-900 rounded-lg p-4 mb-4 max-h-[50vh] overflow-y-auto">
+                  <p className="text-sm sm:text-base text-gray-200 whitespace-pre-wrap leading-relaxed">{aiAnswerContent.answer}</p>
+                </div>
+                <div className="flex justify-end">
+                  <button onClick={() => setAiAnswerContent(null)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base">Close</button>
                 </div>
               </div>
             </div>
