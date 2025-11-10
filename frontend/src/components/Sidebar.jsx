@@ -10,8 +10,6 @@ import {
   CreditCard, 
   User, 
   LogOut,
-  ChevronDown,
-  ChevronUp,
   Menu,
   X
 } from 'lucide-react';
@@ -22,61 +20,7 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
-  const [isBrandsOpen, setIsBrandsOpen] = useState(false);
-  const [brands, setBrands] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  // Fetch user brands on component mount (not when dropdown is opened)
-  useEffect(() => {
-    fetchBrands();
-  }, []);
-
-  const fetchBrands = async () => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    try {
-      const response = await fetch(`${API_URL}/brand/list`, {
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const { data } = await response.json();
-        setBrands(data);
-      }
-    } catch (error) {
-      console.error('Error fetching brands:', error);
-    }
-  };
-
-  const handleBrandClick = async (brandId) => {
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    try {
-      const response = await fetch(`${API_URL}/reports/by-brand/${brandId}`, {
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const { data: report } = await response.json();
-        
-        // Navigate based on report status
-        if (report.status === 'in-progress') {
-          // If in-progress, take user to Reports page where they can continue
-          navigate('/reports');
-        } else if (report.status === 'completed') {
-          // If completed, show the report directly
-          navigate(`/reports/${report._id}`);
-        } else {
-          // Unknown status, go to reports list
-          navigate('/reports');
-        }
-      } else {
-        // No report found for this brand at all - navigate to reports list
-        navigate('/reports');
-      }
-    } catch (error) {
-      console.error('Error fetching brand report:', error);
-      toast.error('Error loading brand report. Please try again.');
-    }
-  };
 
   const menuItems = [
     { 
@@ -95,8 +39,7 @@ const Sidebar = () => {
       name: 'My Brands', 
       path: '/brands', 
       icon: Building2, 
-      gradient: 'from-purple-500 to-indigo-500',
-      hasDropdown: true
+      gradient: 'from-purple-500 to-indigo-500'
     },
     // { 
     //   name: 'Earn Free Credits', 
@@ -185,14 +128,7 @@ const Sidebar = () => {
                   className={`flex items-center justify-between p-3 rounded-xl transition-all group hover:bg-white/10 ${
                     isActive(item.path) ? 'bg-white/10' : ''
                   }`}
-                  onClick={(e) => {
-                    if (item.hasDropdown) {
-                      e.preventDefault();
-                      setIsBrandsOpen(!isBrandsOpen);
-                    } else {
-                      closeMobileMenu();
-                    }
-                  }}
+                  onClick={closeMobileMenu}
                 >
                   <div className="flex items-center space-x-3">
                     <div className={`p-2 rounded-lg bg-gradient-to-r ${item.gradient}`}>
@@ -207,54 +143,7 @@ const Sidebar = () => {
                       {item.badge}
                     </span>
                   )}
-                  {item.hasDropdown && (
-                    <div>
-                      {isBrandsOpen ? (
-                        <ChevronUp className="w-4 h-4 text-gray-400" />
-                      ) : (
-                        <ChevronDown className="w-4 h-4 text-gray-400" />
-                      )}
-                    </div>
-                  )}
                 </Link>
-                {item.hasDropdown && isBrandsOpen && (
-                  <div className="ml-12 mt-2 space-y-1">
-                    {brands.length === 0 ? (
-                      <div className="p-2 text-sm text-gray-500">
-                        No saved brands yet
-                      </div>
-                    ) : (
-                      brands.map((brand) => (
-                        <div
-                          key={brand._id}
-                          onClick={() => {
-                            handleBrandClick(brand._id);
-                            closeMobileMenu();
-                          }}
-                          className="flex items-center gap-2 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer"
-                        >
-                          {brand.favicon ? (
-                            <img
-                              src={brand.favicon}
-                              alt={brand.brandName}
-                              className="w-5 h-5 rounded"
-                              onError={(e) => {
-                                e.target.style.display = 'none';
-                              }}
-                            />
-                          ) : (
-                            <div className="w-5 h-5 bg-gray-600 rounded flex items-center justify-center text-xs text-white">
-                              {brand.brandName?.charAt(0)}
-                            </div>
-                          )}
-                          <span className="text-sm text-gray-300 hover:text-white flex-1 truncate">
-                            {brand.brandName}
-                          </span>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                )}
               </>
             )}
           </div>

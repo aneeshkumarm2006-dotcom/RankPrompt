@@ -495,6 +495,7 @@ export const getReportByBrandId = async (req, res) => {
 
 /**
  * @desc    Get all reports for a brand
+ * @route   GET /api/reports/brand/:brandId
  * @route   GET /api/reports/brand/:brandId/all
  * @access  Private
  */
@@ -508,8 +509,8 @@ export const getReportsByBrand = async (req, res) => {
       userId,
       status: 'completed'
     })
-      .sort({ createdAt: -1 })
-      .select('-reportData'); // Exclude large reportData field for list view
+      .sort({ createdAt: -1 });
+      // Include reportData for dashboard analytics
 
     res.status(200).json({
       success: true,

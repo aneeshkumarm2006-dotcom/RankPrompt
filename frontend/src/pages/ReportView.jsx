@@ -423,7 +423,7 @@ const ReportView = () => {
                 {canSchedule && (
                   hasScheduledReport ? (
                     <button
-                      onClick={() => navigate(`/scheduled-reports/${brandData.brandId}`)}
+                      onClick={() => navigate(`/brands/${brandData.brandId}/scheduled`)}
                       className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base whitespace-nowrap"
                     >
                       <Calendar className="w-4 h-4" />

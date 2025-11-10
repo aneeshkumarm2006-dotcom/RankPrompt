@@ -14,8 +14,12 @@ import SharedReport from './pages/SharedReport';
 import Profile from './pages/Profile';
 import EarnCredits from './pages/EarnCredits';
 import BuyCredits from './pages/BuyCredits';
-import ScheduleReport from './pages/ScheduleReport';
-import ScheduledReports from './pages/ScheduledReports';
+import MyBrands from './pages/MyBrands';
+import BrandDashboard from './pages/BrandDashboard';
+import AllPrompts from './pages/AllPrompts';
+import BrandReports from './pages/BrandReports';
+import BrandScheduledReports from './pages/BrandScheduledReports';
+import CitationsAndSources from './pages/CitationsAndSources';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
@@ -115,18 +119,18 @@ function App() {
               }
             />
             <Route
-              path="/schedule-report"
+              path="/brands"
               element={
                 <ProtectedRoute>
-                  <ScheduleReport />
+                  <MyBrands />
                 </ProtectedRoute>
               }
             />
             <Route
-              path="/scheduled-reports/:brandId"
+              path="/brands/:brandId/*"
               element={
                 <ProtectedRoute>
-                  <ScheduledReports />
+                  <BrandDashboard />
                 </ProtectedRoute>
               }
             />
