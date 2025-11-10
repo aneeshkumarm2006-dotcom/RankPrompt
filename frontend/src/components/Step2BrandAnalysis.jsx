@@ -39,7 +39,15 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
         { value: 150, label: '150' },
       ];
 
+  // Calculate max categories based on subscription tier
+  // Free tier: 3 categories, Paid tiers: 10 categories
   const maxCategories = user?.subscriptionTier === 'free' ? 3 : 10;
+  
+  // Debug log to check subscription tier
+  useEffect(() => {
+    console.log('User subscription tier:', user?.subscriptionTier);
+    console.log('Max categories allowed:', maxCategories);
+  }, [user?.subscriptionTier, maxCategories]);
 
   useEffect(() => {
     if (!hasCalledAPI.current) {

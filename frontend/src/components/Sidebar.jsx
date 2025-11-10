@@ -57,15 +57,20 @@ const Sidebar = () => {
       if (response.ok) {
         const { data: report } = await response.json();
         
-        // Navigate to the report based on its status
+        // Navigate based on report status
         if (report.status === 'in-progress') {
-          navigate(`/reports/new?continue=${report._id}`);
-        } else {
+          // If in-progress, take user to Reports page where they can continue
+          navigate('/reports');
+        } else if (report.status === 'completed') {
+          // If completed, show the report directly
           navigate(`/reports/${report._id}`);
+        } else {
+          // Unknown status, go to reports list
+          navigate('/reports');
         }
       } else {
-        // No report found for this brand at all - navigate to new report
-        navigate('/reports/new');
+        // No report found for this brand at all - navigate to reports list
+        navigate('/reports');
       }
     } catch (error) {
       console.error('Error fetching brand report:', error);

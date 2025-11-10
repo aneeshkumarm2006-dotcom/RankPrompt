@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
-import { Eye, Trash2, Share2, Calendar, TrendingUp, PlayCircle, Clock } from 'lucide-react';
+import { Eye, Share2, Calendar, TrendingUp, PlayCircle, Clock } from 'lucide-react';
 
 const AllReports = () => {
   const navigate = useNavigate();
@@ -45,32 +45,7 @@ const AllReports = () => {
     }
   };
 
-  const handleDeleteReport = async (reportId) => {
-    if (!confirm('Are you sure you want to delete this report?')) return;
-
-    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-    
-    const deletePromise = fetch(`${API_URL}/reports/${reportId}`, {
-      method: 'DELETE',
-      credentials: 'include',
-    }).then(async (response) => {
-      if (response.ok) {
-        // Update state immediately to remove from UI
-        setReports(prevReports => prevReports.filter(r => r._id !== reportId));
-        setInProgressReports(prev => prev.filter(r => r._id !== reportId));
-        setCompletedReports(prev => prev.filter(r => r._id !== reportId));
-        return 'Report deleted successfully';
-      } else {
-        throw new Error('Failed to delete report');
-      }
-    });
-
-    toast.promise(deletePromise, {
-      loading: 'Deleting report...',
-      success: (msg) => msg,
-      error: (err) => err.message || 'Error deleting report',
-    });
-  };
+  // Delete functionality removed as per user request
 
   const handleShareReport = async (reportId) => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -193,13 +168,6 @@ const AllReports = () => {
                               <PlayCircle className="w-4 h-4" />
                               <span className="hidden sm:inline">Continue</span>
                             </button>
-                            <button
-                              onClick={() => handleDeleteReport(report._id)}
-                              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-500 bg-opacity-20 text-red-400 rounded-lg hover:bg-opacity-30 transition-colors"
-                              title="Delete Report"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
                           </div>
                         </div>
                       </div>
@@ -293,13 +261,6 @@ const AllReports = () => {
                           title="Share Report"
                         >
                           <Share2 className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteReport(report._id)}
-                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-500 bg-opacity-20 text-red-400 rounded-lg hover:bg-opacity-30 transition-colors"
-                          title="Delete Report"
-                        >
-                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>
