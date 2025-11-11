@@ -56,7 +56,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
       setTrendLoading(true);
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       try {
-        let url = `${API_URL}/api/reports/brand/${brandData._id}/visibility-trend`;
+        let url = `${API_URL}/reports/brand/${brandData._id}/visibility-trend`;
         const params = new URLSearchParams();
         if (trendDateRange.startDate) params.append('startDate', trendDateRange.startDate);
         if (trendDateRange.endDate) params.append('endDate', trendDateRange.endDate);
