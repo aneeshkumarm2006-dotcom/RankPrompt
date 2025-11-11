@@ -113,7 +113,7 @@ const BrandScheduledReports = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading scheduled reports...</p>
@@ -123,33 +123,22 @@ const BrandScheduledReports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-primary-400 hover:text-primary-300 mb-4 text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Brands
-          </button>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-white">Brand Scheduled Reports</h1>
-              {brandData && (
-                <p className="text-gray-400 mt-1">{brandData.brandName}</p>
-              )}
-              <p className="text-sm text-gray-500 mt-1">
-                To create a new scheduled report, go to any report and click "Schedule Report"
-              </p>
-            </div>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Scheduled Reports</h1>
+          {brandData && (
+            <p className="text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
+          )}
+          <p className="text-xs sm:text-sm text-gray-500 mt-2">
+            To create a new scheduled report, go to any report and click "Schedule Report"
+          </p>
         </div>
 
         {/* Schedules List */}
         {schedules.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {schedules.map((schedule) => (
               <div
                 key={schedule._id}

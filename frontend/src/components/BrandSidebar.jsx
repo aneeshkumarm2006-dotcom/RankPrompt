@@ -46,23 +46,23 @@ const BrandSidebar = ({ brandData }) => {
   return (
     <>
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900 border-b border-gray-800 p-4 z-40 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {brandData?.favicon ? (
-            <img src={brandData.favicon} alt={brandData.brandName} className="w-8 h-8 rounded-lg" />
-          ) : (
-            <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center text-white font-bold">
-              {brandData?.brandName?.charAt(0).toUpperCase() || 'B'}
-            </div>
-          )}
-          <span className="text-white font-semibold">{brandData?.brandName || 'Brand'}</span>
-        </div>
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900 border-b border-gray-800 p-4 z-40 flex items-center gap-3">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="text-white p-2 hover:bg-gray-800 rounded-lg"
+          className="text-white p-2 hover:bg-gray-800 rounded-lg flex-shrink-0"
         >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          {brandData?.favicon ? (
+            <img src={brandData.favicon} alt={brandData.brandName} className="w-8 h-8 rounded-lg flex-shrink-0" />
+          ) : (
+            <div className="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+              {brandData?.brandName?.charAt(0).toUpperCase() || 'B'}
+            </div>
+          )}
+          <span className="text-white font-semibold truncate">{brandData?.brandName || 'Brand'}</span>
+        </div>
       </div>
 
       {/* Sidebar */}

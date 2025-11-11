@@ -3,6 +3,7 @@ import {
   storePromptsForScheduling,
   initiateAnalysis,
   getScheduledPrompts,
+  getScheduledPromptsByBrand,
   getPromptsDue,
   updateScheduledPromptRun,
   receiveN8nResult,
@@ -19,6 +20,7 @@ const router = express.Router();
 router.post('/store-prompts', protect, storePromptsForScheduling);
 router.post('/initiate', protect, initiateAnalysis);
 router.get('/scheduled-prompts', protect, getScheduledPrompts);
+router.get('/scheduled/:brandId', protect, getScheduledPromptsByBrand);
 router.post('/generate-webhook-token', protect, generateWebhookToken);
 router.post('/schedule-from-report', protect, scheduleFromReport);
 router.put('/scheduled-prompts/:id/toggle', protect, toggleScheduledPrompt);

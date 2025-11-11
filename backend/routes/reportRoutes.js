@@ -9,6 +9,7 @@ import {
   saveInProgressReport,
   getReportByBrandId,
   getReportsByBrand,
+  getVisibilityTrend,
 } from '../controllers/reportController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -21,6 +22,7 @@ router.get('/list', protect, getUserReports);
 router.get('/by-brand/:brandId', protect, getReportByBrandId);
 router.get('/brand/:brandId', protect, getReportsByBrand);
 router.get('/brand/:brandId/all', protect, getReportsByBrand);
+router.get('/brand/:brandId/visibility-trend', protect, getVisibilityTrend);
 router.get('/:id', protect, getReportById);
 router.post('/:id/share', protect, shareReport);
 router.delete('/:id', protect, deleteReport);

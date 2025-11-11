@@ -526,3 +526,75 @@ export const getReportsByBrand = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc    Get visibility trend data for a brand within a date range
+ * @route   GET /api/reports/brand/:brandId/visibility-trend
+ * @access  Private
+ */
+export const getVisibilityTrend = async (req, res) => {
+  try {
+    const { brandId } = req.params;
+    const userId = req.user._id;
+    const { startDate, endDate } = req.query;
+
+    // Build query
+    const query = {
+      brandId,
+      userId,
+      status: 'completed',
+    };
+
+    // Add date range filter if provided
+    if (startDate || endDate) {
+      query.reportDate = {};
+      if (startDate) {
+        query.reportDate.$gte = new Date(startDate);
+      }
+      if (endDate) {
+        // Add one day to include the end date fully
+        const end = new Date(endDate);
+        end.setDate(end.getDate() + 1);
+        query.reportDate.$lt = end;
+      }
+    }
+
+    const reports = await Report.find(query)
+      .select('reportDate stats createdAt')
+      .sort({ reportDate: 1 });
+
+    // If less than 2 reports, return empty trend
+    if (reports.length < 2) {
+      return res.status(200).json({
+        success: true,
+        count: reports.length,
+        data: [],
+        message: reports.length === 0 
+          ? 'No reports found for this brand' 
+          : 'At least 2 reports are required to show trend',
+      });
+    }
+
+    // Format data for chart
+    const trendData = reports.map(report => ({
+      date: report.reportDate || report.createdAt,
+      websiteFound: report.stats?.websiteFound || 0,
+      brandMentioned: report.stats?.brandMentioned || 0,
+      successRate: report.stats?.successRate || 0,
+      totalPrompts: report.stats?.totalPrompts || 0,
+    }));
+
+    res.status(200).json({
+      success: true,
+      count: trendData.length,
+      data: trendData,
+    });
+  } catch (error) {
+    console.error('Error fetching visibility trend:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching visibility trend',
+      error: error.message,
+    });
+  }
+};

@@ -172,7 +172,7 @@ const AllPrompts = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading prompts...</p>
@@ -182,34 +182,27 @@ const AllPrompts = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-primary-400 hover:text-primary-300 mb-4 text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Overview
-          </button>
-          <h1 className="text-3xl font-bold text-white">All Prompts</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">All Prompts</h1>
           {brandData && (
-            <p className="text-gray-400 mt-1">{brandData.brandName}</p>
+            <p className="text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
           )}
         </div>
 
         {/* Tabs */}
         <div className="bg-gray-800 rounded-lg border border-gray-700 mb-6">
-          <div className="border-b border-gray-700 px-6 py-4">
-            <div className="flex items-center gap-6">
+          <div className="border-b border-gray-700 px-4 sm:px-6 py-4">
+            <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('all')}
                 className={`${
                   activeTab === 'all'
                     ? 'text-primary-400 border-b-2 border-primary-400'
                     : 'text-gray-400 hover:text-white'
-                } font-semibold pb-2 transition-colors`}
+                } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 All Prompts ({getAllPrompts().length})
               </button>
@@ -219,7 +212,7 @@ const AllPrompts = () => {
                   activeTab === 'scheduled'
                     ? 'text-primary-400 border-b-2 border-primary-400'
                     : 'text-gray-400 hover:text-white'
-                } font-semibold pb-2 transition-colors`}
+                } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 Scheduled Prompt Results ({getScheduledPrompts().length})
               </button>
@@ -229,7 +222,7 @@ const AllPrompts = () => {
                   activeTab === 'static'
                     ? 'text-primary-400 border-b-2 border-primary-400'
                     : 'text-gray-400 hover:text-white'
-                } font-semibold pb-2 transition-colors`}
+                } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 Static Prompt Results ({getStaticPrompts().length})
               </button>
@@ -305,10 +298,11 @@ const AllPrompts = () => {
           </div>
         </div>
 
-        {/* Results Table */}
+        {/* Results - Desktop Table / Mobile Cards */}
         <div className="bg-gray-800 rounded-lg border border-gray-700">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[1100px]">
+          {/* Desktop Table View */}
+          <div className="hidden lg:block overflow-x-auto">
+            <table className="w-full">
               <thead className="bg-gray-750">
                 <tr>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
@@ -422,6 +416,86 @@ const AllPrompts = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="lg:hidden">
+            {filteredPrompts.length > 0 ? (
+              <div className="divide-y divide-gray-700">
+                {filteredPrompts.map((prompt, idx) => {
+                  const foundCount = prompt.responses?.filter(r => r.found).length || 0;
+                  const totalResponses = prompt.responses?.length || 0;
+                  const aiModels = [...new Set(prompt.responses?.map(r => r.src) || [])];
+                  
+                  return (
+                    <div key={idx} className="p-4 hover:bg-gray-750 transition-colors">
+                      {/* Date & Status */}
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-xs text-gray-400">
+                          {new Date(prompt.reportDate).toLocaleDateString('en-US', { 
+                            month: 'short', day: 'numeric', year: 'numeric' 
+                          })}
+                        </span>
+                        <span className={`px-2 py-1 rounded text-xs ${
+                          prompt.reportType === 'Scheduled' 
+                            ? 'bg-blue-500/20 text-blue-400' 
+                            : 'bg-purple-500/20 text-purple-400'
+                        }`}>
+                          {prompt.reportType}
+                        </span>
+                      </div>
+                      
+                      {/* Prompt Text */}
+                      <p className="text-sm text-white font-medium mb-2 line-clamp-2">{prompt.prompt}</p>
+                      
+                      {/* Category & AI Models */}
+                      <div className="flex flex-wrap gap-2 mb-3">
+                        <span className="px-2 py-1 bg-gray-700 rounded-full text-xs text-gray-300">
+                          {prompt.category}
+                        </span>
+                        {aiModels.map((model, midx) => (
+                          <span key={midx} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs capitalize">
+                            {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overviews' ? 'AIO' : model}
+                          </span>
+                        ))}
+                      </div>
+                      
+                      {/* Mentions & Action */}
+                      <div className="flex items-center justify-between">
+                        {foundCount > 0 ? (
+                          <span className="inline-flex items-center px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
+                            ✓ {foundCount}/{totalResponses} Mentions
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
+                            ✗ Not Found
+                          </span>
+                        )}
+                        {prompt.responses && prompt.responses.length > 0 && (
+                          <button
+                            onClick={() => {
+                              const firstResp = prompt.responses[0];
+                              setAiAnswerContent({
+                                platform: firstResp.src === 'google_ai_overviews' ? 'Google AI' : firstResp.src,
+                                prompt: prompt.prompt,
+                                answer: firstResp.aianswer || 'No AI answer available'
+                              });
+                            }}
+                            className="text-primary-400 hover:text-primary-300 flex items-center gap-1 text-xs"
+                          >
+                            <Eye className="w-3 h-3" /> View
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="p-8 text-center text-gray-400">
+                No prompts found
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, TrendingUp, Eye, ExternalLink } from 'lucide-react';
+import { Calendar, TrendingUp, Eye, ExternalLink, CalendarIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -15,6 +15,10 @@ const PerformanceSummary = ({ brandData, reports }) => {
   const [hasScheduledReport, setHasScheduledReport] = useState(false);
   const [nextRunTime, setNextRunTime] = useState(null);
   const [sourcePromptsModal, setSourcePromptsModal] = useState(null);
+  const [visibilityTrendData, setVisibilityTrendData] = useState([]);
+  const [trendLoading, setTrendLoading] = useState(false);
+  const [trendDateRange, setTrendDateRange] = useState({ startDate: '', endDate: '' });
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
 
@@ -40,6 +44,63 @@ const PerformanceSummary = ({ brandData, reports }) => {
     };
     checkScheduledReports();
   }, [brandData]);
+
+  // Fetch visibility trend data
+  useEffect(() => {
+    const fetchVisibilityTrend = async () => {
+      if (!brandData?._id || reports.length < 2) {
+        setVisibilityTrendData([]);
+        return;
+      }
+      
+      setTrendLoading(true);
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      try {
+        let url = `${API_URL}/api/reports/brand/${brandData._id}/visibility-trend`;
+        const params = new URLSearchParams();
+        if (trendDateRange.startDate) params.append('startDate', trendDateRange.startDate);
+        if (trendDateRange.endDate) params.append('endDate', trendDateRange.endDate);
+        if (params.toString()) url += `?${params.toString()}`;
+
+        const response = await fetch(url, {
+          credentials: 'include',
+        });
+        
+        if (response.ok) {
+          const { data } = await response.json();
+          if (data && data.length > 0) {
+            // Format dates for display
+            const formattedData = data.map(item => ({
+              ...item,
+              date: new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+            }));
+            setVisibilityTrendData(formattedData);
+          } else {
+            setVisibilityTrendData([]);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching visibility trend:', error);
+        setVisibilityTrendData([]);
+      } finally {
+        setTrendLoading(false);
+      }
+    };
+    
+    fetchVisibilityTrend();
+  }, [brandData, reports.length, trendDateRange]);
+
+  // Handle date range apply
+  const handleApplyDateRange = () => {
+    setShowDatePicker(false);
+    // The useEffect will automatically refetch with new date range
+  };
+
+  // Clear date range filter
+  const handleClearDateRange = () => {
+    setTrendDateRange({ startDate: '', endDate: '' });
+    setShowDatePicker(false);
+  };
 
   // Get aggregated data
   const getAggregatedData = () => {
@@ -231,13 +292,14 @@ const PerformanceSummary = ({ brandData, reports }) => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Performance Summary</h1>
-          <p className="text-gray-400">Track your AI visibility across platforms</p>
-        </div>
+    <div className="p-4 sm:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Performance Summary</h1>
+            <p className="text-gray-400 text-sm sm:text-base">Track your AI visibility across platforms</p>
+          </div>
         {hasScheduledReport && (
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -256,16 +318,16 @@ const PerformanceSummary = ({ brandData, reports }) => {
 
       {/* Filters */}
       <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700">
-        <div className="flex flex-wrap items-center gap-4">
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
+        <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4">
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
             <option>All Categories</option>
             {data.categoryData.map(cat => <option key={cat.name}>{cat.name}</option>)}
           </select>
-          <select value={selectedPlatform} onChange={(e) => setSelectedPlatform(e.target.value)} className="px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
+          <select value={selectedPlatform} onChange={(e) => setSelectedPlatform(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
             <option>All Platforms</option>
             {data.platformData.map(plat => <option key={plat.name}>{plat.name}</option>)}
           </select>
-          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
+          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
           </select>
@@ -273,55 +335,150 @@ const PerformanceSummary = ({ brandData, reports }) => {
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        {/* Visibility Trend */}
-        <div className="lg:col-span-2 bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <h3 className="text-xl font-bold text-white mb-4">Visibility Trend</h3>
-          {data.trendData.length > 1 ? (
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-4 sm:mb-6">
+        {/* Key Metrics */}
+        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+            <h3 className="text-lg sm:text-xl font-bold text-white">Visibility Trend</h3>
+            <div className="relative flex items-center gap-2">
+              <button
+                onClick={() => setShowDatePicker(!showDatePicker)}
+                className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+              >
+                <CalendarIcon className="w-4 h-4" />
+                {trendDateRange.startDate || trendDateRange.endDate ? 'Custom Range' : 'Select Range'}
+              </button>
+              {(trendDateRange.startDate || trendDateRange.endDate) && (
+                <button
+                  onClick={handleClearDateRange}
+                  className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                >
+                  Clear
+                </button>
+              )}
+              {showDatePicker && (
+                <div className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-1/2 sm:top-full right-auto sm:right-0 -translate-y-1/2 sm:translate-y-0 sm:mt-2 bg-gray-800 sm:bg-gray-750 border border-gray-600 rounded-lg p-4 shadow-2xl z-50 w-auto sm:min-w-[280px] max-w-sm mx-auto sm:mx-0">
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">Start Date</label>
+                      <input
+                        type="date"
+                        value={trendDateRange.startDate}
+                        onChange={(e) => setTrendDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+                        className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-500 focus:outline-none text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs text-gray-400 mb-1">End Date</label>
+                      <input
+                        type="date"
+                        value={trendDateRange.endDate}
+                        onChange={(e) => setTrendDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+                        className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-500 focus:outline-none text-sm"
+                      />
+                    </div>
+                    <button
+                      onClick={handleApplyDateRange}
+                      className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
+                    >
+                      Apply
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+          {trendLoading ? (
+            <div className="h-64 flex items-center justify-center">
+              <div className="text-gray-400 text-sm">Loading trend data...</div>
+            </div>
+          ) : visibilityTrendData.length > 1 ? (
             <>
-              <div className="flex items-baseline gap-2 mb-4">
-                <span className="text-4xl font-bold text-white">{data.avgVisibility}%</span>
-                <span className="text-green-400 text-sm">+5%</span>
+              <div className="flex flex-wrap items-center gap-4 mb-4">
+                <div>
+                  <div className="text-xs text-gray-400 mb-1">Avg Success Rate</div>
+                  <span className="text-2xl sm:text-4xl font-bold text-white">{data.avgVisibility}%</span>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-400 mb-1">Reports Analyzed</div>
+                  <span className="text-2xl sm:text-4xl font-bold text-white">{visibilityTrendData.length}</span>
+                </div>
               </div>
-              <ResponsiveContainer width="100%" height={200}>
-                <LineChart data={data.trendData}>
+              <ResponsiveContainer width="100%" height={200} className="text-xs sm:text-sm">
+                <LineChart data={visibilityTrendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '12px' }} />
-                  <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
-                  <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
-                  <Line type="monotone" dataKey="visibility" stroke="#8b5cf6" strokeWidth={2} />
+                  <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={50} />
+                  <YAxis stroke="#9ca3af" style={{ fontSize: '10px' }} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1f2937', 
+                      border: '1px solid #374151', 
+                      borderRadius: '8px',
+                      fontSize: '12px'
+                    }} 
+                  />
+                  <Legend wrapperStyle={{ fontSize: '11px' }} iconSize={10} />
+                  <Line 
+                    type="monotone" 
+                    dataKey="successRate" 
+                    stroke="#8b5cf6" 
+                    strokeWidth={2} 
+                    name="Success Rate %" 
+                    dot={{ fill: '#8b5cf6', r: 4 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="websiteFound" 
+                    stroke="#10b981" 
+                    strokeWidth={2} 
+                    name="Website Found" 
+                    dot={{ fill: '#10b981', r: 4 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="brandMentioned" 
+                    stroke="#06b6d4" 
+                    strokeWidth={2} 
+                    name="Brand Mentioned" 
+                    dot={{ fill: '#06b6d4', r: 4 }}
+                  />
                 </LineChart>
               </ResponsiveContainer>
             </>
           ) : (
             <div className="h-64 flex items-center justify-center text-gray-400">
               <div className="text-center">
-                <p>Not enough data to show trend</p>
-                <p className="text-xs mt-1 text-gray-500">Run more reports to see trends</p>
+                <TrendingUp className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <p className="text-sm sm:text-base">Not enough data to show trend</p>
+                <p className="text-xs mt-1 text-gray-500">
+                  {reports.length < 2 
+                    ? 'Create at least 2 reports to see visibility trends'
+                    : 'No reports found in selected date range'}
+                </p>
               </div>
             </div>
           )}
         </div>
 
         {/* Category Visibility Chart */}
-        <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
-          <h3 className="text-xl font-bold text-white mb-4">Category Visibility</h3>
+        <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
+          <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Category Visibility</h3>
           {data.categoryData.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={200} className="text-xs sm:text-sm">
               <BarChart data={data.categoryData} margin={{ top: 5, right: 10, left: 0, bottom: 50 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis 
                   dataKey="name" 
                   stroke="#9CA3AF" 
-                  angle={0}
-                  textAnchor="middle"
+                  angle={-45}
+                  textAnchor="end"
                   height={50}
                   interval={0}
-                  tick={<CustomCategoryTick />}
+                  style={{ fontSize: '10px' }}
                 />
-                <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#9CA3AF" tick={{ fontSize: 10 }} />
                 <Tooltip contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }} />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: '11px' }} iconSize={10} />
                 <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
               </BarChart>
             </ResponsiveContainer>
@@ -335,13 +492,13 @@ const PerformanceSummary = ({ brandData, reports }) => {
       </div>
 
       {/* Platform Scores */}
-      <div className="bg-gray-800 rounded-lg p-6 border border-gray-700 mb-6">
-        <h3 className="text-xl font-bold text-white mb-4">Visibility Score by Platform</h3>
-        <ResponsiveContainer width="100%" height={300}>
+      <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700 mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Visibility Score by Platform</h3>
+        <ResponsiveContainer width="100%" height={200}>
           <BarChart data={data.platformData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9ca3af" style={{ fontSize: '12px' }} />
-            <YAxis stroke="#9ca3af" style={{ fontSize: '12px' }} />
+            <XAxis dataKey="name" stroke="#9ca3af" style={{ fontSize: '10px' }} />
+            <YAxis stroke="#9ca3af" style={{ fontSize: '10px' }} />
             <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
             <Bar dataKey="score" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
           </BarChart>
@@ -350,21 +507,21 @@ const PerformanceSummary = ({ brandData, reports }) => {
 
       {/* Tabs */}
       <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="border-b border-gray-700 px-6 py-4">
-          <div className="flex items-center gap-6">
-            <button onClick={() => setActiveTab('prompt-results')} className={`${activeTab === 'prompt-results' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2`}>
+        <div className="border-b border-gray-700 px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto">
+            <button onClick={() => setActiveTab('prompt-results')} className={`${activeTab === 'prompt-results' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Prompt Results
             </button>
-            <button onClick={() => setActiveTab('sources')} className={`${activeTab === 'sources' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2`}>
+            <button onClick={() => setActiveTab('sources')} className={`${activeTab === 'sources' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Sources Ranking
             </button>
-            <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2`}>
+            <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Results Summary
             </button>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           {/* Prompt Results Tab */}
           {activeTab === 'prompt-results' && (
             <div className="space-y-6">
@@ -656,6 +813,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };

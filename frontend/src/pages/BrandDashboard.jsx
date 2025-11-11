@@ -66,9 +66,9 @@ const BrandDashboard = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-900">
+    <div className="flex min-h-screen bg-gray-900 overflow-x-hidden">
       <BrandSidebar brandData={brandData} />
-      <div className="flex-1 lg:ml-64 mt-16 lg:mt-0">
+      <div className="flex-1 lg:ml-64 mt-16 lg:mt-0 overflow-x-hidden">
         <Routes>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<PerformanceSummary brandData={brandData} reports={reports} />} />

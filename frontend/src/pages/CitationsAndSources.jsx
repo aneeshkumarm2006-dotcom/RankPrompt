@@ -141,7 +141,7 @@ const CitationsAndSources = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading citations...</p>
@@ -151,20 +151,13 @@ const CitationsAndSources = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-primary-400 hover:text-primary-300 mb-4 text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Overview
-          </button>
-          <h1 className="text-3xl font-bold text-white">Citations & Sources</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">Citations & Sources</h1>
           {brandData && (
-            <p className="text-gray-400 mt-1">{brandData.brandName}</p>
+            <p className="text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
           )}
         </div>
 
@@ -254,9 +247,10 @@ const CitationsAndSources = () => {
           </div>
         </div>
 
-        {/* Citations Table */}
+        {/* Citations - Desktop Table / Mobile Cards */}
         <div className="bg-gray-800 rounded-lg border border-gray-700 mb-6">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-750">
                 <tr>
@@ -326,6 +320,55 @@ const CitationsAndSources = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-gray-700">
+            {paginatedSources.length > 0 ? (
+              paginatedSources.map((source, idx) => {
+                const globalIndex = (currentPage - 1) * itemsPerPage + idx + 1;
+                return (
+                  <div key={source.url} className="p-4 hover:bg-gray-750 transition-colors">
+                    {/* Index & Frequency */}
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs text-gray-400 font-medium">#{globalIndex}</span>
+                      <span className="px-2 py-1 bg-primary-500/20 text-primary-400 rounded text-xs font-medium">
+                        {source.frequency} {source.frequency === 1 ? 'mention' : 'mentions'}
+                      </span>
+                    </div>
+                    
+                    {/* Domain */}
+                    <p className="text-sm text-white font-medium mb-2">{source.domain}</p>
+                    
+                    {/* URL */}
+                    <a
+                      href={source.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-primary-400 hover:text-primary-300 mb-3 block truncate"
+                    >
+                      {source.url}
+                    </a>
+                    
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <p className="text-xs text-gray-400">Last Seen</p>
+                        <p className="text-sm text-white">{formatDate(source.lastSeen)}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Reports</p>
+                        <p className="text-sm text-white">{source.reports.length}</p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="p-8 text-center text-gray-400">
+                No citations found
+              </div>
+            )}
           </div>
         </div>
 

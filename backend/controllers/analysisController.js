@@ -226,6 +226,46 @@ export const getScheduledPrompts = async (req, res) => {
 };
 
 /**
+ * Get scheduled prompts by brand ID (alternative endpoint)
+ * @route GET /api/analysis/scheduled/:brandId
+ * @access Private
+ */
+export const getScheduledPromptsByBrand = async (req, res) => {
+  try {
+    const { brandId } = req.params;
+
+    const query = {
+      user: req.user._id,
+      isActive: true,
+    };
+
+    // Filter by brandId
+    if (mongoose.Types.ObjectId.isValid(brandId)) {
+      query.brandId = new mongoose.Types.ObjectId(brandId);
+    } else {
+      query.brandId = brandId;
+    }
+
+    const scheduledPrompts = await ScheduledPrompt.find(query)
+      .populate('user', 'name email')
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: scheduledPrompts.length,
+      data: scheduledPrompts,
+    });
+  } catch (error) {
+    console.error('Get scheduled prompts by brand error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get scheduled prompts',
+      error: error.message,
+    });
+  }
+};
+
+/**
  * Get prompts due for execution (for n8n cron job)
  * @route GET /api/analysis/prompts-due
  * @access Public (protected by API key)

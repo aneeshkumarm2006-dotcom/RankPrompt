@@ -96,7 +96,7 @@ const BrandReports = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading reports...</p>
@@ -106,25 +106,14 @@ const BrandReports = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 py-6 px-4 sm:px-6 lg:px-8">
+    <div className="p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-2 text-primary-400 hover:text-primary-300 mb-4 text-sm"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Overview
-          </button>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-3xl font-bold text-white">All Reports</h1>
-              {brandData && (
-                <p className="text-gray-400 mt-1">{brandData.brandName}</p>
-              )}
-            </div>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white">All Reports</h1>
+          {brandData && (
+            <p className="text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
+          )}
         </div>
 
         {/* Filters */}
@@ -162,9 +151,10 @@ const BrandReports = () => {
           </div>
         </div>
 
-        {/* Reports Table */}
+        {/* Reports - Desktop Table / Mobile Cards */}
         <div className="bg-gray-800 rounded-lg border border-gray-700">
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-750">
                 <tr>
@@ -272,6 +262,91 @@ const BrandReports = () => {
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden divide-y divide-gray-700">
+            {filteredReports.length > 0 ? (
+              filteredReports.map((report) => {
+                const reportType = getReportType(report.createdAt);
+                const categoriesCount = report.reportData 
+                  ? [...new Set(report.reportData.map(item => item.category))].length 
+                  : 0;
+                const promptsCount = report.reportData ? report.reportData.length : 0;
+
+                return (
+                  <div key={report._id} className="p-4 hover:bg-gray-750 transition-colors">
+                    {/* Date & Status */}
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-xs text-gray-400">
+                        {new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </span>
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${
+                        report.status === 'completed'
+                          ? 'bg-green-500/20 text-green-400'
+                          : 'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {report.status}
+                      </span>
+                    </div>
+                    
+                    {/* Website URL */}
+                    <a 
+                      href={report.brandUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary-400 hover:text-primary-300 mb-3 block truncate"
+                    >
+                      {report.brandUrl}
+                    </a>
+                    
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      <div>
+                        <p className="text-xs text-gray-400">Location</p>
+                        <p className="text-sm text-white">{report.location || 'Global'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Language</p>
+                        <p className="text-sm text-white">{report.language || 'English'}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Categories</p>
+                        <p className="text-sm text-white">{categoriesCount}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400">Prompts</p>
+                        <p className="text-sm text-white">{promptsCount}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Search Type Badge */}
+                    <div className="mb-3">
+                      <span className="px-2 py-1 bg-gray-700 rounded text-xs capitalize text-gray-300">
+                        {report.searchScope || 'global'} search
+                      </span>
+                    </div>
+                    
+                    {/* View Button */}
+                    <button
+                      onClick={() => navigate(`/reports/${report._id}`)}
+                      className="w-full px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 text-sm"
+                    >
+                      <Eye className="w-4 h-4" />
+                      View Report
+                    </button>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="p-8 text-center text-gray-400">
+                No reports found
+              </div>
+            )}
           </div>
         </div>
 
