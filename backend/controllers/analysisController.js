@@ -668,3 +668,130 @@ export const deleteScheduledPrompt = async (req, res) => {
     });
   }
 };
+
+/**
+ * N8N Webhook for saving reports with $oid format conversion
+ * This endpoint accepts n8n's payload where userId and brandId are in { $oid: "string" } format
+ * and converts them to proper MongoDB ObjectId before saving
+ * @route POST /api/analysis/n8n-save-report
+ * @access Public (protected by API key)
+ */
+export const n8nSaveReport = async (req, res) => {
+  try {
+    // Verify API key for n8n
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey !== process.env.N8N_API_KEY) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized - Invalid API key',
+      });
+    }
+
+    const payload = req.body;
+
+    // Helper function to convert $oid to ObjectId
+    const convertOidToObjectId = (obj) => {
+      if (!obj) return null;
+      
+      // If it's already a string, convert to ObjectId
+      if (typeof obj === 'string') {
+        return mongoose.Types.ObjectId.isValid(obj) ? new mongoose.Types.ObjectId(obj) : null;
+      }
+      
+      // If it has $oid property (n8n format)
+      if (obj.$oid && typeof obj.$oid === 'string') {
+        return mongoose.Types.ObjectId.isValid(obj.$oid) ? new mongoose.Types.ObjectId(obj.$oid) : null;
+      }
+      
+      // If it's already an ObjectId, return as-is
+      if (obj instanceof mongoose.Types.ObjectId) {
+        return obj;
+      }
+      
+      return null;
+    };
+
+    // Convert userId and brandId from $oid format to ObjectId
+    const userId = convertOidToObjectId(payload.userId);
+    const brandId = convertOidToObjectId(payload.brandId);
+
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or missing userId in payload',
+      });
+    }
+
+    // Calculate statistics from reportData
+    const reportData = payload.reportData || [];
+    const stats = {
+      totalPrompts: reportData.length,
+      websiteFound: 0,
+      brandMentioned: 0,
+      totalFindings: 0,
+    };
+
+    reportData.forEach(item => {
+      if (item.response && Array.isArray(item.response)) {
+        item.response.forEach(platformData => {
+          if (platformData.details?.websiteFound) stats.websiteFound++;
+          if (platformData.details?.brandMentionFound) stats.brandMentioned++;
+          if (platformData.found) stats.totalFindings++;
+        });
+      }
+    });
+
+    stats.successRate = stats.totalPrompts > 0 
+      ? Math.round((reportData.filter(r => r.success).length / stats.totalPrompts) * 100)
+      : 0;
+
+    // Create report document
+    const report = await Report.create({
+      userId: userId,
+      brandId: brandId,
+      searchScope: payload.searchScope || 'national',
+      location: payload.location || null,
+      country: payload.country || 'US',
+      language: payload.language || 'English',
+      brandName: payload.brandName,
+      brandUrl: payload.brandUrl,
+      favicon: payload.favicon,
+      platforms: payload.platforms || {
+        chatgpt: false,
+        perplexity: false,
+        googleAiOverviews: false
+      },
+      reportData: reportData,
+      stats: stats,
+      status: payload.status || 'completed',
+      reportDate: payload.reportDate ? new Date(payload.reportDate) : new Date(),
+    });
+
+    console.log('✅ N8N report saved successfully:', {
+      reportId: report._id,
+      userId: userId.toString(),
+      brandId: brandId ? brandId.toString() : 'none',
+      brandName: payload.brandName,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Report saved successfully via n8n webhook',
+      data: {
+        reportId: report._id,
+        userId: report.userId,
+        brandId: report.brandId,
+        brandName: report.brandName,
+        stats: report.stats,
+      },
+    });
+  } catch (error) {
+    console.error('❌ N8N save report error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to save report via n8n webhook',
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+    });
+  }
+};
