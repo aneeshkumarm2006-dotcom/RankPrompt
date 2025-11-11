@@ -408,7 +408,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                 <LineChart data={visibilityTrendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={50} />
-                  <YAxis stroke="#9ca3af" style={{ fontSize: '10px' }} />
+                  <YAxis stroke="#9ca3af" style={{ fontSize: '10px' }} domain={[0, 100]} label={{ value: 'Visibility Score (%)', angle: -90, position: 'insideLeft', style: { fontSize: '10px', fill: '#9ca3af' } }} />
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: '#1f2937', 
@@ -420,26 +420,26 @@ const PerformanceSummary = ({ brandData, reports }) => {
                   <Legend wrapperStyle={{ fontSize: '11px' }} iconSize={10} />
                   <Line 
                     type="monotone" 
-                    dataKey="successRate" 
-                    stroke="#8b5cf6" 
-                    strokeWidth={2} 
-                    name="Success Rate %" 
-                    dot={{ fill: '#8b5cf6', r: 4 }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="websiteFound" 
+                    dataKey="chatgpt" 
                     stroke="#10b981" 
                     strokeWidth={2} 
-                    name="Website Found" 
+                    name="ChatGPT" 
                     dot={{ fill: '#10b981', r: 4 }}
                   />
                   <Line 
                     type="monotone" 
-                    dataKey="brandMentioned" 
+                    dataKey="perplexity" 
+                    stroke="#8b5cf6" 
+                    strokeWidth={2} 
+                    name="Perplexity" 
+                    dot={{ fill: '#8b5cf6', r: 4 }}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="googleAiOverviews" 
                     stroke="#06b6d4" 
                     strokeWidth={2} 
-                    name="Brand Mentioned" 
+                    name="Google AI" 
                     dot={{ fill: '#06b6d4', r: 4 }}
                   />
                 </LineChart>

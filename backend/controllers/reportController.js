@@ -560,7 +560,7 @@ export const getVisibilityTrend = async (req, res) => {
     }
 
     const reports = await Report.find(query)
-      .select('reportDate stats createdAt')
+      .select('reportDate stats createdAt reportData platforms')
       .sort({ reportDate: 1 });
 
     // If less than 2 reports, return empty trend
@@ -575,14 +575,63 @@ export const getVisibilityTrend = async (req, res) => {
       });
     }
 
-    // Format data for chart
-    const trendData = reports.map(report => ({
-      date: report.reportDate || report.createdAt,
-      websiteFound: report.stats?.websiteFound || 0,
-      brandMentioned: report.stats?.brandMentioned || 0,
-      successRate: report.stats?.successRate || 0,
-      totalPrompts: report.stats?.totalPrompts || 0,
-    }));
+    // Calculate platform-specific visibility scores for each report
+    const trendData = reports.map(report => {
+      const platformScores = {
+        chatgpt: 0,
+        perplexity: 0,
+        googleAiOverviews: 0,
+      };
+      
+      const platformCounts = {
+        chatgpt: 0,
+        perplexity: 0,
+        googleAiOverviews: 0,
+      };
+
+      // Calculate visibility score per platform
+      if (report.reportData && Array.isArray(report.reportData)) {
+        report.reportData.forEach(item => {
+          if (item.response && Array.isArray(item.response)) {
+            item.response.forEach(platformData => {
+              const platform = platformData.platform;
+              
+              if (platform === 'chatgpt' || platform === 'perplexity' || platform === 'google_ai_overview') {
+                const platformKey = platform === 'google_ai_overview' ? 'googleAiOverviews' : platform;
+                platformCounts[platformKey]++;
+                
+                // Score based on findings
+                if (platformData.found) {
+                  if (platformData.details?.brandMentionFound) {
+                    platformScores[platformKey] += 100; // Full score for brand mention
+                  } else if (platformData.details?.websiteFound) {
+                    platformScores[platformKey] += 50; // Half score for website only
+                  }
+                }
+              }
+            });
+          }
+        });
+      }
+
+      // Calculate average scores (0-100 scale)
+      const avgScores = {};
+      Object.keys(platformScores).forEach(platform => {
+        if (platformCounts[platform] > 0) {
+          avgScores[platform] = Math.round(platformScores[platform] / platformCounts[platform]);
+        } else {
+          avgScores[platform] = 0;
+        }
+      });
+
+      return {
+        date: report.reportDate || report.createdAt,
+        chatgpt: avgScores.chatgpt,
+        perplexity: avgScores.perplexity,
+        googleAiOverviews: avgScores.googleAiOverviews,
+        totalPrompts: report.stats?.totalPrompts || 0,
+      };
+    });
 
     res.status(200).json({
       success: true,

@@ -774,6 +774,64 @@ export const n8nSaveReport = async (req, res) => {
       brandName: payload.brandName,
     });
 
+    // If scheduledPromptId is provided, update the scheduled prompt automatically
+    let scheduledPromptUpdate = null;
+    if (payload.scheduledPromptId) {
+      const scheduledPromptId = convertOidToObjectId(payload.scheduledPromptId);
+      
+      if (scheduledPromptId) {
+        try {
+          const scheduledPrompt = await ScheduledPrompt.findById(scheduledPromptId);
+          
+          if (scheduledPrompt) {
+            // Use provided reportDate or report's date
+            const lastRunDate = payload.reportDate ? new Date(payload.reportDate) : report.reportDate || new Date();
+            
+            scheduledPrompt.lastRun = lastRunDate;
+            scheduledPrompt.lastReportId = report._id;
+            
+            // Calculate next run based on frequency
+            const nextRun = new Date(lastRunDate);
+            switch (scheduledPrompt.scheduleFrequency) {
+              case 'daily':
+                nextRun.setDate(nextRun.getDate() + 1);
+                break;
+              case 'weekly':
+                nextRun.setDate(nextRun.getDate() + 7);
+                break;
+              case 'monthly':
+                nextRun.setMonth(nextRun.getMonth() + 1);
+                break;
+              default:
+                nextRun.setDate(nextRun.getDate() + 1);
+            }
+            
+            scheduledPrompt.nextRun = nextRun;
+            scheduledPrompt.lastUpdated = new Date();
+            
+            await scheduledPrompt.save();
+            
+            scheduledPromptUpdate = {
+              lastRun: scheduledPrompt.lastRun,
+              nextRun: scheduledPrompt.nextRun,
+              scheduleFrequency: scheduledPrompt.scheduleFrequency,
+            };
+            
+            console.log('✅ Scheduled prompt updated:', {
+              scheduledPromptId: scheduledPromptId.toString(),
+              lastRun: scheduledPrompt.lastRun,
+              nextRun: scheduledPrompt.nextRun,
+            });
+          } else {
+            console.warn('⚠️ Scheduled prompt not found:', scheduledPromptId.toString());
+          }
+        } catch (updateError) {
+          console.error('❌ Error updating scheduled prompt:', updateError);
+          // Don't fail the whole request if scheduled prompt update fails
+        }
+      }
+    }
+
     res.status(201).json({
       success: true,
       message: 'Report saved successfully via n8n webhook',
@@ -783,6 +841,7 @@ export const n8nSaveReport = async (req, res) => {
         brandId: report.brandId,
         brandName: report.brandName,
         stats: report.stats,
+        scheduledPromptUpdate: scheduledPromptUpdate,
       },
     });
   } catch (error) {
