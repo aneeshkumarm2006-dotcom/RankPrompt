@@ -774,61 +774,65 @@ export const n8nSaveReport = async (req, res) => {
       brandName: payload.brandName,
     });
 
-    // If scheduledPromptId is provided, update the scheduled prompt automatically
+    // Automatically find and update the scheduled prompt for this brand/user
     let scheduledPromptUpdate = null;
-    if (payload.scheduledPromptId) {
-      const scheduledPromptId = convertOidToObjectId(payload.scheduledPromptId);
-      
-      if (scheduledPromptId) {
-        try {
-          const scheduledPrompt = await ScheduledPrompt.findById(scheduledPromptId);
+    if (brandId) {
+      try {
+        // Find the most recent active scheduled prompt that is due for this brand/user
+        const scheduledPrompt = await ScheduledPrompt.findOne({
+          user: userId,
+          brandId: brandId,
+          isActive: true,
+          nextRun: { $lte: new Date() } // Only update prompts that are due
+        }).sort({ nextRun: 1 }); // Get the one that's been waiting longest
+        
+        if (scheduledPrompt) {
+          // Use provided reportDate or report's date
+          const lastRunDate = payload.reportDate ? new Date(payload.reportDate) : report.reportDate || new Date();
           
-          if (scheduledPrompt) {
-            // Use provided reportDate or report's date
-            const lastRunDate = payload.reportDate ? new Date(payload.reportDate) : report.reportDate || new Date();
-            
-            scheduledPrompt.lastRun = lastRunDate;
-            scheduledPrompt.lastReportId = report._id;
-            
-            // Calculate next run based on frequency
-            const nextRun = new Date(lastRunDate);
-            switch (scheduledPrompt.scheduleFrequency) {
-              case 'daily':
-                nextRun.setDate(nextRun.getDate() + 1);
-                break;
-              case 'weekly':
-                nextRun.setDate(nextRun.getDate() + 7);
-                break;
-              case 'monthly':
-                nextRun.setMonth(nextRun.getMonth() + 1);
-                break;
-              default:
-                nextRun.setDate(nextRun.getDate() + 1);
-            }
-            
-            scheduledPrompt.nextRun = nextRun;
-            scheduledPrompt.lastUpdated = new Date();
-            
-            await scheduledPrompt.save();
-            
-            scheduledPromptUpdate = {
-              lastRun: scheduledPrompt.lastRun,
-              nextRun: scheduledPrompt.nextRun,
-              scheduleFrequency: scheduledPrompt.scheduleFrequency,
-            };
-            
-            console.log('✅ Scheduled prompt updated:', {
-              scheduledPromptId: scheduledPromptId.toString(),
-              lastRun: scheduledPrompt.lastRun,
-              nextRun: scheduledPrompt.nextRun,
-            });
-          } else {
-            console.warn('⚠️ Scheduled prompt not found:', scheduledPromptId.toString());
+          scheduledPrompt.lastRun = lastRunDate;
+          scheduledPrompt.lastReportId = report._id;
+          
+          // Calculate next run based on frequency
+          const nextRun = new Date(lastRunDate);
+          switch (scheduledPrompt.scheduleFrequency) {
+            case 'daily':
+              nextRun.setDate(nextRun.getDate() + 1);
+              break;
+            case 'weekly':
+              nextRun.setDate(nextRun.getDate() + 7);
+              break;
+            case 'monthly':
+              nextRun.setMonth(nextRun.getMonth() + 1);
+              break;
+            default:
+              nextRun.setDate(nextRun.getDate() + 1);
           }
-        } catch (updateError) {
-          console.error('❌ Error updating scheduled prompt:', updateError);
-          // Don't fail the whole request if scheduled prompt update fails
+          
+          scheduledPrompt.nextRun = nextRun;
+          scheduledPrompt.lastUpdated = new Date();
+          
+          await scheduledPrompt.save();
+          
+          scheduledPromptUpdate = {
+            scheduledPromptId: scheduledPrompt._id,
+            lastRun: scheduledPrompt.lastRun,
+            nextRun: scheduledPrompt.nextRun,
+            scheduleFrequency: scheduledPrompt.scheduleFrequency,
+          };
+          
+          console.log('✅ Scheduled prompt updated automatically:', {
+            scheduledPromptId: scheduledPrompt._id.toString(),
+            brandName: scheduledPrompt.brandName,
+            lastRun: scheduledPrompt.lastRun,
+            nextRun: scheduledPrompt.nextRun,
+          });
+        } else {
+          console.log('ℹ️ No active scheduled prompt found for this brand/user (or none are due)');
         }
+      } catch (updateError) {
+        console.error('❌ Error updating scheduled prompt:', updateError);
+        // Don't fail the whole request if scheduled prompt update fails
       }
     }
 
