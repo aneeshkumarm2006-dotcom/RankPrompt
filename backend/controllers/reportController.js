@@ -577,58 +577,73 @@ export const getVisibilityTrend = async (req, res) => {
 
     // Calculate platform-specific visibility scores for each report
     const trendData = reports.map(report => {
-      const platformScores = {
+      // Count total prompts and findings per platform
+      const platformFound = {
         chatgpt: 0,
         perplexity: 0,
         googleAiOverviews: 0,
       };
       
-      const platformCounts = {
+      const platformTotal = {
         chatgpt: 0,
         perplexity: 0,
         googleAiOverviews: 0,
       };
 
-      // Calculate visibility score per platform
+      // Calculate visibility: how many times brand was mentioned per platform
       if (report.reportData && Array.isArray(report.reportData)) {
-        report.reportData.forEach(item => {
+        report.reportData.forEach((item, idx) => {
           if (item.response && Array.isArray(item.response)) {
             item.response.forEach(platformData => {
               const platform = platformData.platform;
               
+              // Debug log for first item of first report
+              if (idx === 0 && report === reports[0]) {
+                console.log('📊 Platform data sample:', {
+                  platform,
+                  found: platformData.found,
+                  details: platformData.details,
+                });
+              }
+              
               if (platform === 'chatgpt' || platform === 'perplexity' || platform === 'google_ai_overview') {
                 const platformKey = platform === 'google_ai_overview' ? 'googleAiOverviews' : platform;
-                platformCounts[platformKey]++;
+                platformTotal[platformKey]++;
                 
-                // Score based on findings
-                if (platformData.found) {
-                  if (platformData.details?.brandMentionFound) {
-                    platformScores[platformKey] += 100; // Full score for brand mention
-                  } else if (platformData.details?.websiteFound) {
-                    platformScores[platformKey] += 50; // Half score for website only
-                  }
+                // Count as visible if brand was mentioned OR website was found
+                if (platformData.found && (platformData.details?.brandMentionFound || platformData.details?.websiteFound)) {
+                  platformFound[platformKey]++;
                 }
               }
             });
           }
         });
       }
+      
+      // Debug log for first report
+      if (report === reports[0]) {
+        console.log('📊 Visibility calculation for first report:', {
+          reportDate: report.reportDate,
+          platformTotal,
+          platformFound,
+        });
+      }
 
-      // Calculate average scores (0-100 scale)
-      const avgScores = {};
-      Object.keys(platformScores).forEach(platform => {
-        if (platformCounts[platform] > 0) {
-          avgScores[platform] = Math.round(platformScores[platform] / platformCounts[platform]);
+      // Calculate visibility percentage (0-100 scale)
+      const visibilityScores = {};
+      Object.keys(platformFound).forEach(platform => {
+        if (platformTotal[platform] > 0) {
+          visibilityScores[platform] = Math.round((platformFound[platform] / platformTotal[platform]) * 100);
         } else {
-          avgScores[platform] = 0;
+          visibilityScores[platform] = 0;
         }
       });
 
       return {
         date: report.reportDate || report.createdAt,
-        chatgpt: avgScores.chatgpt,
-        perplexity: avgScores.perplexity,
-        googleAiOverviews: avgScores.googleAiOverviews,
+        chatgpt: visibilityScores.chatgpt,
+        perplexity: visibilityScores.perplexity,
+        googleAiOverviews: visibilityScores.googleAiOverviews,
         totalPrompts: report.stats?.totalPrompts || 0,
       };
     });
