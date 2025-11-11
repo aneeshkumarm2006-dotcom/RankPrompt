@@ -1,6 +1,8 @@
 import https from 'https';
 import http from 'http';
 import Brand from '../models/Brand.js';
+import Report from '../models/Report.js';
+import ScheduledPrompt from '../models/ScheduledPrompt.js';
 
 /**
  * @desc    Get favicon for a website URL
@@ -199,7 +201,7 @@ export const getBrandById = async (req, res) => {
 };
 
 /**
- * @desc    Delete a brand
+ * @desc    Delete a brand and all associated data
  * @route   DELETE /api/brand/:id
  * @access  Private
  */
@@ -208,11 +210,8 @@ export const deleteBrand = async (req, res) => {
     const { id } = req.params;
     const userId = req.user._id;
 
-    const brand = await Brand.findOneAndUpdate(
-      { _id: id, userId },
-      { isActive: false },
-      { new: true }
-    );
+    // Find the brand first to ensure it exists and belongs to the user
+    const brand = await Brand.findOne({ _id: id, userId });
 
     if (!brand) {
       return res.status(404).json({
@@ -221,9 +220,35 @@ export const deleteBrand = async (req, res) => {
       });
     }
 
+    // Delete all reports associated with this brand
+    const deletedReports = await Report.deleteMany({
+      brandId: id,
+      userId: userId
+    });
+
+    // Delete all scheduled prompts associated with this brand
+    const deletedSchedules = await ScheduledPrompt.deleteMany({
+      brandId: id,
+      user: userId
+    });
+
+    // Finally, delete the brand itself
+    await Brand.findByIdAndDelete(id);
+
+    console.log('✅ Brand and associated data deleted:', {
+      brandId: id,
+      brandName: brand.brandName,
+      deletedReports: deletedReports.deletedCount,
+      deletedSchedules: deletedSchedules.deletedCount,
+    });
+
     res.status(200).json({
       success: true,
-      message: 'Brand deleted successfully',
+      message: 'Brand and all associated data deleted successfully',
+      deletedData: {
+        reports: deletedReports.deletedCount,
+        schedules: deletedSchedules.deletedCount,
+      }
     });
   } catch (error) {
     console.error('Error deleting brand:', error);
