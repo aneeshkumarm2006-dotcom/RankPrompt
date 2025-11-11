@@ -19,6 +19,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
   const [trendLoading, setTrendLoading] = useState(false);
   const [trendDateRange, setTrendDateRange] = useState({ startDate: '', endDate: '' });
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [platformAverages, setPlatformAverages] = useState({ chatgpt: 0, perplexity: 0, googleAiOverviews: 0 });
 
   const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
 
@@ -67,7 +68,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
         });
         
         if (response.ok) {
-          const { data } = await response.json();
+          const { data, averages } = await response.json();
           if (data && data.length > 0) {
             // Format dates for display
             const formattedData = data.map(item => ({
@@ -75,8 +76,10 @@ const PerformanceSummary = ({ brandData, reports }) => {
               date: new Date(item.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
             }));
             setVisibilityTrendData(formattedData);
+            setPlatformAverages(averages || { chatgpt: 0, perplexity: 0, googleAiOverviews: 0 });
           } else {
             setVisibilityTrendData([]);
+            setPlatformAverages({ chatgpt: 0, perplexity: 0, googleAiOverviews: 0 });
           }
         }
       } catch (error) {
@@ -394,14 +397,22 @@ const PerformanceSummary = ({ brandData, reports }) => {
             </div>
           ) : visibilityTrendData.length > 1 ? (
             <>
-              <div className="flex flex-wrap items-center gap-4 mb-4">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-4">
                 <div>
-                  <div className="text-xs text-gray-400 mb-1">Avg Success Rate</div>
-                  <span className="text-2xl sm:text-4xl font-bold text-white">{data.avgVisibility}%</span>
+                  <div className="text-xs text-gray-400 mb-1">Avg ChatGPT</div>
+                  <span className="text-xl sm:text-3xl font-bold text-green-400">{platformAverages.chatgpt}%</span>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-400 mb-1">Avg Perplexity</div>
+                  <span className="text-xl sm:text-3xl font-bold text-purple-400">{platformAverages.perplexity}%</span>
+                </div>
+                <div>
+                  <div className="text-xs text-gray-400 mb-1">Avg Google AI</div>
+                  <span className="text-xl sm:text-3xl font-bold text-cyan-400">{platformAverages.googleAiOverviews}%</span>
                 </div>
                 <div>
                   <div className="text-xs text-gray-400 mb-1">Reports Analyzed</div>
-                  <span className="text-2xl sm:text-4xl font-bold text-white">{visibilityTrendData.length}</span>
+                  <span className="text-xl sm:text-3xl font-bold text-white">{visibilityTrendData.length}</span>
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={200} className="text-xs sm:text-sm">

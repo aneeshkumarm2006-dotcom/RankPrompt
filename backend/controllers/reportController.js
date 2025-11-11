@@ -590,42 +590,24 @@ export const getVisibilityTrend = async (req, res) => {
         googleAiOverviews: 0,
       };
 
-      // Calculate visibility: how many times brand was mentioned per platform
+      // Calculate visibility using the SAME logic as the frontend bar chart
       if (report.reportData && Array.isArray(report.reportData)) {
-        report.reportData.forEach((item, idx) => {
+        report.reportData.forEach(item => {
           if (item.response && Array.isArray(item.response)) {
-            item.response.forEach(platformData => {
-              const platform = platformData.platform;
+            item.response.forEach(resp => {
+              const platform = resp.src; // Using 'src' field, not 'platform'!
               
-              // Debug log for first item of first report
-              if (idx === 0 && report === reports[0]) {
-                console.log('📊 Platform data sample:', {
-                  platform,
-                  found: platformData.found,
-                  details: platformData.details,
-                });
-              }
-              
-              if (platform === 'chatgpt' || platform === 'perplexity' || platform === 'google_ai_overview') {
-                const platformKey = platform === 'google_ai_overview' ? 'googleAiOverviews' : platform;
+              if (platform === 'chatgpt' || platform === 'perplexity' || platform === 'google_ai_overviews') {
+                const platformKey = platform === 'google_ai_overviews' ? 'googleAiOverviews' : platform;
                 platformTotal[platformKey]++;
                 
-                // Count as visible if brand was mentioned OR website was found
-                if (platformData.found && (platformData.details?.brandMentionFound || platformData.details?.websiteFound)) {
+                // Simple check: if found, count it
+                if (resp.found) {
                   platformFound[platformKey]++;
                 }
               }
             });
           }
-        });
-      }
-      
-      // Debug log for first report
-      if (report === reports[0]) {
-        console.log('📊 Visibility calculation for first report:', {
-          reportDate: report.reportDate,
-          platformTotal,
-          platformFound,
         });
       }
 
@@ -648,10 +630,30 @@ export const getVisibilityTrend = async (req, res) => {
       };
     });
 
+    // Calculate average scores across all reports
+    const avgScores = {
+      chatgpt: 0,
+      perplexity: 0,
+      googleAiOverviews: 0,
+    };
+
+    if (trendData.length > 0) {
+      trendData.forEach(data => {
+        avgScores.chatgpt += data.chatgpt;
+        avgScores.perplexity += data.perplexity;
+        avgScores.googleAiOverviews += data.googleAiOverviews;
+      });
+
+      avgScores.chatgpt = Math.round(avgScores.chatgpt / trendData.length);
+      avgScores.perplexity = Math.round(avgScores.perplexity / trendData.length);
+      avgScores.googleAiOverviews = Math.round(avgScores.googleAiOverviews / trendData.length);
+    }
+
     res.status(200).json({
       success: true,
       count: trendData.length,
       data: trendData,
+      averages: avgScores,
     });
   } catch (error) {
     console.error('Error fetching visibility trend:', error);
