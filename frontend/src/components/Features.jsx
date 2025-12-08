@@ -47,7 +47,7 @@ const features = [
 
 const Features = () => {
   return (
-    <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-dark-900 relative overflow-hidden">
+    <section id="features" className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-40 left-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl"></div>
@@ -57,17 +57,17 @@ const Features = () => {
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16 lg:mb-20 space-y-4 sm:space-y-6 animate-slide-up">
-          <div className="inline-flex items-center space-x-2 glass-light px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <Shield className="w-4 h-4 text-primary-400" />
-            <span className="text-gray-300">Powerful Features</span>
+          <div className="inline-flex items-center space-x-2 bg-purple-100 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <Shield className="w-4 h-4 text-purple-600" />
+            <span className="text-gray-800">Powerful Features</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-800 leading-tight">
             Everything You Need to
             <span className="block gradient-text mt-1 sm:mt-2">
               Dominate AI Search
             </span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-3xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
             Comprehensive suite of tools to measure, track, and optimize your brand's presence in AI-generated answers
           </p>
         </div>
@@ -77,7 +77,7 @@ const Features = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group glass-effect rounded-xl sm:rounded-2xl p-6 sm:p-8 card-hover border border-white/5"
+              className="group bg-gray-50 rounded-xl sm:rounded-2xl p-6 sm:p-8 card-hover border border-gray-200"
             >
               {/* Icon */}
               <div className="relative mb-4 sm:mb-6">
@@ -88,16 +88,16 @@ const Features = () => {
               </div>
               
               {/* Content */}
-              <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:gradient-text transition-all">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3 group-hover:gradient-text transition-all">
                 {feature.title}
               </h3>
               
-              <p className="text-sm sm:text-base text-gray-400 leading-relaxed mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-4 sm:mb-6">
                 {feature.description}
               </p>
               
               {/* Hover Arrow */}
-              <div className="flex items-center space-x-2 text-primary-400 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
+              <div className="flex items-center space-x-2 text-purple-600 text-sm sm:text-base font-semibold opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0">
                 <span>Explore feature</span>
                 <span className="group-hover:translate-x-2 transition-transform">→</span>
               </div>
@@ -107,12 +107,9 @@ const Features = () => {
 
         {/* Bottom CTA */}
         <div className="mt-12 sm:mt-16 text-center">
-          <button className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl blur-lg opacity-75 group-hover:opacity-50 transition-opacity"></div>
-            <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold shadow-xl hover:shadow-2xl transition-all flex items-center justify-center space-x-2 text-sm sm:text-base">
-              <span>View All Features</span>
-              <Zap className="w-5 h-5 group-hover:rotate-12 transition-transform" />
-            </div>
+          <button className="bg-[#4F46E5] text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold hover:bg-purple-700 transition-all flex items-center justify-center space-x-2 text-sm sm:text-base">
+            <span>View All Features</span>
+            <Zap className="w-5 h-5 group-hover:rotate-12 transition-transform" />
           </button>
         </div>
       </div>

@@ -46,10 +46,10 @@ const BrandSidebar = ({ brandData }) => {
   return (
     <>
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 bg-gray-900 border-b border-gray-800 p-4 z-40 flex items-center gap-3">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#F1F5F9] border-b border-gray-200 p-4 z-40 flex items-center gap-3">
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="text-white p-2 hover:bg-gray-800 rounded-lg flex-shrink-0"
+          className="text-gray-800 p-2 hover:bg-gray-200 rounded-lg flex-shrink-0"
         >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -61,13 +61,13 @@ const BrandSidebar = ({ brandData }) => {
               {brandData?.brandName?.charAt(0).toUpperCase() || 'B'}
             </div>
           )}
-          <span className="text-white font-semibold truncate">{brandData?.brandName || 'Brand'}</span>
+          <span className="text-gray-800 font-semibold truncate">{brandData?.brandName || 'Brand'}</span>
         </div>
       </div>
 
       {/* Sidebar */}
       <div
-        className={`fixed top-0 left-0 h-full w-64 bg-gray-900 border-r border-gray-800 z-50 transform transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-full w-64 bg-[#F1F5F9] border-r border-gray-200 z-50 transform transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         } lg:translate-x-0`}
       >
@@ -75,14 +75,14 @@ const BrandSidebar = ({ brandData }) => {
           {/* Back to Brands */}
           <button
             onClick={() => navigate('/brands')}
-            className="flex items-center gap-2 px-4 py-3 text-gray-400 hover:text-white hover:bg-gray-800 transition-colors border-b border-gray-800"
+            className="flex items-center gap-2 px-4 py-3 text-gray-500 hover:text-gray-800 hover:bg-gray-200 transition-colors border-b border-gray-200"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Back to Brands</span>
           </button>
 
           {/* Brand Header */}
-          <div className="px-4 py-4 border-b border-gray-800">
+          <div className="px-4 py-4 border-b border-gray-200">
             <div className="flex items-center gap-3">
               {brandData?.favicon ? (
                 <img
@@ -96,8 +96,8 @@ const BrandSidebar = ({ brandData }) => {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <h2 className="text-white font-semibold text-sm truncate">{brandData?.brandName || 'Brand Name'}</h2>
-                <p className="text-gray-400 text-xs truncate">{brandData?.websiteUrl?.replace(/^https?:\/\//, '') || 'website.com'}</p>
+                <h2 className="text-gray-800 font-semibold text-sm truncate">{brandData?.brandName || 'Brand Name'}</h2>
+                <p className="text-gray-500 text-xs truncate">{brandData?.websiteUrl?.replace(/^https?:\/\//, '') || 'website.com'}</p>
               </div>
             </div>
           </div>
@@ -110,7 +110,7 @@ const BrandSidebar = ({ brandData }) => {
                   <div>
                     <button
                       onClick={() => setIsAiDashboardOpen(!isAiDashboardOpen)}
-                      className="w-full flex items-center justify-between px-3 py-2 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors mb-1"
+                      className="w-full flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors mb-1"
                     >
                       <div className="flex items-center gap-3">
                         <item.icon className="w-5 h-5" />
@@ -127,8 +127,8 @@ const BrandSidebar = ({ brandData }) => {
                             onClick={() => setIsMobileMenuOpen(false)}
                             className={`flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-sm transition-colors ${
                               location.pathname === subItem.path
-                                ? 'bg-primary-500 text-white'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                ? 'bg-[#4F46E5] text-white'
+                                : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200'
                             }`}
                           >
                             <div className="flex items-center gap-2">
@@ -155,10 +155,10 @@ const BrandSidebar = ({ brandData }) => {
                     }}
                     className={`flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition-colors mb-1 ${
                       item.comingSoon
-                        ? 'text-gray-600 cursor-not-allowed'
+                        ? 'text-gray-400 cursor-not-allowed'
                         : location.pathname === item.path
-                        ? 'bg-primary-500 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                        ? 'bg-[#4F46E5] text-white'
+                        : 'text-gray-500 hover:text-gray-800 hover:bg-gray-200'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -166,7 +166,7 @@ const BrandSidebar = ({ brandData }) => {
                       <span className="text-sm font-medium">{item.name}</span>
                     </div>
                     {item.comingSoon && (
-                      <span className="text-xs bg-gray-800 text-gray-500 px-2 py-0.5 rounded">Soon</span>
+                      <span className="text-xs bg-gray-200 text-gray-400 px-2 py-0.5 rounded">Soon</span>
                     )}
                   </Link>
                 )}

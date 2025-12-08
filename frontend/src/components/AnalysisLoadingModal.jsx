@@ -6,8 +6,8 @@ const AnalysisLoadingModal = ({ isOpen, totalPrompts, completedPrompts }) => {
   const progress = totalPrompts > 0 ? (completedPrompts / totalPrompts) * 100 : 0;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 border border-gray-700 shadow-2xl">
+    <div className="fixed inset-0 bg-black bg-opacity-25 z-50 flex items-center justify-center">
+      <div className="bg-[#F8FAFC] rounded-lg p-8 max-w-md w-full mx-4 border border-gray-200 shadow-2xl">
         <div className="flex flex-col items-center">
           {/* Animated Loader */}
           <div className="relative">
@@ -18,28 +18,28 @@ const AnalysisLoadingModal = ({ isOpen, totalPrompts, completedPrompts }) => {
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-white mt-6 mb-2">
+          <h2 className="text-2xl font-bold text-gray-800 mt-6 mb-2">
             Analyzing Visibility
           </h2>
 
           {/* Description */}
-          <p className="text-gray-400 text-center mb-6">
+          <p className="text-gray-600 text-center mb-6">
             Sending prompts to AI platforms and collecting responses...
           </p>
 
           {/* Progress Bar */}
-          <div className="w-full bg-gray-700 rounded-full h-3 mb-4 overflow-hidden">
+          <div className="w-full bg-gray-200 rounded-full h-3 mb-4 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-primary-500 to-primary-600 h-full rounded-full transition-all duration-500 ease-out"
+              className="bg-[#4F46E5] h-full rounded-full transition-all duration-500 ease-out"
               style={{ width: `${progress}%` }}
             ></div>
           </div>
 
           {/* Progress Text */}
-          <div className="text-gray-300 text-sm">
-            <span className="font-semibold text-white">{completedPrompts}</span>
+          <div className="text-gray-700 text-sm">
+            <span className="font-semibold text-gray-800">{completedPrompts}</span>
             {' / '}
-            <span className="text-gray-400">{totalPrompts}</span>
+            <span className="text-gray-500">{totalPrompts}</span>
             {' prompts analyzed'}
           </div>
 

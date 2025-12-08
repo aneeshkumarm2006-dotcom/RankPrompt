@@ -33,7 +33,7 @@ const steps = [
 
 const HowItWorks = () => {
   return (
-    <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 gradient-bg relative overflow-hidden">
+    <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-gray-50 relative overflow-hidden">
       {/* Background Grid Pattern */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0" style={{
@@ -45,15 +45,15 @@ const HowItWorks = () => {
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16 lg:mb-20 space-y-4 sm:space-y-6 animate-slide-up">
-          <div className="inline-flex items-center space-x-2 glass-light px-4 py-2 rounded-full text-sm font-medium mb-4">
-            <CheckCircle2 className="w-4 h-4 text-primary-400" />
-            <span className="text-gray-300">Simple Process</span>
+          <div className="inline-flex items-center space-x-2 bg-purple-100 px-4 py-2 rounded-full text-sm font-medium mb-4">
+            <CheckCircle2 className="w-4 h-4 text-purple-600" />
+            <span className="text-gray-800">Simple Process</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-800 leading-tight">
             How It
             <span className="gradient-text"> Works</span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
             Get started in minutes and watch your AI search rankings soar
           </p>
         </div>
@@ -79,18 +79,18 @@ const HowItWorks = () => {
                   <div className="flex justify-center mb-4 sm:mb-6">
                     <div className="relative">
                       <div className={`absolute inset-0 bg-gradient-to-r ${step.color} rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity`}></div>
-                      <div className={`relative glass-effect p-4 sm:p-5 rounded-xl sm:rounded-2xl group-hover:scale-110 transition-transform duration-300 bg-gradient-to-r ${step.color}`}>
-                        <step.icon className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                      <div className={`relative bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl group-hover:scale-110 transition-transform duration-300`}>
+                        <step.icon className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600" />
                       </div>
                     </div>
                   </div>
                   
                   {/* Content */}
-                  <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3 group-hover:gradient-text transition-all">
+                  <h3 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-3 group-hover:gradient-text transition-all">
                     {step.title}
                   </h3>
                   
-                  <p className="text-sm sm:text-base text-gray-400 leading-relaxed">
+                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
                     {step.description}
                   </p>
                 </div>
@@ -101,14 +101,11 @@ const HowItWorks = () => {
 
         {/* CTA */}
         <div className="text-center mt-12 sm:mt-16 lg:mt-20">
-          <button className="group relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity"></div>
-            <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:shadow-2xl hover:shadow-primary-500/50 transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3">
-              <span>Start Your Free Trial</span>
-              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
-            </div>
+          <button className="bg-[#4F46E5] text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-purple-700 transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3">
+            <span>Start Your Free Trial</span>
+            <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
           </button>
-          <p className="text-gray-400 text-xs sm:text-sm mt-3 sm:mt-4">No credit card required • 14-day free trial</p>
+          <p className="text-gray-600 text-xs sm:text-sm mt-3 sm:mt-4">No credit card required • 14-day free trial</p>
         </div>
       </div>
     </section>

@@ -72,12 +72,12 @@ const AllReports = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-900">
+      <div className="flex h-screen bg-[#F8FAFC]">
         <Sidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading reports...</p>
+            <p className="text-gray-600">Loading reports...</p>
           </div>
         </div>
       </div>
@@ -85,25 +85,25 @@ const AllReports = () => {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-900">
+    <div className="flex min-h-screen bg-[#F8FAFC]">
       <Sidebar />
       
       <div className="flex-1 lg:ml-64 overflow-auto">
         <div className="max-w-7xl mx-auto p-4 sm:p-6 mt-16 lg:mt-0">
           {/* Header */}
           <div className="mb-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">All Reports</h1>
-            <p className="text-sm sm:text-base text-gray-400">View and manage your visibility reports</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">All Reports</h1>
+            <p className="text-sm sm:text-base text-gray-600">View and manage your visibility reports</p>
           </div>
 
           {reports.length === 0 ? (
-            <div className="bg-gray-800 rounded-lg p-8 sm:p-12 text-center border border-gray-700">
+            <div className="bg-white rounded-lg p-8 sm:p-12 text-center border border-gray-200">
               <TrendingUp className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-white mb-2">No Reports Yet</h2>
-              <p className="text-gray-400 mb-6">Create your first visibility report to get started</p>
+              <h2 className="text-xl font-bold text-gray-800 mb-2">No Reports Yet</h2>
+              <p className="text-gray-600 mb-6">Create your first visibility report to get started</p>
               <button
                 onClick={() => navigate('/reports/new')}
-                className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                className="px-6 py-3 bg-[#4F46E5] text-white rounded-lg hover:bg-action-600 transition-colors"
               >
                 Create New Report
               </button>
@@ -115,14 +115,14 @@ const AllReports = () => {
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <Clock className="w-5 h-5 text-yellow-500" />
-                    <h2 className="text-xl font-bold text-white">In Progress</h2>
-                    <span className="text-sm text-gray-400">({inProgressReports.length})</span>
+                    <h2 className="text-xl font-bold text-gray-800">In Progress</h2>
+                    <span className="text-sm text-gray-600">({inProgressReports.length})</span>
                   </div>
                   <div className="grid grid-cols-1 gap-4">
                     {inProgressReports.map((report) => (
                       <div
                         key={report._id}
-                        className="bg-gray-800 rounded-lg p-4 sm:p-6 border-2 border-yellow-500/30 hover:border-yellow-500/50 transition-colors"
+                        className="bg-white rounded-lg p-4 sm:p-6 border-2 border-yellow-500/30 hover:border-yellow-500/50 transition-colors"
                       >
                         <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
                           {/* Left: Brand Info */}
@@ -139,14 +139,14 @@ const AllReports = () => {
                             )}
                             <div className="flex-1 min-w-0">
                               <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-1">
-                                <h3 className="text-lg sm:text-xl font-bold text-white break-words">
+                                <h3 className="text-lg sm:text-xl font-bold text-gray-800 break-words">
                                   {report.brandName}
                                 </h3>
                                 <span className="px-2 py-1 bg-yellow-500/20 text-yellow-400 text-xs rounded-full">
                                   Step {report.progress?.currentStep || 1} of 3
                                 </span>
                               </div>
-                              <p className="text-gray-400 text-xs sm:text-sm mb-3 break-all">{report.brandUrl}</p>
+                              <p className="text-gray-600 text-xs sm:text-sm mb-3 break-all">{report.brandUrl}</p>
                               
                               {/* Meta */}
                               <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-500">
@@ -162,7 +162,7 @@ const AllReports = () => {
                           <div className="flex items-center gap-2 w-full lg:w-auto lg:ml-4">
                             <button
                               onClick={() => navigate(`/reports/new?continue=${report._id}`)}
-                              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-colors text-sm flex-1 lg:flex-initial"
+                              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-yellow-500 text-gray-800 rounded-lg hover:bg-yellow-600 transition-colors text-sm flex-1 lg:flex-initial"
                               title="Continue Report"
                             >
                               <PlayCircle className="w-4 h-4" />
@@ -181,14 +181,14 @@ const AllReports = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-4">
                     <TrendingUp className="w-5 h-5 text-green-500" />
-                    <h2 className="text-xl font-bold text-white">Completed Reports</h2>
-                    <span className="text-sm text-gray-400">({completedReports.length})</span>
+                    <h2 className="text-xl font-bold text-gray-800">Completed Reports</h2>
+                    <span className="text-sm text-gray-600">({completedReports.length})</span>
                   </div>
                   <div className="grid grid-cols-1 gap-4">
                     {completedReports.map((report) => (
                   <div
                     key={report._id}
-                    className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700 hover:border-gray-600 transition-colors"
+                    className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 hover:border-gray-300 transition-colors"
                   >
                     <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
                       {/* Left: Brand Info */}
@@ -204,16 +204,16 @@ const AllReports = () => {
                           />
                         )}
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-lg sm:text-xl font-bold text-white mb-1 break-words">
+                          <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-1 break-words">
                             {report.brandName}
                           </h3>
-                          <p className="text-gray-400 text-xs sm:text-sm mb-3 break-all">{report.brandUrl}</p>
+                          <p className="text-gray-600 text-xs sm:text-sm mb-3 break-all">{report.brandUrl}</p>
                           
                           {/* Stats */}
                           <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mb-3">
                             <div className="flex items-center gap-2">
                               <span className="text-gray-500 text-xs sm:text-sm">Prompts:</span>
-                              <span className="text-white font-semibold">{report.stats?.totalPrompts || 0}</span>
+                              <span className="text-gray-800 font-semibold">{report.stats?.totalPrompts || 0}</span>
                             </div>
                             <div className="flex items-center gap-2">
                               <span className="text-gray-500 text-sm">Website Found:</span>
@@ -249,7 +249,7 @@ const AllReports = () => {
                       <div className="flex items-center gap-2 w-full lg:w-auto lg:ml-4">
                         <button
                           onClick={() => navigate(`/reports/${report._id}`)}
-                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm flex-1 lg:flex-initial"
+                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-[#4F46E5] text-white rounded-lg hover:bg-action-600 transition-colors text-sm flex-1 lg:flex-initial"
                           title="View Report"
                         >
                           <Eye className="w-4 h-4" />
@@ -257,7 +257,7 @@ const AllReports = () => {
                         </button>
                         <button
                           onClick={() => handleShareReport(report._id)}
-                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 hover:text-white transition-colors"
+                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
                           title="Share Report"
                         >
                           <Share2 className="w-4 h-4" />
@@ -276,17 +276,17 @@ const AllReports = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Previous
                   </button>
-                  <span className="px-4 py-2 bg-gray-800 text-white rounded-lg">
+                  <span className="px-4 py-2 bg-white text-gray-800 rounded-lg">
                     Page {currentPage} of {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="px-4 py-2 bg-white text-gray-800 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
                   </button>

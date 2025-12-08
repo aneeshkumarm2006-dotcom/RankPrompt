@@ -106,27 +106,27 @@ const BrandReports = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">All Reports</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">All Reports</h1>
           {brandData && (
-            <p className="text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
           )}
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800 rounded-lg p-4 sm:p-6 mb-6 border border-gray-700">
+        <div className="bg-white rounded-lg p-4 sm:p-6 mb-6 border border-gray-200">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">
                 Report Type
               </label>
               <select
                 value={selectedFilter}
                 onChange={(e) => setSelectedFilter(e.target.value)}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                className="w-full bg-white text-gray-800 rounded-lg px-3 sm:px-4 py-2 border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm sm:text-base"
               >
                 {allCategories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -134,13 +134,13 @@ const BrandReports = () => {
               </select>
             </div>
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">
                 Date Range
               </label>
               <select
                 value={dateFilter}
                 onChange={(e) => setDateFilter(e.target.value)}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                className="w-full bg-white text-gray-800 rounded-lg px-3 sm:px-4 py-2 border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm sm:text-base"
               >
                 <option>Last 7 days</option>
                 <option>Last 30 days</option>
@@ -152,42 +152,42 @@ const BrandReports = () => {
         </div>
 
         {/* Reports - Desktop Table / Mobile Cards */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700">
+        <div className="bg-white rounded-lg border border-gray-200">
           {/* Desktop Table View */}
           <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-750">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Website
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Location
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Search Type
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Language
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Categories
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Prompts
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-gray-200">
                 {filteredReports.length > 0 ? (
                   filteredReports.map((report) => {
                     const reportType = getReportType(report.createdAt);
@@ -197,8 +197,8 @@ const BrandReports = () => {
                     const promptsCount = report.reportData ? report.reportData.length : 0;
 
                     return (
-                      <tr key={report._id} className="hover:bg-gray-750 transition-colors">
-                        <td className="px-4 py-3 text-sm text-gray-400 whitespace-nowrap">
+                      <tr key={report._id} className="hover:bg-gray-100 transition-colors">
+                        <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
                           {new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -214,7 +214,7 @@ const BrandReports = () => {
                             {report.status}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-300 max-w-xs truncate">
+                        <td className="px-4 py-3 text-sm text-gray-800 max-w-xs truncate">
                           <a 
                             href={report.brandUrl} 
                             target="_blank" 
@@ -228,7 +228,7 @@ const BrandReports = () => {
                           {report.location || 'Global'}
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-300 whitespace-nowrap">
-                          <span className="px-2 py-1 bg-gray-700 rounded text-xs capitalize">
+                          <span className="px-2 py-1 bg-gray-200 rounded text-xs capitalize">
                             {report.searchScope || 'global'}
                           </span>
                         </td>
@@ -244,7 +244,7 @@ const BrandReports = () => {
                         <td className="px-4 py-3 text-sm whitespace-nowrap">
                           <button
                             onClick={() => navigate(`/reports/${report._id}`)}
-                            className="px-3 py-1.5 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors flex items-center gap-1"
+                            className="px-3 py-1.5 bg-[#4F46E5] text-white rounded hover:bg-purple-700 transition-colors flex items-center gap-1"
                           >
                             <Eye className="w-4 h-4" />
                             View Report
@@ -255,7 +255,7 @@ const BrandReports = () => {
                   })
                 ) : (
                   <tr>
-                    <td colSpan="9" className="px-4 py-8 text-center text-gray-400">
+                    <td colSpan="9" className="px-4 py-8 text-center text-gray-500">
                       No reports found
                     </td>
                   </tr>
@@ -265,7 +265,7 @@ const BrandReports = () => {
           </div>
 
           {/* Mobile Card View */}
-          <div className="md:hidden divide-y divide-gray-700">
+          <div className="md:hidden divide-y divide-gray-200">
             {filteredReports.length > 0 ? (
               filteredReports.map((report) => {
                 const reportType = getReportType(report.createdAt);
@@ -275,10 +275,10 @@ const BrandReports = () => {
                 const promptsCount = report.reportData ? report.reportData.length : 0;
 
                 return (
-                  <div key={report._id} className="p-4 hover:bg-gray-750 transition-colors">
+                  <div key={report._id} className="p-4 hover:bg-gray-100 transition-colors">
                     {/* Date & Status */}
                     <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs text-gray-400">
+                      <span className="text-xs text-gray-500">
                         {new Date(report.reportDate || report.createdAt).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
@@ -307,26 +307,26 @@ const BrandReports = () => {
                     {/* Details Grid */}
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <div>
-                        <p className="text-xs text-gray-400">Location</p>
-                        <p className="text-sm text-white">{report.location || 'Global'}</p>
+                        <p className="text-xs text-gray-500">Location</p>
+                        <p className="text-sm text-gray-800">{report.location || 'Global'}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400">Language</p>
-                        <p className="text-sm text-white">{report.language || 'English'}</p>
+                        <p className="text-xs text-gray-500">Language</p>
+                        <p className="text-sm text-gray-800">{report.language || 'English'}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400">Categories</p>
-                        <p className="text-sm text-white">{categoriesCount}</p>
+                        <p className="text-xs text-gray-500">Categories</p>
+                        <p className="text-sm text-gray-800">{categoriesCount}</p>
                       </div>
                       <div>
-                        <p className="text-xs text-gray-400">Prompts</p>
-                        <p className="text-sm text-white">{promptsCount}</p>
+                        <p className="text-xs text-gray-500">Prompts</p>
+                        <p className="text-sm text-gray-800">{promptsCount}</p>
                       </div>
                     </div>
                     
                     {/* Search Type Badge */}
                     <div className="mb-3">
-                      <span className="px-2 py-1 bg-gray-700 rounded text-xs capitalize text-gray-300">
+                      <span className="px-2 py-1 bg-gray-200 rounded text-xs capitalize text-gray-700">
                         {report.searchScope || 'global'} search
                       </span>
                     </div>
@@ -334,7 +334,7 @@ const BrandReports = () => {
                     {/* View Button */}
                     <button
                       onClick={() => navigate(`/reports/${report._id}`)}
-                      className="w-full px-3 py-2 bg-primary-500 text-white rounded hover:bg-primary-600 transition-colors flex items-center justify-center gap-2 text-sm"
+                      className="w-full px-3 py-2 bg-[#4F46E5] text-white rounded hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 text-sm"
                     >
                       <Eye className="w-4 h-4" />
                       View Report
@@ -343,7 +343,7 @@ const BrandReports = () => {
                 );
               })
             ) : (
-              <div className="p-8 text-center text-gray-400">
+              <div className="p-8 text-center text-gray-500">
                 No reports found
               </div>
             )}
@@ -353,37 +353,37 @@ const BrandReports = () => {
         {/* Stats Summary */}
         {filteredReports.length > 0 && (
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
                 <Calendar className="w-4 h-4" />
                 Total Reports
               </div>
-              <div className="text-2xl font-bold text-white">{filteredReports.length}</div>
+              <div className="text-2xl font-bold text-gray-800">{filteredReports.length}</div>
             </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
                 <Globe className="w-4 h-4" />
                 Static Reports
               </div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-gray-800">
                 {filteredReports.filter(r => getReportType(r.createdAt) === 'Static').length}
               </div>
             </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
                 <Calendar className="w-4 h-4" />
                 Scheduled Reports
               </div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-gray-800">
                 {filteredReports.filter(r => getReportType(r.createdAt) === 'Scheduled').length}
               </div>
             </div>
-            <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
-              <div className="flex items-center gap-2 text-gray-400 text-sm mb-1">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-gray-500 text-sm mb-1">
                 <MapPin className="w-4 h-4" />
                 Total Prompts
               </div>
-              <div className="text-2xl font-bold text-white">
+              <div className="text-2xl font-bold text-gray-800">
                 {filteredReports.reduce((sum, r) => sum + (r.reportData ? r.reportData.length : 0), 0)}
               </div>
             </div>

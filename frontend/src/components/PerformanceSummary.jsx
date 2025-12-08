@@ -283,10 +283,10 @@ const PerformanceSummary = ({ brandData, reports }) => {
     return (
       <div className="p-6 flex items-center justify-center h-full">
         <div className="text-center">
-          <TrendingUp className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-white mb-2">No Reports Yet</h2>
-          <p className="text-gray-400 mb-6">Create your first report to see visibility analytics</p>
-          <button onClick={() => window.location.href = '/reports/new'} className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600">
+          <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-800 mb-2">No Reports Yet</h2>
+          <p className="text-gray-600 mb-6">Create your first report to see visibility analytics</p>
+          <button onClick={() => window.location.href = '/reports/new'} className="px-6 py-3 bg-[#4F46E5] text-white rounded-lg hover:bg-purple-700">
             Create First Report
           </button>
         </div>
@@ -300,18 +300,18 @@ const PerformanceSummary = ({ brandData, reports }) => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Performance Summary</h1>
-            <p className="text-gray-400 text-sm sm:text-base">Track your AI visibility across platforms</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Performance Summary</h1>
+            <p className="text-gray-600 text-sm sm:text-base">Track your AI visibility across platforms</p>
           </div>
         {hasScheduledReport && (
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-gray-400">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
               <Calendar className="w-4 h-4" />
-              <span>Next report in: <strong className="text-white">{calculateTimeRemaining()}</strong></span>
+              <span>Next report in: <strong className="text-gray-800">{calculateTimeRemaining()}</strong></span>
             </div>
             <button
               onClick={() => navigate(`/brands/${brandData._id}/scheduled`)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm"
             >
               View Schedules
             </button>
@@ -320,17 +320,17 @@ const PerformanceSummary = ({ brandData, reports }) => {
       </div>
 
       {/* Filters */}
-      <div className="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700">
+      <div className="bg-white rounded-lg p-4 mb-6 border border-gray-200">
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4">
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white text-gray-800 rounded-lg border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm">
             <option>All Categories</option>
             {data.categoryData.map(cat => <option key={cat.name}>{cat.name}</option>)}
           </select>
-          <select value={selectedPlatform} onChange={(e) => setSelectedPlatform(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
+          <select value={selectedPlatform} onChange={(e) => setSelectedPlatform(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white text-gray-800 rounded-lg border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm">
             <option>All Platforms</option>
             {data.platformData.map(plat => <option key={plat.name}>{plat.name}</option>)}
           </select>
-          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none text-sm">
+          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white text-gray-800 rounded-lg border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm">
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
           </select>
@@ -340,13 +340,13 @@ const PerformanceSummary = ({ brandData, reports }) => {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-4 sm:mb-6">
         {/* Key Metrics */}
-        <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+        <div className="bg-white rounded-lg p-4 border border-gray-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-            <h3 className="text-lg sm:text-xl font-bold text-white">Visibility Trend</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800">Visibility Trend</h3>
             <div className="relative flex items-center gap-2">
               <button
                 onClick={() => setShowDatePicker(!showDatePicker)}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                className="flex items-center gap-2 px-3 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm"
               >
                 <CalendarIcon className="w-4 h-4" />
                 {trendDateRange.startDate || trendDateRange.endDate ? 'Custom Range' : 'Select Range'}
@@ -354,35 +354,35 @@ const PerformanceSummary = ({ brandData, reports }) => {
               {(trendDateRange.startDate || trendDateRange.endDate) && (
                 <button
                   onClick={handleClearDateRange}
-                  className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                  className="px-3 py-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-gray-300 transition-colors text-sm"
                 >
                   Clear
                 </button>
               )}
               {showDatePicker && (
-                <div className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-1/2 sm:top-full right-auto sm:right-0 -translate-y-1/2 sm:translate-y-0 sm:mt-2 bg-gray-800 sm:bg-gray-750 border border-gray-600 rounded-lg p-4 shadow-2xl z-50 w-auto sm:min-w-[280px] max-w-sm mx-auto sm:mx-0">
+                <div className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-1/2 sm:top-full right-auto sm:right-0 -translate-y-1/2 sm:translate-y-0 sm:mt-2 bg-white border border-gray-200 rounded-lg p-4 shadow-2xl z-50 w-auto sm:min-w-[280px] max-w-sm mx-auto sm:mx-0">
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs text-gray-400 mb-1">Start Date</label>
+                      <label className="block text-xs text-gray-500 mb-1">Start Date</label>
                       <input
                         type="date"
                         value={trendDateRange.startDate}
                         onChange={(e) => setTrendDateRange(prev => ({ ...prev, startDate: e.target.value }))}
-                        className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-500 focus:outline-none text-sm"
+                        className="w-full px-3 py-2 bg-white text-gray-800 rounded border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-400 mb-1">End Date</label>
+                      <label className="block text-xs text-gray-500 mb-1">End Date</label>
                       <input
                         type="date"
                         value={trendDateRange.endDate}
                         onChange={(e) => setTrendDateRange(prev => ({ ...prev, endDate: e.target.value }))}
-                        className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:border-primary-500 focus:outline-none text-sm"
+                        className="w-full px-3 py-2 bg-white text-gray-800 rounded border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm"
                       />
                     </div>
                     <button
                       onClick={handleApplyDateRange}
-                      className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
+                      className="w-full px-4 py-2 bg-[#4F46E5] text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
                     >
                       Apply
                     </button>
@@ -393,37 +393,37 @@ const PerformanceSummary = ({ brandData, reports }) => {
           </div>
           {trendLoading ? (
             <div className="h-64 flex items-center justify-center">
-              <div className="text-gray-400 text-sm">Loading trend data...</div>
+              <div className="text-gray-500 text-sm">Loading trend data...</div>
             </div>
           ) : visibilityTrendData.length > 1 ? (
             <>
               <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-4">
                 <div>
-                  <div className="text-xs text-gray-400 mb-1">Avg ChatGPT</div>
-                  <span className="text-xl sm:text-3xl font-bold text-green-400">{platformAverages.chatgpt}%</span>
+                  <div className="text-xs text-gray-500 mb-1">Avg ChatGPT</div>
+                  <span className="text-xl sm:text-3xl font-bold text-green-500">{platformAverages.chatgpt}%</span>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 mb-1">Avg Perplexity</div>
-                  <span className="text-xl sm:text-3xl font-bold text-purple-400">{platformAverages.perplexity}%</span>
+                  <div className="text-xs text-gray-500 mb-1">Avg Perplexity</div>
+                  <span className="text-xl sm:text-3xl font-bold text-purple-500">{platformAverages.perplexity}%</span>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 mb-1">Avg Google AI</div>
-                  <span className="text-xl sm:text-3xl font-bold text-cyan-400">{platformAverages.googleAiOverviews}%</span>
+                  <div className="text-xs text-gray-500 mb-1">Avg Google AI</div>
+                  <span className="text-xl sm:text-3xl font-bold text-cyan-500">{platformAverages.googleAiOverviews}%</span>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-400 mb-1">Reports Analyzed</div>
-                  <span className="text-xl sm:text-3xl font-bold text-white">{visibilityTrendData.length}</span>
+                  <div className="text-xs text-gray-500 mb-1">Reports Analyzed</div>
+                  <span className="text-xl sm:text-3xl font-bold text-gray-800">{visibilityTrendData.length}</span>
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={200} className="text-xs sm:text-sm">
                 <LineChart data={visibilityTrendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis dataKey="date" stroke="#9ca3af" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={50} />
-                  <YAxis stroke="#9ca3af" style={{ fontSize: '10px' }} domain={[0, 100]} label={{ value: 'Visibility Score (%)', angle: -90, position: 'insideLeft', style: { fontSize: '10px', fill: '#9ca3af' } }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={50} />
+                  <YAxis stroke="#6b7280" style={{ fontSize: '10px' }} domain={[0, 100]} label={{ value: 'Visibility Score (%)', angle: -90, position: 'insideLeft', style: { fontSize: '10px', fill: '#6b7280' } }} />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#1f2937', 
-                      border: '1px solid #374151', 
+                      backgroundColor: '#ffffff', 
+                      border: '1px solid #e5e7eb', 
                       borderRadius: '8px',
                       fontSize: '12px'
                     }} 
@@ -457,9 +457,9 @@ const PerformanceSummary = ({ brandData, reports }) => {
               </ResponsiveContainer>
             </>
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-400">
+            <div className="h-64 flex items-center justify-center text-gray-500">
               <div className="text-center">
-                <TrendingUp className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <TrendingUp className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                 <p className="text-sm sm:text-base">Not enough data to show trend</p>
                 <p className="text-xs mt-1 text-gray-500">
                   {reports.length < 2 
@@ -472,61 +472,61 @@ const PerformanceSummary = ({ brandData, reports }) => {
         </div>
 
         {/* Category Visibility Chart */}
-        <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
-          <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Category Visibility</h3>
+        <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Category Visibility</h3>
           {data.categoryData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200} className="text-xs sm:text-sm">
               <BarChart data={data.categoryData} margin={{ top: 5, right: 10, left: 0, bottom: 50 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis 
                   dataKey="name" 
-                  stroke="#9CA3AF" 
+                  stroke="#6b7280" 
                   angle={-45}
                   textAnchor="end"
                   height={50}
                   interval={0}
                   style={{ fontSize: '10px' }}
                 />
-                <YAxis stroke="#9CA3AF" tick={{ fontSize: 10 }} />
-                <Tooltip contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }} />
+                <YAxis stroke="#6b7280" tick={{ fontSize: 10 }} />
+                <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
                 <Legend wrapperStyle={{ fontSize: '11px' }} iconSize={10} />
                 <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-400">No category data</div>
+            <div className="h-64 flex items-center justify-center text-gray-500">No category data</div>
           )}
-          <div className="mt-2 text-sm text-gray-400">
-            <p>Top: <span className="text-white font-bold">{data.categoryData[0]?.name || 'N/A'} ({data.categoryData[0]?.visibility || 0}%)</span></p>
+          <div className="mt-2 text-sm text-gray-600">
+            <p>Top: <span className="text-gray-800 font-bold">{data.categoryData[0]?.name || 'N/A'} ({data.categoryData[0]?.visibility || 0}%)</span></p>
           </div>
         </div>
       </div>
 
       {/* Platform Scores */}
-      <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700 mb-4 sm:mb-6">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-4">Visibility Score by Platform</h3>
+      <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Visibility Score by Platform</h3>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={data.platformData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9ca3af" style={{ fontSize: '10px' }} />
-            <YAxis stroke="#9ca3af" style={{ fontSize: '10px' }} />
-            <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: '1px solid #374151', borderRadius: '8px' }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+            <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '10px' }} />
+            <YAxis stroke="#6b7280" style={{ fontSize: '10px' }} />
+            <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
             <Bar dataKey="score" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Tabs */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700">
-        <div className="border-b border-gray-700 px-4 sm:px-6 py-4">
+      <div className="bg-white rounded-lg border border-gray-200">
+        <div className="border-b border-gray-200 px-4 sm:px-6 py-4">
           <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto">
-            <button onClick={() => setActiveTab('prompt-results')} className={`${activeTab === 'prompt-results' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+            <button onClick={() => setActiveTab('prompt-results')} className={`${activeTab === 'prompt-results' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Prompt Results
             </button>
-            <button onClick={() => setActiveTab('sources')} className={`${activeTab === 'sources' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+            <button onClick={() => setActiveTab('sources')} className={`${activeTab === 'sources' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Sources Ranking
             </button>
-            <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-primary-400 border-b-2 border-primary-400' : 'text-gray-400 hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+            <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Results Summary
             </button>
           </div>
@@ -538,37 +538,37 @@ const PerformanceSummary = ({ brandData, reports }) => {
             <div className="space-y-6">
               {/* Ranked */}
               <div>
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <span className="text-green-400">✓</span> Ranked Prompts ({data.rankedPrompts.length})
+                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <span className="text-green-500">✓</span> Ranked Prompts ({data.rankedPrompts.length})
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[1000px]">
-                    <thead className="bg-gray-750">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">AI</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Prompt</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Rank</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Sources</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">AI</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prompt</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sources</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-700">
+                    <tbody className="divide-y divide-gray-200">
                       {data.rankedPrompts.slice(0, 10).map((p, i) => (
-                        <tr key={i} className="hover:bg-gray-750">
-                          <td className="px-4 py-3 text-sm text-gray-400">{p.date}</td>
+                        <tr key={i} className="hover:bg-gray-100">
+                          <td className="px-4 py-3 text-sm text-gray-500">{p.date}</td>
                           <td className="px-4 py-3">
                             <div className="flex gap-1">
                               {p.aiModels.map((model, idx) => (
-                                <span key={idx} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs capitalize">
+                                <span key={idx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
                                   {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overviews' ? 'AIO' : model}
                                 </span>
                               ))}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-300 max-w-md truncate">{p.prompt}</td>
-                          <td className="px-4 py-3"><span className="px-2 py-1 bg-green-500/20 text-green-400 rounded text-xs">{p.index !== null ? `#${p.index}` : '-'}</span></td>
-                          <td className="px-4 py-3 text-sm text-gray-300">{p.sources}</td>
+                          <td className="px-4 py-3 text-sm text-gray-800 max-w-md truncate">{p.prompt}</td>
+                          <td className="px-4 py-3"><span className="px-2 py-1 bg-green-100 text-green-600 rounded text-xs">{p.index !== null ? `#${p.index}` : '-'}</span></td>
+                          <td className="px-4 py-3 text-sm text-gray-800">{p.sources}</td>
                           <td className="px-4 py-3">
                             <button 
                               onClick={() => {
@@ -596,37 +596,37 @@ const PerformanceSummary = ({ brandData, reports }) => {
 
               {/* Missed */}
               <div>
-                <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                  <span className="text-red-400">✗</span> Missed Prompts ({data.missedPrompts.length})
+                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <span className="text-red-500">✗</span> Missed Prompts ({data.missedPrompts.length})
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[1000px]">
-                    <thead className="bg-gray-750">
+                    <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">AI</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Prompt</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Rank</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Sources</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">AI</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prompt</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sources</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-700">
+                    <tbody className="divide-y divide-gray-200">
                       {data.missedPrompts.slice(0, 10).map((p, i) => (
-                        <tr key={i} className="hover:bg-gray-750">
-                          <td className="px-4 py-3 text-sm text-gray-400">{p.date}</td>
+                        <tr key={i} className="hover:bg-gray-100">
+                          <td className="px-4 py-3 text-sm text-gray-500">{p.date}</td>
                           <td className="px-4 py-3">
                             <div className="flex gap-1">
                               {p.aiModels.map((model, idx) => (
-                                <span key={idx} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs capitalize">
+                                <span key={idx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
                                   {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overviews' ? 'AIO' : model}
                                 </span>
                               ))}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-300 max-w-md truncate">{p.prompt}</td>
-                          <td className="px-4 py-3"><span className="px-2 py-1 bg-red-500/20 text-red-400 rounded text-xs">{p.index !== null ? `#${p.index}` : 'MISS'}</span></td>
-                          <td className="px-4 py-3 text-sm text-gray-300">0</td>
+                          <td className="px-4 py-3 text-sm text-gray-800 max-w-md truncate">{p.prompt}</td>
+                          <td className="px-4 py-3"><span className="px-2 py-1 bg-red-100 text-red-600 rounded text-xs">{p.index !== null ? `#${p.index}` : 'MISS'}</span></td>
+                          <td className="px-4 py-3 text-sm text-gray-800">0</td>
                           <td className="px-4 py-3">
                             <button 
                               onClick={() => {
@@ -658,39 +658,39 @@ const PerformanceSummary = ({ brandData, reports }) => {
           {activeTab === 'sources' && (
             <div>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-white">Top Sources</h3>
+                <h3 className="text-lg font-bold text-gray-800">Top Sources</h3>
                 <button 
                   onClick={() => navigate(`/brands/${brandData._id}/citations`)}
-                  className="text-primary-400 hover:text-primary-300 text-sm font-medium"
+                  className="text-[#4F46E5] hover:text-purple-700 text-sm font-medium"
                 >
                   View All Citations →
                 </button>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-750">
+                  <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Rank</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Source URL</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Citations</th>
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase">Action</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source URL</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Citations</th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-700">
+                  <tbody className="divide-y divide-gray-200">
                     {data.topSources.map((source, index) => (
-                      <tr key={index} className="hover:bg-gray-750">
-                        <td className="px-4 py-3 text-sm font-medium text-gray-300">#{index + 1}</td>
-                        <td className="px-4 py-3 text-sm text-primary-400 hover:text-primary-300 truncate max-w-xs">
+                      <tr key={index} className="hover:bg-gray-100">
+                        <td className="px-4 py-3 text-sm font-medium text-gray-800">#{index + 1}</td>
+                        <td className="px-4 py-3 text-sm text-[#4F46E5] hover:text-purple-700 truncate max-w-xs">
                           <a href={source.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
                             {source.url}
                             <ExternalLink className="w-3 h-3" />
                           </a>
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-300">{source.citations} citations</td>
+                        <td className="px-4 py-3 text-sm text-gray-800">{source.citations} citations</td>
                         <td className="px-4 py-3">
                           <button 
                             onClick={() => setSourcePromptsModal(source)}
-                            className="text-primary-400 hover:text-primary-300 text-sm font-medium"
+                            className="text-[#4F46E5] hover:text-purple-700 text-sm font-medium"
                           >
                             View Prompts
                           </button>
@@ -706,27 +706,27 @@ const PerformanceSummary = ({ brandData, reports }) => {
           {/* Summary Tab */}
           {activeTab === 'summary' && (
             <div>
-              <h3 className="text-lg font-bold text-white mb-6">Brand Overview</h3>
+              <h3 className="text-lg font-bold text-gray-800 mb-6">Brand Overview</h3>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                <div className="bg-gray-750 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2"><span className="text-green-400">✓</span><span className="text-gray-400 text-sm">Found In</span></div>
-                  <span className="text-2xl font-bold text-white">{data.foundInPrompts}</span><span className="text-gray-400 text-sm ml-1">prompts</span>
+                <div className="bg-gray-100 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2"><span className="text-green-500">✓</span><span className="text-gray-600 text-sm">Found In</span></div>
+                  <span className="text-2xl font-bold text-gray-800">{data.foundInPrompts}</span><span className="text-gray-600 text-sm ml-1">prompts</span>
                 </div>
-                <div className="bg-gray-750 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2"><span className="text-red-400">✗</span><span className="text-gray-400 text-sm">Missing From</span></div>
-                  <span className="text-2xl font-bold text-white">{data.missingFromPrompts}</span><span className="text-gray-400 text-sm ml-1">prompts</span>
+                <div className="bg-gray-100 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2"><span className="text-red-500">✗</span><span className="text-gray-600 text-sm">Missing From</span></div>
+                  <span className="text-2xl font-bold text-gray-800">{data.missingFromPrompts}</span><span className="text-gray-600 text-sm ml-1">prompts</span>
                 </div>
-                <div className="bg-gray-750 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2"><span className="text-blue-400">📊</span><span className="text-gray-400 text-sm">Total Reports</span></div>
-                  <span className="text-2xl font-bold text-white">{reports.length}</span><span className="text-gray-400 text-sm ml-1">reports</span>
+                <div className="bg-gray-100 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2"><span className="text-blue-500">📊</span><span className="text-gray-600 text-sm">Total Reports</span></div>
+                  <span className="text-2xl font-bold text-gray-800">{reports.length}</span><span className="text-gray-600 text-sm ml-1">reports</span>
                 </div>
-                <div className="bg-gray-750 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2"><span className="text-purple-400">🔗</span><span className="text-gray-400 text-sm">Total Sources</span></div>
-                  <span className="text-2xl font-bold text-white">{data.totalSources}</span><span className="text-gray-400 text-sm ml-1">sources</span>
+                <div className="bg-gray-100 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2"><span className="text-purple-500">🔗</span><span className="text-gray-600 text-sm">Total Sources</span></div>
+                  <span className="text-2xl font-bold text-gray-800">{data.totalSources}</span><span className="text-gray-600 text-sm ml-1">sources</span>
                 </div>
-                <div className="bg-gray-750 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-2"><span className="text-yellow-400">📁</span><span className="text-gray-400 text-sm">Categories</span></div>
-                  <span className="text-2xl font-bold text-white">{data.categories}</span><span className="text-gray-400 text-sm ml-1">categories</span>
+                <div className="bg-gray-100 rounded-lg p-4">
+                  <div className="flex items-center gap-2 mb-2"><span className="text-yellow-500">📁</span><span className="text-gray-600 text-sm">Categories</span></div>
+                  <span className="text-2xl font-bold text-gray-800">{data.categories}</span><span className="text-gray-600 text-sm ml-1">categories</span>
                 </div>
                 <div className="bg-gray-750 rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-2"><span className="text-orange-400">📅</span><span className="text-gray-400 text-sm">Scheduled Reports</span></div>

@@ -123,13 +123,13 @@ const BrandScheduledReports = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Scheduled Reports</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Scheduled Reports</h1>
           {brandData && (
-            <p className="text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
           )}
           <p className="text-xs sm:text-sm text-gray-500 mt-2">
             To create a new scheduled report, go to any report and click "Schedule Report"
@@ -142,15 +142,15 @@ const BrandScheduledReports = () => {
             {schedules.map((schedule) => (
               <div
                 key={schedule._id}
-                className="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-gray-600 transition-colors"
+                className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-white mb-1">
+                    <h3 className="text-lg font-bold text-gray-800 mb-1">
                       {schedule.brandName || brandData?.brandName || 'Report'}
                     </h3>
-                    <p className="text-xs text-gray-400">{schedule._id.slice(-6)}</p>
+                    <p className="text-xs text-gray-500">{schedule._id.slice(-6)}</p>
                   </div>
                   {getStatusBadge(schedule)}
                 </div>
@@ -158,7 +158,7 @@ const BrandScheduledReports = () => {
                 {/* Details */}
                 <div className="space-y-3 mb-4">
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Website</p>
+                    <p className="text-xs text-gray-500 mb-1">Website</p>
                     <a
                       href={schedule.brandUrl}
                       target="_blank"
@@ -172,31 +172,31 @@ const BrandScheduledReports = () => {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">Next Run</p>
-                      <p className="text-sm text-white font-medium">
+                      <p className="text-xs text-gray-500 mb-1">Next Run</p>
+                      <p className="text-sm text-gray-800 font-medium">
                         {formatDate(schedule.nextRun)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-400 mb-1">Created</p>
-                      <p className="text-sm text-white font-medium">
+                      <p className="text-xs text-gray-500 mb-1">Created</p>
+                      <p className="text-sm text-gray-800 font-medium">
                         {formatDate(schedule.createdAt)}
                       </p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">Frequency</p>
-                    <span className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs capitalize">
+                    <p className="text-xs text-gray-500 mb-1">Frequency</p>
+                    <span className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
                       {schedule.scheduleFrequency}
                     </span>
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-400 mb-1">AI Models</p>
+                    <p className="text-xs text-gray-500 mb-1">AI Models</p>
                     <div className="flex flex-wrap gap-1">
                       {schedule.aiModels?.map((model, idx) => (
-                        <span key={idx} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs capitalize">
+                        <span key={idx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
                           {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overview' ? 'AIO' : model}
                         </span>
                       ))}
@@ -205,7 +205,7 @@ const BrandScheduledReports = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 pt-4 border-t border-gray-700">
+                <div className="flex gap-2 pt-4 border-t border-gray-200">
                   <button
                     onClick={() => handleToggleSchedule(schedule._id, schedule.isActive)}
                     className={`flex-1 px-3 py-2 rounded transition-colors text-sm font-medium ${
@@ -235,10 +235,10 @@ const BrandScheduledReports = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-12 text-center">
+          <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
             <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-white mb-2">No Scheduled Reports</h3>
-            <p className="text-gray-400 mb-4">
+            <h3 className="text-xl font-bold text-gray-800 mb-2">No Scheduled Reports</h3>
+            <p className="text-gray-600 mb-4">
               You haven't scheduled any reports for this brand yet.
             </p>
             <p className="text-sm text-gray-500">
@@ -251,22 +251,22 @@ const BrandScheduledReports = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold text-white mb-4">Delete Scheduled Report?</h3>
-            <p className="text-gray-400 mb-6">
+        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-gray-800 mb-4">Delete Scheduled Report?</h3>
+            <p className="text-gray-600 mb-6">
               Are you sure you want to delete this scheduled report? This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteModal(null)}
-                className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteSchedule}
-                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Delete
               </button>

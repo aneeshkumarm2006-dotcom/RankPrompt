@@ -182,26 +182,26 @@ const AllPrompts = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8 bg-[#F8FAFC]">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">All Prompts</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">All Prompts</h1>
           {brandData && (
-            <p className="text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
           )}
         </div>
 
         {/* Tabs */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700 mb-6">
-          <div className="border-b border-gray-700 px-4 sm:px-6 py-4">
+        <div className="bg-white rounded-lg border border-gray-200 mb-6">
+          <div className="border-b border-gray-200 px-4 sm:px-6 py-4">
             <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('all')}
                 className={`${
                   activeTab === 'all'
-                    ? 'text-primary-400 border-b-2 border-primary-400'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]'
+                    : 'text-gray-500 hover:text-gray-800'
                 } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 All Prompts ({getAllPrompts().length})
@@ -210,8 +210,8 @@ const AllPrompts = () => {
                 onClick={() => setActiveTab('scheduled')}
                 className={`${
                   activeTab === 'scheduled'
-                    ? 'text-primary-400 border-b-2 border-primary-400'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]'
+                    : 'text-gray-500 hover:text-gray-800'
                 } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 Scheduled Prompt Results ({getScheduledPrompts().length})
@@ -220,8 +220,8 @@ const AllPrompts = () => {
                 onClick={() => setActiveTab('static')}
                 className={`${
                   activeTab === 'static'
-                    ? 'text-primary-400 border-b-2 border-primary-400'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]'
+                    : 'text-gray-500 hover:text-gray-800'
                 } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 Static Prompt Results ({getStaticPrompts().length})
@@ -231,18 +231,18 @@ const AllPrompts = () => {
         </div>
 
         {/* Filters */}
-        <div className="bg-gray-800 rounded-lg p-4 sm:p-6 mb-6 border border-gray-700">
+        <div className="bg-white rounded-lg p-4 sm:p-6 mb-6 border border-gray-200">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Status Filter */}
             <div className="relative">
-              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">
                 <Filter className="w-4 h-4 inline mr-1" />
                 Status
               </label>
               <select
                 value={selectedStatus}
                 onChange={(e) => setSelectedStatus(e.target.value)}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                className="w-full bg-white text-gray-800 rounded-lg px-3 sm:px-4 py-2 border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm sm:text-base"
               >
                 <option>All</option>
                 <option>Ranked</option>
@@ -252,11 +252,11 @@ const AllPrompts = () => {
 
             {/* Category Filter */}
             <div className="relative">
-              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Category</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">Category</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                className="w-full bg-white text-gray-800 rounded-lg px-3 sm:px-4 py-2 border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm sm:text-base"
               >
                 {categories.map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -266,11 +266,11 @@ const AllPrompts = () => {
 
             {/* Platform Filter */}
             <div className="relative">
-              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Platform</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">Platform</label>
               <select
                 value={selectedPlatform}
                 onChange={(e) => setSelectedPlatform(e.target.value)}
-                className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                className="w-full bg-white text-gray-800 rounded-lg px-3 sm:px-4 py-2 border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm sm:text-base"
               >
                 {platforms.map(plat => (
                   <option key={plat} value={plat}>{plat}</option>
@@ -280,7 +280,7 @@ const AllPrompts = () => {
 
             {/* Search */}
             <div className="relative">
-              <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Search</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">Search</label>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
@@ -288,50 +288,50 @@ const AllPrompts = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search prompts..."
-                  className="w-full bg-gray-700 text-white rounded-lg pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                  className="w-full bg-white text-gray-800 rounded-lg pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm sm:text-base"
                 />
               </div>
             </div>
           </div>
-          <div className="mt-4 text-sm text-gray-400">
+          <div className="mt-4 text-sm text-gray-600">
             Showing {filteredPrompts.length} of {prompts.length} prompts
           </div>
         </div>
 
         {/* Results - Desktop Table / Mobile Cards */}
-        <div className="bg-gray-800 rounded-lg border border-gray-700">
+        <div className="bg-white rounded-lg border border-gray-200">
           {/* Desktop Table View */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-750">
+              <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Date
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     AI Models
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Prompt Text
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Rank
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Mentions
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="divide-y divide-gray-200">
                 {filteredPrompts.length > 0 ? (
                   filteredPrompts.map((prompt, idx) => {
                     const foundCount = prompt.responses?.filter(r => r.found).length || 0;
@@ -339,8 +339,8 @@ const AllPrompts = () => {
                     const aiModels = [...new Set(prompt.responses?.map(r => r.src) || [])];
                     
                     return (
-                      <tr key={idx} className="hover:bg-gray-750 transition-colors">
-                        <td className="px-3 py-3 text-sm text-gray-400 whitespace-nowrap">
+                      <tr key={idx} className="hover:bg-gray-100 transition-colors">
+                        <td className="px-3 py-3 text-sm text-gray-500 whitespace-nowrap">
                           {new Date(prompt.reportDate).toLocaleDateString('en-US', { 
                             month: 'short', 
                             day: 'numeric', 
@@ -350,7 +350,7 @@ const AllPrompts = () => {
                         <td className="px-3 py-3">
                           <div className="flex gap-1 flex-wrap">
                             {aiModels.map((model, midx) => (
-                              <span key={midx} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs capitalize">
+                              <span key={midx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
                                 {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overviews' ? 'AIO' : model}
                               </span>
                             ))}
@@ -365,15 +365,15 @@ const AllPrompts = () => {
                             {prompt.reportType}
                           </span>
                         </td>
-                        <td className="px-3 py-3 text-sm text-gray-300 max-w-md truncate">
+                        <td className="px-3 py-3 text-sm text-gray-800 max-w-md truncate">
                           {prompt.prompt}
                         </td>
-                        <td className="px-3 py-3 text-sm text-gray-400">
-                          <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
+                        <td className="px-3 py-3 text-sm text-gray-500">
+                          <span className="px-2 py-1 bg-gray-200 rounded-full text-xs">
                             {prompt.category}
                           </span>
                         </td>
-                        <td className="px-3 py-3 text-sm text-gray-300 whitespace-nowrap">
+                        <td className="px-3 py-3 text-sm text-gray-800 whitespace-nowrap">
                           #{prompt.index}
                         </td>
                         <td className="px-3 py-3 text-sm whitespace-nowrap">
@@ -409,7 +409,7 @@ const AllPrompts = () => {
                   })
                 ) : (
                   <tr>
-                    <td colSpan="8" className="px-3 py-8 text-center text-gray-400">
+                    <td colSpan="8" className="px-3 py-8 text-center text-gray-500">
                       No prompts found
                     </td>
                   </tr>
@@ -421,17 +421,17 @@ const AllPrompts = () => {
           {/* Mobile Card View */}
           <div className="lg:hidden">
             {filteredPrompts.length > 0 ? (
-              <div className="divide-y divide-gray-700">
+              <div className="divide-y divide-gray-200">
                 {filteredPrompts.map((prompt, idx) => {
                   const foundCount = prompt.responses?.filter(r => r.found).length || 0;
                   const totalResponses = prompt.responses?.length || 0;
                   const aiModels = [...new Set(prompt.responses?.map(r => r.src) || [])];
                   
                   return (
-                    <div key={idx} className="p-4 hover:bg-gray-750 transition-colors">
+                    <div key={idx} className="p-4 hover:bg-gray-100 transition-colors">
                       {/* Date & Status */}
                       <div className="flex items-center justify-between mb-3">
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-gray-500">
                           {new Date(prompt.reportDate).toLocaleDateString('en-US', { 
                             month: 'short', day: 'numeric', year: 'numeric' 
                           })}
@@ -446,15 +446,15 @@ const AllPrompts = () => {
                       </div>
                       
                       {/* Prompt Text */}
-                      <p className="text-sm text-white font-medium mb-2 line-clamp-2">{prompt.prompt}</p>
+                      <p className="text-sm text-gray-800 font-medium mb-2 line-clamp-2">{prompt.prompt}</p>
                       
                       {/* Category & AI Models */}
                       <div className="flex flex-wrap gap-2 mb-3">
-                        <span className="px-2 py-1 bg-gray-700 rounded-full text-xs text-gray-300">
+                        <span className="px-2 py-1 bg-gray-200 rounded-full text-xs text-gray-700">
                           {prompt.category}
                         </span>
                         {aiModels.map((model, midx) => (
-                          <span key={midx} className="px-2 py-1 bg-gray-700 text-gray-300 rounded text-xs capitalize">
+                          <span key={midx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
                             {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overviews' ? 'AIO' : model}
                           </span>
                         ))}
@@ -492,7 +492,7 @@ const AllPrompts = () => {
                 })}
               </div>
             ) : (
-              <div className="p-8 text-center text-gray-400">
+              <div className="p-8 text-center text-gray-500">
                 No prompts found
               </div>
             )}
@@ -502,29 +502,29 @@ const AllPrompts = () => {
 
       {/* AI Answer Modal */}
       {aiAnswerContent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[85vh] overflow-y-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">AI Response</h3>
-                <p className="text-xs sm:text-sm text-gray-400 break-words">
-                  <span className="font-medium text-gray-300">Platform:</span>{' '}
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">AI Response</h3>
+                <p className="text-xs sm:text-sm text-gray-600 break-words">
+                  <span className="font-medium text-gray-700">Platform:</span>{' '}
                   <span className="capitalize">{aiAnswerContent.platform}</span>
                 </p>
-                <p className="text-xs sm:text-sm text-gray-400 mt-1 break-words">
-                  <span className="font-medium text-gray-300">Prompt:</span> {aiAnswerContent.prompt}
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 break-words">
+                  <span className="font-medium text-gray-700">Prompt:</span> {aiAnswerContent.prompt}
                 </p>
               </div>
             </div>
-            <div className="bg-gray-900 rounded-lg p-4 mb-4 max-h-[50vh] overflow-y-auto">
-              <p className="text-sm sm:text-base text-gray-200 whitespace-pre-wrap leading-relaxed">
+            <div className="bg-gray-50 rounded-lg p-4 mb-4 max-h-[50vh] overflow-y-auto">
+              <p className="text-sm sm:text-base text-gray-800 whitespace-pre-wrap leading-relaxed">
                 {aiAnswerContent.answer}
               </p>
             </div>
             <div className="flex justify-end">
               <button
                 onClick={() => setAiAnswerContent(null)}
-                className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base"
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm sm:text-base"
               >
                 Close
               </button>
