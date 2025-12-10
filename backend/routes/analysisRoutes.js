@@ -11,6 +11,7 @@ import {
   scheduleFromReport,
   toggleScheduledPrompt,
   deleteScheduledPrompt,
+  updateScheduledPrompt,
   n8nSaveReport,
 } from '../controllers/analysisController.js';
 import { protect } from '../middleware/auth.js';
@@ -26,6 +27,7 @@ router.post('/generate-webhook-token', protect, generateWebhookToken);
 router.post('/schedule-from-report', protect, scheduleFromReport);
 router.put('/scheduled-prompts/:id/toggle', protect, toggleScheduledPrompt);
 router.delete('/scheduled-prompts/:id', protect, deleteScheduledPrompt);
+router.put('/scheduled-prompts/:id', protect, updateScheduledPrompt);
 
 // Public routes for n8n (protected by API key in controller)
 router.get('/prompts-due', getPromptsDue);

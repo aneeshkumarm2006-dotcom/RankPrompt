@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Calendar, Trash2, Play, Pause, Globe } from 'lucide-react';
+import { ArrowLeft, Calendar, Trash2, Play, Pause, Globe, Pencil, Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const BrandScheduledReports = () => {
@@ -10,6 +10,8 @@ const BrandScheduledReports = () => {
   const [schedules, setSchedules] = useState([]);
   const [brandData, setBrandData] = useState(null);
   const [deleteModal, setDeleteModal] = useState(null);
+  const [editModal, setEditModal] = useState(null);
+  const [promptInputs, setPromptInputs] = useState([]);
 
   useEffect(() => {
     fetchData();
@@ -86,6 +88,63 @@ const BrandScheduledReports = () => {
     } catch (error) {
       console.error('Error deleting schedule:', error);
       toast.error('Failed to delete schedule');
+    }
+  };
+
+  const openEditModal = (schedule) => {
+    setEditModal(schedule);
+    setPromptInputs(
+      schedule?.prompts?.length
+        ? schedule.prompts.map(p => p.prompt || '')
+        : ['']
+    );
+  };
+
+  const handlePromptChange = (index, value) => {
+    setPromptInputs(prev => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
+  const handleAddPrompt = () => {
+    setPromptInputs(prev => [...prev, '']);
+  };
+
+  const handleRemovePrompt = (index) => {
+    setPromptInputs(prev => prev.filter((_, idx) => idx !== index));
+  };
+
+  const handleSavePrompts = async () => {
+    if (!editModal) return;
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+    const cleaned = promptInputs.map(p => p.trim()).filter(Boolean);
+    if (!cleaned.length) {
+      toast.error('Please add at least one prompt');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/analysis/scheduled-prompts/${editModal._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ prompts: cleaned }),
+      });
+
+      if (response.ok) {
+        toast.success('Prompts updated');
+        setEditModal(null);
+        fetchData();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        toast.error(err.message || 'Failed to update prompts');
+      }
+    } catch (error) {
+      console.error('Error updating prompts:', error);
+      toast.error('Failed to update prompts');
     }
   };
 
@@ -207,6 +266,12 @@ const BrandScheduledReports = () => {
                 {/* Actions */}
                 <div className="flex gap-2 pt-4 border-t border-gray-200">
                   <button
+                    onClick={() => openEditModal(schedule)}
+                    className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-500 rounded hover:bg-blue-500/30 transition-colors text-sm font-medium"
+                  >
+                    <Pencil className="w-4 h-4 inline mr-1" /> Edit Prompts
+                  </button>
+                  <button
                     onClick={() => handleToggleSchedule(schedule._id, schedule.isActive)}
                     className={`flex-1 px-3 py-2 rounded transition-colors text-sm font-medium ${
                       schedule.isActive
@@ -269,6 +334,74 @@ const BrandScheduledReports = () => {
                 className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Prompts Modal */}
+      {editModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50 p-4">
+          <div className="bg-white border border-gray-200 rounded-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-800">Edit Scheduled Prompts</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Update the prompts that will be used for future runs of this schedule.
+                </p>
+              </div>
+              <button
+                onClick={() => setEditModal(null)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {promptInputs.map((prompt, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-gray-500 mb-1 block">Prompt {idx + 1}</label>
+                    <textarea
+                      value={prompt}
+                      onChange={(e) => handlePromptChange(idx, e.target.value)}
+                      rows={2}
+                      className="w-full bg-gray-100 text-gray-800 rounded-lg px-3 py-2 border border-gray-300 focus:border-primary-500 focus:outline-none"
+                      placeholder="Enter prompt text"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleRemovePrompt(idx)}
+                    className="mt-7 px-2 py-1 text-xs text-red-500 hover:text-red-700"
+                    disabled={promptInputs.length <= 1}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+
+              <button
+                onClick={handleAddPrompt}
+                className="flex items-center gap-2 text-sm text-primary-500 hover:text-primary-400"
+              >
+                <Plus className="w-4 h-4" /> Add prompt
+              </button>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => setEditModal(null)}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSavePrompts}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Save Changes
               </button>
             </div>
           </div>

@@ -7,6 +7,93 @@ import Report from '../models/Report.js';
 import PromptSent from '../models/PromptSent.js';
 
 /**
+ * Update scheduled prompt details (currently supports prompts text)
+ * @route PUT /api/analysis/scheduled-prompts/:id
+ * @access Private
+ */
+export const updateScheduledPrompt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { prompts } = req.body;
+
+    const scheduledPrompt = await ScheduledPrompt.findById(id);
+
+    if (!scheduledPrompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Scheduled report not found',
+      });
+    }
+
+    // Verify ownership
+    if (scheduledPrompt.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to edit this scheduled report',
+      });
+    }
+
+    // Validate prompts
+    if (!Array.isArray(prompts) || prompts.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one prompt is required',
+      });
+    }
+
+    let cleanedPrompts = prompts
+      .map((p, idx) => {
+        const promptText = typeof p === 'string' ? p : p?.prompt;
+        const trimmed = typeof promptText === 'string' ? promptText.trim() : '';
+        if (!trimmed) return null;
+
+        // Preserve any extra fields sent by client while ensuring required fields
+        const base = typeof p === 'object' && p !== null ? { ...p } : {};
+
+        return {
+          ...base,
+          prompt: trimmed,
+          promptIndex: typeof base.promptIndex === 'number' ? base.promptIndex : idx,
+          brand: base.brand || scheduledPrompt.brandName,
+          brandUrl: base.brandUrl || scheduledPrompt.brandUrl,
+        };
+      })
+      .filter(Boolean);
+
+    if (cleanedPrompts.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Prompts cannot be empty',
+      });
+    }
+
+    // Normalize promptIndex sequencing
+    cleanedPrompts = cleanedPrompts.map((p, idx) => ({
+      ...p,
+      promptIndex: idx,
+    }));
+
+    scheduledPrompt.prompts = cleanedPrompts;
+    scheduledPrompt.lastUpdated = new Date();
+
+    await scheduledPrompt.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Scheduled prompts updated successfully',
+      data: scheduledPrompt,
+    });
+  } catch (error) {
+    console.error('Update scheduled prompt error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update scheduled prompts',
+      error: error.message,
+    });
+  }
+};
+
+/**
  * Store prompts for scheduling after step 3 (generate-prompts)
  * This will be called when user clicks "Analyze Brand" button
  * @route POST /api/analysis/store-prompts
