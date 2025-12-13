@@ -2,80 +2,58 @@ import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
 import { CreditCard, Zap, Gift, ChevronDown, ChevronUp, ArrowRight, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { createCheckoutSession, createTopUpSession } from '../services/stripeService';
 
 const BuyCredits = () => {
   const navigate = useNavigate();
   const [isTopUpExpanded, setIsTopUpExpanded] = useState(false);
   
-  const STRIPE_BILLING_URL = 'https://billing.stripe.com/p/session/live_YWNjdF8xUlA2bEVBR1ZScWFRRW1YLF9UTDBCdDVhNjRXaHNxMFVhUzJqTk5VQkVPVExZdXhQ0100SB6NIwCa';
-
   const subscriptionPlans = [
     {
+      key: 'starter',
       name: 'Starter',
       price: 49,
       period: 'per month',
-      description: 'Perfect for individuals starting their SEO journey',
+      description: 'For individuals looking to explore AI visibility and scan key prompts.',
       features: [
-        'Access to ~150 credibility reports',
-        'Everything you need to get started',
-        'Can track your own brand(s)',
-        'Works on trending, branded, etc.',
-        'Analyze rankings on 100+ prompts',
-        'Receive after 14 credits top up'
+        '150 credits/month',
+        'All AI platforms (ChatGPT, Perplexity, AI Overviews)',
+        'White-label exports (not included)',
+        'Team collaboration (not included)',
+        'Priority support (not included)'
       ],
       gradient: 'from-blue-500 to-cyan-500',
       border: 'border-blue-500/30'
     },
     {
-      name: 'Starter Plan (7 Day Free Trial)',
-      price: 0,
-      originalPrice: 49,
-      period: 'initially, then $49/month',
-      description: 'Try our Starter plan risk-free for 7 days',
-      features: [
-        'Access to ~150 credibility reports',
-        'Everything you need to get started',
-        'Can track your own brand(s)',
-        'Works on trending, branded, etc.',
-        'Analyze rankings on 100+ prompts',
-        'Receive after 14 credits top up'
-      ],
-      gradient: 'from-green-500 to-emerald-500',
-      border: 'border-green-500/30',
-      trial: true
-    },
-    {
+      key: 'pro',
       name: 'Pro',
       price: 89,
-      period: 'per month, billed $89/mo on trial',
-      description: 'Ideal for growing teams and power users',
+      period: 'per month',
+      description: 'For companies and teams ready to monitor AI rankings more actively.',
       features: [
-        'Access to ~300 credibility reports',
-        'Great for industries (credits expire end of month)',
-        'Can track multiple brands/clients',
-        'Great share, viewership opportunities, and traffic drivers',
-        'Analyze rankings on 1000+ prompts',
-        'Priority support & access to alpha testing for 14 credits top up anytime for $0.40/credit',
-        'Build up reports for clients, fits your workflow on 150 credits'
+        '500 credits/month',
+        'All AI platforms (ChatGPT, Perplexity, AI Overviews)',
+        'White-label exports included',
+        'Team collaboration (not included)',
+        'Priority support (not included)'
       ],
       gradient: 'from-purple-500 to-pink-500',
       border: 'border-purple-500/30',
       popular: true
     },
     {
+      key: 'agency',
       name: 'Agency',
       price: 149,
-      period: 'per month, billed ~$0.75 credits',
-      description: 'Built for agencies managing multiple clients',
+      period: 'per month',
+      description: 'For agencies and enterprises managing multiple clients, campaigns, or brands.',
       features: [
-        'Access to ~350 credibility reports',
-        'Error-proof analytics on 1000+ prompts',
-        'Bulk AI powers cards and rankings at scale',
-        'Works on trending & other, brandaware with clients',
-        'Analyze 15 brands (subject to review with ongoing) and reports',
-        'Priority support & access to alpha features',
-        'Need more than 500 credits? Top up anytime for $0.40/credit',
-        'Build up reports for clients and integrations with your SEO stack'
+        '1000 credits/month',
+        'All AI platforms (ChatGPT, Perplexity, AI Overviews)',
+        'White-label exports included',
+        'Team collaboration included',
+        'Priority support included'
       ],
       gradient: 'from-pink-500 to-rose-500',
       border: 'border-pink-500/30'
@@ -84,18 +62,21 @@ const BuyCredits = () => {
 
   const topUpOptions = [
     {
+      key: 'topup50',
       credits: 50,
       price: 20,
       pricePerCredit: 0.4,
       description: 'Add 50 extra credits to run more credibility checks. Perfect for small boosts when you run out of your monthly credits.'
     },
     {
+      key: 'topup100',
       credits: 100,
       price: 40,
       pricePerCredit: 0.4,
       description: 'Add 100 credits to your account. Ideal for extending reports or handling busier research weeks.'
     },
     {
+      key: 'topup200',
       credits: 200,
       price: 80,
       pricePerCredit: 0.4,
@@ -103,14 +84,22 @@ const BuyCredits = () => {
     }
   ];
 
-  const handlePlanPurchase = (plan) => {
-    // Redirect to Stripe billing portal
-    window.open(STRIPE_BILLING_URL, '_blank');
+  const handlePlanPurchase = async (plan) => {
+    if (!plan?.key) return;
+    try {
+      await createCheckoutSession(plan.key);
+    } catch (error) {
+      console.error('Error starting checkout:', error);
+    }
   };
 
-  const handleTopUpPurchase = (option) => {
-    // Redirect to Stripe billing portal
-    window.open(STRIPE_BILLING_URL, '_blank');
+  const handleTopUpPurchase = async (option) => {
+    if (!option?.key) return;
+    try {
+      await createTopUpSession(option.key);
+    } catch (error) {
+      console.error('Error starting top-up:', error);
+    }
   };
 
   return (

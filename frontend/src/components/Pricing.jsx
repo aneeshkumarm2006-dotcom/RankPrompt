@@ -1,56 +1,78 @@
+import { useState } from 'react';
 import { Check, Sparkles, Crown, Zap, ArrowRight } from 'lucide-react';
+import toast from 'react-hot-toast';
+import { createCheckoutSession } from '../services/stripeService';
 
 const plans = [
   {
+    key: 'starter',
     name: 'Starter',
-    price: '0',
-    description: 'Perfect for trying out RankPrompt',
+    price: '49',
+    subtitle: 'For individuals looking to explore AI visibility and scan key prompts.',
+    description: '150 credits included (~$0.32 per credit)',
     features: [
-      '5 brand scans per month',
-      '2 AI platforms tracked',
-      'Basic analytics',
-      'Email support',
-      '7-day data history',
+      { label: '150 credits/month', available: true },
+      { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
+      { label: 'White-label exports', available: false },
+      { label: 'Team collaboration', available: false },
+      { label: 'Priority support', available: false },
     ],
-    cta: 'Start Free',
+    cta: 'Get started',
     popular: false,
   },
   {
-    name: 'Professional',
-    price: '49',
-    description: 'For growing businesses',
+    key: 'pro',
+    name: 'Pro',
+    price: '89',
+    subtitle: 'For companies and teams ready to monitor AI rankings more actively.',
+    description: '500 credits included (~$0.18 per credit • Save 40% vs Starter)',
     features: [
-      'Unlimited brand scans',
-      'All AI platforms tracked',
-      'Advanced analytics & reports',
-      'Priority support',
-      'Unlimited data history',
-      'Competitor tracking',
-      'API access',
-      'Custom alerts',
+      { label: '500 credits/month', available: true },
+      { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
+      { label: 'White-label exports', available: true },
+      { label: 'Team collaboration', available: false },
+      { label: 'Priority support', available: false },
     ],
-    cta: 'Get Started',
+    cta: 'Get started',
     popular: true,
   },
   {
-    name: 'Enterprise',
-    price: 'Custom',
-    description: 'For large organizations',
+    key: 'agency',
+    name: 'Agency',
+    price: '149',
+    subtitle: 'For agencies and enterprises managing multiple clients, campaigns, or brands.',
+    description: '1000 credits included (~$0.15 per credit • Save 55% vs Starter)',
     features: [
-      'Everything in Professional',
-      'Multiple team members',
-      'White-label reports',
-      'Dedicated account manager',
-      'Custom integrations',
-      'SLA guarantee',
-      'Training & onboarding',
+      { label: '1000 credits/month', available: true },
+      { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
+      { label: 'White-label exports', available: true },
+      { label: 'Team collaboration', available: true },
+      { label: 'Priority support', available: true },
     ],
-    cta: 'Contact Sales',
+    cta: 'Get started',
     popular: false,
   },
 ];
 
 const Pricing = () => {
+  const [loadingPlan, setLoadingPlan] = useState(null);
+
+  const handleSelectPlan = async (plan) => {
+    if (!plan?.key) return;
+    try {
+      setLoadingPlan(plan.key);
+      const resp = await createCheckoutSession(plan.key);
+      if (!resp?.success) {
+        toast.error(resp?.message || 'Failed to start checkout');
+        setLoadingPlan(null);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || 'Failed to start checkout');
+      setLoadingPlan(null);
+    }
+  };
+
   return (
     <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
       {/* Background Elements */}
@@ -116,9 +138,8 @@ const Pricing = () => {
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">
                   {plan.name}
                 </h3>
-                <p className="text-gray-600 text-sm mb-8">
-                  {plan.description}
-                </p>
+                <p className="text-gray-600 text-sm mb-1">{plan.subtitle}</p>
+                <p className="text-gray-600 text-xs mb-8">{plan.description}</p>
 
                 {/* Price */}
                 <div className="mb-8">
@@ -139,11 +160,11 @@ const Pricing = () => {
                 <ul className="space-y-4 mb-8">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start space-x-3">
-                      <div className="mt-1 p-1 rounded-full bg-purple-100">
-                        <Check className="w-4 h-4 text-purple-600" />
+                      <div className={`mt-1 p-1 rounded-full ${feature.available ? 'bg-green-100' : 'bg-gray-200'}`}>
+                        <Check className={`w-4 h-4 ${feature.available ? 'text-green-500' : 'text-gray-400'}`} />
                       </div>
-                      <span className="text-gray-800 text-sm">
-                        {feature}
+                      <span className={`text-sm ${feature.available ? 'text-gray-800' : 'text-gray-400 line-through'}`}>
+                        {feature.label}
                       </span>
                     </li>
                   ))}
@@ -151,13 +172,15 @@ const Pricing = () => {
 
                 {/* CTA Button */}
                 <button
+                  onClick={() => handleSelectPlan(plan)}
+                  disabled={loadingPlan === plan.key}
                   className={`group w-full py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 ${
                     plan.popular
                       ? 'bg-[#4F46E5] text-white hover:bg-purple-700'
                       : 'bg-white text-gray-800 hover:bg-gray-100 border border-gray-300'
-                  }`}
+                  } ${loadingPlan === plan.key ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
-                  <span>{plan.cta}</span>
+                  <span>{loadingPlan === plan.key ? 'Redirecting…' : plan.cta}</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </button>
               </div>

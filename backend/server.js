@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import stripeRoutes from './routes/stripeRoutes.js';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
@@ -48,13 +49,18 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
+// Cookie parser middleware (needs to run before protected routes like Stripe to read auth cookies)
+app.use(cookieParser());
+
+// Stripe routes (webhook uses raw body inside the router). Keep before global body parsers.
+app.use('/api/stripe', stripeRoutes);
+
 // Body parser middleware with increased limit for large reports
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Cookie parser middleware
-app.use(cookieParser());
-
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/brand', brandRoutes);

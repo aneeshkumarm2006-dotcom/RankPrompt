@@ -49,6 +49,18 @@ const Profile = () => {
   };
 
   // Mock data - replace with actual data from your backend
+  const formatPlan = (plan) => {
+    if (!plan) return 'Free';
+    const normalized = (plan || '').toString();
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  };
+
+  const formatStatus = (status) => {
+    if (!status) return 'Inactive';
+    const normalized = status.toString().replace('_', ' ');
+    return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+  };
+
   const creditData = {
     availableCredits: user?.credits || 0,
     billingCycleStarted: 'October 28, 2025',
@@ -59,8 +71,9 @@ const Profile = () => {
   };
 
   const accountData = {
-    currentPlan: user?.currentPlan || 'Free',
-    subscriptionStatus: user?.subscriptionStatus || 'Inactive'
+    currentPlan: formatPlan(user?.currentPlan || 'Free'),
+    subscriptionStatus: formatStatus(user?.subscriptionStatus || 'Inactive'),
+    allowedModels: user?.allowedModels || ['chatgpt'],
   };
 
   const trialData = {
@@ -128,7 +141,9 @@ const Profile = () => {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-gray-800 font-semibold text-sm sm:text-base truncate">{user?.email}</p>
-                  <p className="text-gray-600 text-xs">Free Plan</p>
+                  <p className="text-gray-600 text-xs">
+                    {accountData.currentPlan} • {accountData.subscriptionStatus}
+                  </p>
                 </div>
               </div>
               <button
@@ -282,6 +297,16 @@ const Profile = () => {
                       <div className="flex justify-between items-center">
                         <span className="text-gray-600 text-xs sm:text-sm">Status</span>
                         <span className="text-gray-600 text-sm">{accountData.subscriptionStatus}</span>
+                      </div>
+                      <div className="space-y-1">
+                        <span className="text-gray-600 text-xs sm:text-sm">Allowed AI Models</span>
+                        <div className="flex flex-wrap gap-1">
+                          {accountData.allowedModels.map((model) => (
+                            <span key={model} className="px-2 py-1 bg-white text-gray-800 border border-gray-200 rounded text-xs capitalize">
+                              {model === 'google_ai_overview' ? 'AI Overviews' : model}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                     <button

@@ -134,6 +134,16 @@ export const storePromptsForScheduling = async (req, res) => {
       });
     }
 
+    // Enforce plan-based model access
+    const allowedModels = req.user?.allowedModels || ['chatgpt'];
+    const isAllowed = aiModels.every((m) => allowedModels.includes(m));
+    if (!isAllowed) {
+      return res.status(403).json({
+        success: false,
+        message: 'Selected AI models are not available on your plan.',
+      });
+    }
+
     // Calculate next run time (24 hours from now)
     const nextRun = new Date();
     nextRun.setHours(nextRun.getHours() + 24);
@@ -192,6 +202,16 @@ export const initiateAnalysis = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Brand name, URL, prompts, and AI models are required',
+      });
+    }
+
+    // Enforce plan-based model access
+    const allowedModels = req.user?.allowedModels || ['chatgpt'];
+    const isAllowed = aiModels.every((m) => allowedModels.includes(m));
+    if (!isAllowed) {
+      return res.status(403).json({
+        success: false,
+        message: 'Selected AI models are not available on your plan.',
       });
     }
 
