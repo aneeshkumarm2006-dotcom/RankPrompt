@@ -103,17 +103,27 @@ const Profile = () => {
     }
   };
 
-  const handleSyncSubscription = async () => {
-    // Implement subscription sync logic
-    console.log('Syncing subscription status...');
-  };
-
-  const handleStartTrial = () => {
-    // Implement trial start logic
-    console.log('Starting free trial...');
+  const getUpgradeButtonText = () => {
+    const currentPlan = user?.currentPlan || 'free';
+    switch (currentPlan.toLowerCase()) {
+      case 'free':
+        return 'Upgrade to Starter';
+      case 'starter':
+        return 'Upgrade to Pro';
+      case 'pro':
+        return 'Upgrade to Agency';
+      case 'agency':
+        return 'Current Plan';
+      default:
+        return 'Upgrade Plans';
+    }
   };
 
   const handleUpgradeToPro = () => {
+    const currentPlan = user?.currentPlan || 'free';
+    if (currentPlan.toLowerCase() === 'agency') {
+      return; // Already on highest plan
+    }
     navigate('/buy-credits#pricing');
   };
 
@@ -212,7 +222,7 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* Unlock Free Trial - Mobile Optimized */}
+                {/* Unlock Free Trial - Mobile Optimized
                 <div>
                   <div className="flex items-center gap-2 mb-3">
                     <Gift className="w-4 h-4 sm:w-5 sm:h-5 text-amber-500" />
@@ -243,9 +253,9 @@ const Profile = () => {
                       Start Free Trial
                     </button>
                   </div>
-                </div>
+                </div> */}
 
-                {/* Detailed Credit Breakdown - Simplified Mobile */}
+                {/* Detailed Credit Breakdown - Simplified Mobile
                 <div className="hidden sm:block">
                   <div className="flex items-center gap-2 mb-3">
                     <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
@@ -278,7 +288,7 @@ const Profile = () => {
                       <p className="text-gray-500 text-xs pl-4">Never expire</p>
                     </div>
                   </div>
-                </div>
+                </div> */}
 
                 {/* Account Section - Mobile Optimized */}
                 <div>
@@ -309,22 +319,27 @@ const Profile = () => {
                     </div>
                     <button
                       onClick={handleUpgradeToPro}
-                      className="w-full bg-[#4F46E5] text-white font-bold py-2.5 rounded-lg transition-all text-sm"
+                      disabled={user?.currentPlan?.toLowerCase() === 'agency'}
+                      className={`w-full font-bold py-2.5 rounded-lg transition-all text-sm ${
+                        user?.currentPlan?.toLowerCase() === 'agency'
+                          ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          : 'bg-[#4F46E5] text-white hover:bg-[#4338CA]'
+                      }`}
                     >
-                      Upgrade to Pro
+                      {getUpgradeButtonText()}
                     </button>
                   </div>
                 </div>
 
                 {/* Sync Subscription Status */}
                 <div className="text-center pt-2">
-                  <button
+                  {/* <button
                     onClick={handleSyncSubscription}
                     className="inline-flex items-center gap-2 text-action-500 hover:text-action-600 transition-colors"
                   >
                     <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     <span className="text-xs sm:text-sm">Sync Status</span>
-                  </button>
+                  </button> */}
                 </div>
               </div>
             )}
