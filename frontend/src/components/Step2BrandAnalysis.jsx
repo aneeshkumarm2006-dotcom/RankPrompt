@@ -21,14 +21,14 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   const hasCalledAPI = useRef(false);
 
   // Prompt options based on subscription tier
-  const promptOptions = user?.subscriptionTier === 'free' 
+  const isFreeTier = (user?.subscriptionTier || user?.currentPlan || 'free') === 'free';
+
+  const promptOptions = isFreeTier
     ? [
         { value: 1, label: '1' },
         { value: 10, label: '10' },
         { value: 25, label: '25' },
         { value: 50, label: '50' },
-        { value: 100, label: '100', disabled: true, pro: true },
-        { value: 150, label: '150', disabled: true, pro: true },
       ]
     : [
         { value: 1, label: '1' },
@@ -41,7 +41,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
 
   // Calculate max categories based on subscription tier
   // Free tier: 3 categories, Paid tiers: 10 categories
-  const maxCategories = user?.subscriptionTier === 'free' ? 3 : 10;
+  const maxCategories = isFreeTier ? 3 : 10;
   
   // Debug log to check subscription tier
   useEffect(() => {

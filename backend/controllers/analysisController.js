@@ -134,13 +134,29 @@ export const storePromptsForScheduling = async (req, res) => {
       });
     }
 
-    // Enforce plan-based model access
+    // Enforce plan-based model access and limits
     const allowedModels = req.user?.allowedModels || ['chatgpt'];
     const isAllowed = aiModels.every((m) => allowedModels.includes(m));
     if (!isAllowed) {
       return res.status(403).json({
         success: false,
         message: 'Selected AI models are not available on your plan.',
+      });
+    }
+
+    const tier = req.user?.subscriptionTier || 'free';
+    const maxPrompts = tier === 'free' ? 50 : 150;
+    const maxCategories = tier === 'free' ? 3 : 10;
+    if (Array.isArray(prompts) && prompts.length > maxPrompts) {
+      return res.status(400).json({
+        success: false,
+        message: `Your plan allows up to ${maxPrompts} prompts per report.`,
+      });
+    }
+    if (Array.isArray(categories) && categories.length > maxCategories) {
+      return res.status(400).json({
+        success: false,
+        message: `Your plan allows up to ${maxCategories} categories.`,
       });
     }
 

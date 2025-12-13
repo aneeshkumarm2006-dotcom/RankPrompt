@@ -14,11 +14,15 @@ import {
   DollarSign,
   Info
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { createBillingPortalSession } from '../services/stripeService';
 
 const Profile = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const [creditActivity, setCreditActivity] = useState([]);
+  const [topupActivity, setTopupActivity] = useState([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -40,6 +44,7 @@ const Profile = () => {
       const data = await response.json();
       if (data.success) {
         setCreditActivity(data.data);
+        setTopupActivity(data.data.filter((log) => ['purchase', 'subscription'].includes(log.source)));
       }
     } catch (error) {
       console.error('Error fetching credit activity:', error);
@@ -91,13 +96,7 @@ const Profile = () => {
 
   const handleManageBilling = async () => {
     try {
-      // TODO: Uncomment when Stripe is fully configured
-      // import { createBillingPortalSession } from '../services/stripeService';
-      // await createBillingPortalSession();
-      
-      // Temporary: Opens a sample Stripe billing portal URL
-      const stripeSessionUrl = 'https://billing.stripe.com/p/session/live_YWNjdF8xUlA2bEVBR1ZScWFRRW1YLF9UTDBCdDVhNjRXaHNxMFVhUzJqTk5VQkVPVExZdXhQ0100SB6NIwCa';
-      window.open(stripeSessionUrl, '_blank');
+      await createBillingPortalSession();
     } catch (error) {
       console.error('Error opening billing portal:', error);
       toast.error('Failed to open billing portal. Please try again.');
@@ -115,8 +114,7 @@ const Profile = () => {
   };
 
   const handleUpgradeToPro = () => {
-    // Navigate to pricing or checkout
-    console.log('Upgrading to Pro...');
+    navigate('/buy-credits#pricing');
   };
 
   return (
@@ -354,7 +352,7 @@ const Profile = () => {
                           </div>
                           <div className="text-right flex-shrink-0">
                             <p className={`font-bold text-base sm:text-lg ${
-                              log.amount > 0 ? 'text-green-400' : 'text-red-400'
+                              log.amount > 0 ? 'text-green-500' : 'text-red-500'
                             }`}>
                               {log.amount > 0 ? '+' : ''}{log.amount}
                             </p>
@@ -395,13 +393,27 @@ const Profile = () => {
                   <h3 className="text-base sm:text-lg font-bold text-gray-800">Top-ups</h3>
                   <p className="text-gray-600 text-xs">Purchase history</p>
                 </div>
-                <div className="bg-gray-100 rounded-lg p-6 sm:p-8 text-center">
-                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-purple-500/10 mb-3">
-                    <CreditCard className="w-6 h-6 sm:w-7 sm:h-7 text-purple-400" />
+                {topupActivity.length > 0 ? (
+                  <div className="bg-gray-100 rounded-lg p-4 space-y-3">
+                    {topupActivity.map((log) => (
+                      <div key={log._id} className="flex items-center justify-between bg-white p-3 rounded-md">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 capitalize">{log.description}</p>
+                          <p className="text-sm text-gray-500">{new Date(log.createdAt).toLocaleString()}</p>
+                        </div>
+                        <p className="text-sm font-semibold text-green-600">+{log.amount} credits</p>
+                      </div>
+                    ))}
                   </div>
-                  <h4 className="text-gray-800 font-semibold text-sm sm:text-base mb-1">No purchases yet</h4>
-                  <p className="text-gray-600 text-xs sm:text-sm">Your purchase history will appear here</p>
-                </div>
+                ) : (
+                  <div className="bg-gray-100 rounded-lg p-6 sm:p-8 text-center">
+                    <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-purple-500/10 mb-3">
+                      <CreditCard className="w-6 h-6 sm:w-7 sm:h-7 text-purple-400" />
+                    </div>
+                    <h4 className="text-gray-800 font-semibold text-sm sm:text-base mb-1">No purchases yet</h4>
+                    <p className="text-gray-600 text-xs sm:text-sm">Your purchase history will appear here</p>
+                  </div>
+                )}
               </div>
             )}
 

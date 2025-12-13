@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import Sidebar from '../components/Sidebar';
-import { CreditCard, Zap, Gift, ChevronDown, ChevronUp, ArrowRight, Check } from 'lucide-react';
+import { CreditCard, Zap, Gift, ChevronDown, ChevronUp, ArrowRight, Check, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { createCheckoutSession, createTopUpSession } from '../services/stripeService';
 
 const BuyCredits = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [isTopUpExpanded, setIsTopUpExpanded] = useState(false);
   
   const subscriptionPlans = [
@@ -16,11 +18,11 @@ const BuyCredits = () => {
       period: 'per month',
       description: 'For individuals looking to explore AI visibility and scan key prompts.',
       features: [
-        '150 credits/month',
-        'All AI platforms (ChatGPT, Perplexity, AI Overviews)',
-        'White-label exports (not included)',
-        'Team collaboration (not included)',
-        'Priority support (not included)'
+        { label: '150 credits/month', available: true },
+        { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
+        { label: 'White-label exports', available: false },
+        { label: 'Team collaboration', available: false },
+        { label: 'Priority support', available: false }
       ],
       gradient: 'from-blue-500 to-cyan-500',
       border: 'border-blue-500/30'
@@ -32,11 +34,11 @@ const BuyCredits = () => {
       period: 'per month',
       description: 'For companies and teams ready to monitor AI rankings more actively.',
       features: [
-        '500 credits/month',
-        'All AI platforms (ChatGPT, Perplexity, AI Overviews)',
-        'White-label exports included',
-        'Team collaboration (not included)',
-        'Priority support (not included)'
+        { label: '500 credits/month', available: true },
+        { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
+        { label: 'White-label exports', available: true },
+        { label: 'Team collaboration', available: false },
+        { label: 'Priority support', available: false }
       ],
       gradient: 'from-purple-500 to-pink-500',
       border: 'border-purple-500/30',
@@ -49,11 +51,11 @@ const BuyCredits = () => {
       period: 'per month',
       description: 'For agencies and enterprises managing multiple clients, campaigns, or brands.',
       features: [
-        '1000 credits/month',
-        'All AI platforms (ChatGPT, Perplexity, AI Overviews)',
-        'White-label exports included',
-        'Team collaboration included',
-        'Priority support included'
+        { label: '1000 credits/month', available: true },
+        { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
+        { label: 'White-label exports', available: true },
+        { label: 'Team collaboration', available: true },
+        { label: 'Priority support', available: true }
       ],
       gradient: 'from-pink-500 to-rose-500',
       border: 'border-pink-500/30'
@@ -103,189 +105,94 @@ const BuyCredits = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+        <div className="flex min-h-screen bg-gray-50">
       <Sidebar />
-      
       <div className="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8 mt-16 lg:mt-0">
         <div className="max-w-7xl mx-auto">
-          {/* Page Header */}
-          <div className="text-center mb-8 sm:mb-12">
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gray-800 mb-4 px-2">
-              Choose Your Plan And <span className="gradient-text">Start Ranking</span>
-            </h1>
-            <p className="text-gray-600 text-sm sm:text-base lg:text-lg max-w-3xl mx-auto px-4">
-              All plans are made to provide high-quality ChatGPT, Claude, Gemini, and Perplexity 
-              citation analysis. Pick a plan that fits your needs or top-up 
-              credits when you need more visibility checks.
-            </p>
-          </div>
+          <header className="mb-10 text-center">
+            <h1 className="text-4xl sm:text-5xl font-black text-gray-900 tracking-tight">Plans & Pricing</h1>
+            <p className="mt-3 text-lg text-gray-600 max-w-2xl mx-auto">Find the perfect plan to boost your AI visibility. Upgrade, downgrade, or cancel anytime.</p>
+          </header>
 
-          {/* Subscription Plans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
-            {subscriptionPlans.map((plan, index) => (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            {subscriptionPlans.map((plan) => (
               <div
-                key={index}
-                className={`bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 flex flex-col relative ${
-                  plan.popular ? 'ring-2 ring-[#4F46E5]' : ''
+                key={plan.key}
+                className={`relative bg-white rounded-2xl p-8 flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 ${
+                  plan.popular ? 'border-2 border-purple-500 shadow-xl' : 'border border-gray-200'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1 rounded-full">
-                      POPULAR
-                    </span>
+                  <div className="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2">
+                    <span className="bg-purple-500 text-white text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider shadow-md">Most Popular</span>
                   </div>
                 )}
 
-                {plan.trial && (
-                  <div className="absolute -top-3 sm:-top-4 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs font-bold px-4 py-1 rounded-full">
-                      FREE TRIAL
-                    </span>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{plan.name}</h3>
+                  <p className="text-gray-500 text-sm mb-6 h-10">{plan.description}</p>
+
+                  <div className="mb-6 flex items-baseline">
+                    <span className="text-5xl font-extrabold text-gray-900">${plan.price}</span>
+                    <span className="ml-1 text-lg text-gray-500">/month</span>
                   </div>
-                )}
 
-                <div className="mb-4 sm:mb-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2">{plan.name}</h3>
-                  <p className="text-gray-600 text-xs sm:text-sm mb-4 min-h-[40px] sm:min-h-[40px]">{plan.description}</p>
-                  
-                  <div className="flex items-baseline mb-2">
-                    <span className="text-3xl sm:text-4xl font-black text-gray-800">${plan.price}</span>
-                    {plan.originalPrice && (
-                      <span className="text-gray-500 line-through ml-2">${plan.originalPrice}</span>
-                    )}
-                  </div>
-                  <p className="text-gray-600 text-xs sm:text-sm">{plan.period}</p>
-                </div>
+                  <button
+                    onClick={() => handlePlanPurchase(plan)}
+                    disabled={user?.currentPlan === plan.key}
+                    className={`w-full font-bold py-3 px-6 rounded-lg transition-all text-base shadow-sm ${
+                      user?.currentPlan === plan.key
+                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        : plan.popular
+                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
+                        : 'bg-gray-800 hover:bg-gray-900 text-white'
+                    }`}>
+                    {user?.currentPlan === plan.key ? 'Current Plan' : 'Get Started'}
+                  </button>
 
-                <button
-                  onClick={() => handlePlanPurchase(plan)}
-                  className={`w-full bg-[#4F46E5] hover:bg-purple-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all mb-4 sm:mb-6 text-sm sm:text-base`}
-                >
-                  Sign up
-                </button>
+                  <div className="border-t border-gray-200 my-8"></div>
 
-                <div className="space-y-2 sm:space-y-3 flex-1">
-                  {plan.features.map((feature, idx) => (
-                    <div key={idx} className="flex items-start space-x-2">
-                      <Check className="w-3 h-3 sm:w-4 sm:h-4 text-primary-400 flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700 text-xs sm:text-sm">{feature}</span>
-                    </div>
-                  ))}
+                  <ul className="space-y-4">
+                    {plan.features.map((feature, idx) => (
+                      <li key={idx} className="flex items-center space-x-3">
+                        {feature.available ? (
+                          <Check className="w-5 h-5 text-green-500 flex-shrink-0" />
+                        ) : (
+                          <X className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                        )}
+                        <span className={`text-sm ${feature.available ? 'text-gray-700' : 'text-gray-400 line-through'}`}>
+                          {feature.label}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Need Flexibility Section */}
-          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 md:p-8 mb-6">
-            <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
-              <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
-                <div className="p-2 sm:p-3 rounded-xl bg-purple-500/20">
-                  <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-purple-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Need flexibility instead?</h2>
-                  <p className="text-gray-700 text-sm sm:text-base">
-                    Top up credits any time for <span className="text-primary-400 font-semibold">$0.40 per credit</span> — no subscription required.
-                  </p>
-                  <div className="mt-3 sm:mt-4 space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <Check className="w-4 h-4 text-purple-400" />
-                      <span className="text-gray-700 text-sm">Perfect for one-time analyses or when you're running low on credits</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <Check className="w-4 h-4 text-purple-400" />
-                      <span className="text-gray-700 text-sm">Choose from 3 top-up packs based on your needs</span>
-                    </div>
-                  </div>
-                </div>
+          <div className="bg-white rounded-2xl border border-gray-200 p-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex-1 text-center md:text-left">
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Need more flexibility?</h3>
+                <p className="text-gray-600">Top up your credits anytime. They never expire and roll over indefinitely.</p>
               </div>
-              <button
-                onClick={() => setIsTopUpExpanded(!isTopUpExpanded)}
-                className="bg-gray-100 hover:bg-gray-200 p-3 sm:p-4 rounded-xl transition-all flex items-center space-x-2 w-full lg:w-auto justify-center lg:justify-start"
-              >
-                <span className="text-gray-800 font-medium">View Top-up Options</span>
-                {isTopUpExpanded ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
-                ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          {/* Top-up Credits Expanded Section */}
-          {isTopUpExpanded && (
-            <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 md:p-8 mb-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-3">
-                  <Zap className="w-6 h-6 text-primary-500" />
-                  <h2 className="text-2xl font-bold text-gray-800">Top-up Credits</h2>
-                </div>
-                <button
-                  onClick={() => setIsTopUpExpanded(false)}
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Collapse
-                </button>
-              </div>
-
-              <div className="space-y-3 sm:space-y-4">
-                {topUpOptions.map((option, index) => (
-                  <div
-                    key={index}
-                    className="bg-gray-50 rounded-xl p-4 sm:p-6 flex flex-col lg:flex-row items-start lg:items-center justify-between hover:bg-gray-100 transition-all gap-4"
-                  >
-                    <div className="flex-1">
-                      <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 mb-2">
-                        <h3 className="text-lg sm:text-xl font-bold text-gray-800">{option.credits} Credits Top-Up</h3>
-                        <span className="text-primary-400 text-sm font-semibold">
-                          ${option.pricePerCredit} per credit
-                        </span>
-                      </div>
-                      <p className="text-gray-600 text-xs sm:text-sm">{option.description}</p>
-                    </div>
-                    <div className="flex items-center space-x-4 sm:space-x-6 w-full lg:w-auto lg:ml-6">
-                      <div className="text-left lg:text-right flex-1 lg:flex-initial">
-                        <div className="text-2xl sm:text-3xl font-black text-gray-800">${option.price}</div>
-                      </div>
-                      <button
-                        onClick={() => handleTopUpPurchase(option)}
-                        className="bg-[#4F46E5] hover:bg-purple-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all flex items-center justify-center space-x-2 flex-1 lg:flex-initial text-sm sm:text-base"
-                      >
-                        <span>Purchase</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </button>
-                    </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full md:w-auto">
+                {topUpOptions.map((option) => (
+                  <div key={option.key} className="bg-gray-50 rounded-xl p-4 text-center border border-gray-200 hover:border-purple-400 hover:bg-purple-50 transition-all">
+                    <p className="text-3xl font-bold text-gray-900">{option.credits}</p>
+                    <p className="text-sm text-gray-500 mb-3">Credits</p>
+                    <button
+                      onClick={() => handleTopUpPurchase(option)}
+                      className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-sm">
+                      Buy for ${option.price}
+                    </button>
                   </div>
                 ))}
               </div>
             </div>
-          )}
-
-          {/* Get 50 Credits Free Section */}
-          <div className="bg-white rounded-xl sm:rounded-2xl border border-gray-200 p-4 sm:p-6 md:p-8">
-            <div className="flex items-start space-x-3 sm:space-x-4">
-              <div className="p-2 sm:p-3 rounded-xl bg-green-500/20">
-                <Gift className="w-5 h-5 sm:w-6 sm:h-6 text-green-400" />
-              </div>
-              <div className="flex-1">
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">Get 50 Credits Free</h2>
-                <p className="text-gray-700 text-sm sm:text-base mb-4 sm:mb-6">
-                  Take our quick 2-minute survey to help us improve RankPrompt and get{' '}
-                  <span className="text-green-400 font-semibold">50 credits instantly!</span>
-                </p>
-                <button
-                  onClick={() => navigate('/earn-credits')}
-                  className="bg-[#4F46E5] hover:bg-purple-700 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-6 rounded-xl transition-all inline-flex items-center justify-center space-x-2 w-full sm:w-auto text-sm sm:text-base"
-                >
-                  <Gift className="w-4 h-4" />
-                  <span>Earn Free Credits</span>
-                </button>
-              </div>
-            </div>
           </div>
+
         </div>
       </div>
     </div>

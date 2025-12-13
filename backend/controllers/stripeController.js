@@ -1,5 +1,6 @@
 import { stripe, PLAN_CONFIG, TOPUP_CONFIG } from '../config/stripe.js';
 import User from '../models/User.js';
+import CreditLog from '../models/CreditLog.js';
 
 const successUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile?session_id={CHECKOUT_SESSION_ID}`;
 const cancelUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile?canceled=true`;
@@ -11,6 +12,7 @@ export const createCheckoutSession = async (req, res) => {
   try {
     const { planKey } = req.body;
     const userId = req.user.id;
+    const customerEmail = req.user.email;
 
     const plan = PLAN_CONFIG[planKey];
     if (!plan) {
@@ -27,6 +29,7 @@ export const createCheckoutSession = async (req, res) => {
       line_items: [{ price: plan.priceId, quantity: 1 }],
       success_url: successUrl,
       cancel_url: cancelUrl,
+      customer_email: customerEmail,
       metadata: { userId, planType: planKey },
       subscription_data: { metadata: { userId, planType: planKey } },
     });
@@ -45,6 +48,7 @@ export const createTopUpSession = async (req, res) => {
   try {
     const { topupKey } = req.body;
     const userId = req.user.id;
+    const customerEmail = req.user.email;
 
     const topup = TOPUP_CONFIG[topupKey];
     if (!topup) {
@@ -61,6 +65,7 @@ export const createTopUpSession = async (req, res) => {
       line_items: [{ price: topup.priceId, quantity: 1 }],
       success_url: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/profile?topup=success&credits=${topup.credits}`,
       cancel_url: cancelUrl,
+      customer_email: customerEmail,
       metadata: { userId, credits: topup.credits, type: 'topup' },
     });
 
@@ -171,23 +176,51 @@ async function handleCheckoutCompleted(session) {
     const subscription = await stripe.subscriptions.retrieve(session.subscription);
     const planKey = session.metadata?.planType;
     const plan = PLAN_CONFIG[planKey];
-    await User.findByIdAndUpdate(userId, {
+    const user = await User.findById(userId);
+    const currentCredits = user?.credits || 0;
+    const update = {
       stripeCustomerId: session.customer,
       stripeSubscriptionId: subscription.id,
       subscriptionStatus: 'active',
       currentPlan: planKey || 'free',
       subscriptionTier: planKey || 'free',
-      credits: plan?.credits ?? 0,
+      credits: (plan?.credits ?? 0) + currentCredits,
       allowedModels: plan?.allowedModels ?? undefined,
       currentPlanPeriodEnd: new Date(subscription.current_period_end * 1000),
       creditsUsed: 0,
-    });
+    };
+    const updated = await User.findByIdAndUpdate(userId, update, { new: true });
+    // Log credit grant
+    if (plan?.credits) {
+      await CreditLog.create({
+        user: userId,
+        amount: plan.credits,
+        type: 'purchased',
+        source: 'subscription',
+        description: `Subscribed to ${planKey}`,
+        metadata: { plan: planKey, subscriptionId: subscription.id },
+        balanceAfter: updated?.credits ?? (plan.credits + currentCredits),
+      });
+    }
   } else if (session.metadata?.type === 'topup') {
     const credits = parseInt(session.metadata?.credits, 10) || 0;
     if (credits > 0) {
-      await User.findByIdAndUpdate(userId, {
-        $inc: { credits },
-        stripeCustomerId: session.customer,
+      const updated = await User.findByIdAndUpdate(
+        userId,
+        {
+          $inc: { credits },
+          stripeCustomerId: session.customer,
+        },
+        { new: true }
+      );
+      await CreditLog.create({
+        user: userId,
+        amount: credits,
+        type: 'purchased',
+        source: 'purchase',
+        description: `Top-up ${credits} credits`,
+        metadata: { topup: true },
+        balanceAfter: updated?.credits ?? credits,
       });
     }
   }

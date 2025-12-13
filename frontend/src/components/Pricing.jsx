@@ -161,7 +161,11 @@ const Pricing = () => {
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start space-x-3">
                       <div className={`mt-1 p-1 rounded-full ${feature.available ? 'bg-green-100' : 'bg-gray-200'}`}>
-                        <Check className={`w-4 h-4 ${feature.available ? 'text-green-500' : 'text-gray-400'}`} />
+                        {feature.available ? (
+                          <Check className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <X className="w-4 h-4 text-gray-400" />
+                        )}
                       </div>
                       <span className={`text-sm ${feature.available ? 'text-gray-800' : 'text-gray-400 line-through'}`}>
                         {feature.label}

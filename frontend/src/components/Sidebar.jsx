@@ -163,7 +163,9 @@ const Sidebar = () => {
               <p className="text-gray-800 text-sm font-medium truncate">
                 {user?.name || 'User'}
               </p>
-              <p className="text-gray-500 text-xs">Free Plan</p>
+              <p className="text-gray-500 text-xs capitalize">
+                {user?.currentPlan || 'free'} Plan
+              </p>
             </div>
           </div>
           
