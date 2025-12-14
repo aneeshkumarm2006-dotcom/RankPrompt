@@ -199,6 +199,7 @@ const ReportView = () => {
   const platforms = ['chatgpt', 'perplexity', 'google_ai_overviews'];
   
   const stats = {
+    totalPrompts: reportData.length,
     websiteFound: 0,
     brandMentioned: 0,
     totalFindings: 0,

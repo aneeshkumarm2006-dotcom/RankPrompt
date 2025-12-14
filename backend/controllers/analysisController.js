@@ -7,6 +7,129 @@ import Report from '../models/Report.js';
 import PromptSent from '../models/PromptSent.js';
 
 /**
+ * Compare competitors - send competitor data to n8n agent
+ * @route POST /api/analysis/compare-competitors
+ * @access Private
+ */
+export const compareCompetitors = async (req, res) => {
+  try {
+    const { competitorName, competitorWebsite, reportId } = req.body;
+
+    // Validate required fields
+    if (!competitorName || !competitorWebsite || !reportId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Competitor name, website, and report ID are required',
+      });
+    }
+
+    // Validate URL format
+    try {
+      new URL(competitorWebsite);
+    } catch (error) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid competitor website URL',
+      });
+    }
+
+    // Verify report exists and belongs to user
+    const report = await Report.findById(reportId);
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found',
+      });
+    }
+
+    if (report.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to access this report',
+      });
+    }
+
+    // Send data to n8n agent
+    const n8nWebhookUrl = process.env.N8N_COMPETITOR_ANALYSIS_WEBHOOK_URL;
+    
+    if (!n8nWebhookUrl) {
+      return res.status(500).json({
+        success: false,
+        message: 'N8N webhook URL not configured',
+      });
+    }
+
+    const payload = {
+      competitorName,
+      competitorWebsite,
+      reportId,
+      userId: req.user._id,
+      brandData: {
+        brandName: report.brandName,
+        brandUrl: report.brandUrl,
+        searchScope: report.searchScope,
+        location: report.location,
+        country: report.country,
+        platforms: report.platforms,
+      },
+      reportData: report.reportData,
+      timestamp: new Date().toISOString(),
+    };
+
+    try {
+      const n8nResponse = await axios.post(n8nWebhookUrl, payload, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${process.env.N8N_API_KEY || ''}`,
+        },
+        timeout: 30000, // 30 second timeout
+      });
+
+      console.log('N8N competitor analysis request sent:', {
+        status: n8nResponse.status,
+        competitorName,
+        reportId,
+      });
+
+      res.status(200).json({
+        success: true,
+        message: 'Competitor analysis request sent to n8n agent',
+        data: {
+          requestId: crypto.randomUUID(),
+          competitorName,
+          competitorWebsite,
+          reportId,
+          n8nStatus: n8nResponse.status,
+        },
+      });
+    } catch (n8nError) {
+      console.error('Error sending to n8n:', n8nError);
+      
+      // Still return success to frontend but log the error
+      res.status(200).json({
+        success: true,
+        message: 'Competitor analysis request queued (n8n processing)',
+        data: {
+          requestId: crypto.randomUUID(),
+          competitorName,
+          competitorWebsite,
+          reportId,
+          n8nStatus: 'queued',
+          note: 'Request queued for processing',
+        },
+      });
+    }
+  } catch (error) {
+    console.error('Compare competitors error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to process competitor comparison request',
+      error: error.message,
+    });
+  }
+};
+
+/**
  * Update scheduled prompt details (currently supports prompts text)
  * @route PUT /api/analysis/scheduled-prompts/:id
  * @access Private

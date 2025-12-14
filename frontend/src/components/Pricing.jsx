@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Check, Sparkles, Crown, Zap, ArrowRight } from 'lucide-react';
+import { Check, Sparkles, Crown, Zap, ArrowRight, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createCheckoutSession } from '../services/stripeService';
 

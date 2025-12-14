@@ -10,6 +10,9 @@ const PerformanceSummary = ({ brandData, reports }) => {
   const [selectedPlatform, setSelectedPlatform] = useState('All Platforms');
   const [timeRange, setTimeRange] = useState('30');
   const [activeTab, setActiveTab] = useState('prompt-results');
+  const [competitorName, setCompetitorName] = useState('');
+  const [competitorWebsite, setCompetitorWebsite] = useState('');
+  const [isComparing, setIsComparing] = useState(false);
   const [aiAnswerContent, setAiAnswerContent] = useState(null);
   const [citationContent, setCitationContent] = useState(null);
   const [hasScheduledReport, setHasScheduledReport] = useState(false);
@@ -265,6 +268,59 @@ const PerformanceSummary = ({ brandData, reports }) => {
         </text>
       </g>
     );
+  };
+
+  const handleCompareCompetitors = async () => {
+    if (!competitorName.trim() || !competitorWebsite.trim()) {
+      toast.error('Please enter both competitor name and website');
+      return;
+    }
+
+    // Get the latest report ID
+    const latestReport = reports[0];
+    if (!latestReport?._id) {
+      toast.error('No report found to compare with');
+      return;
+    }
+
+    setIsComparing(true);
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+    try {
+      const response = await fetch(`${API_URL}/analysis/compare-competitors`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          competitorName: competitorName.trim(),
+          competitorWebsite: competitorWebsite.trim(),
+          reportId: latestReport._id,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast.success('Competitor comparison request sent successfully!');
+        console.log('Comparison result:', result);
+        
+        // Reset form
+        setCompetitorName('');
+        setCompetitorWebsite('');
+        
+        // TODO: Add logic to display comparison results when n8n responds
+        toast.success('Analysis in progress. Results will appear here soon.');
+      } else {
+        const error = await response.json();
+        toast.error(error.message || 'Failed to send comparison request');
+      }
+    } catch (error) {
+      console.error('Error comparing competitors:', error);
+      toast.error('Failed to send comparison request');
+    } finally {
+      setIsComparing(false);
+    }
   };
 
   const calculateTimeRemaining = () => {
@@ -529,6 +585,9 @@ const PerformanceSummary = ({ brandData, reports }) => {
             <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Results Summary
             </button>
+            <button onClick={() => setActiveTab('competitor-ranking')} className={`${activeTab === 'competitor-ranking' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+              Competitor Ranking
+            </button>
           </div>
         </div>
 
@@ -699,6 +758,63 @@ const PerformanceSummary = ({ brandData, reports }) => {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            </div>
+          )}
+
+          {/* Competitor Ranking Tab */}
+          {activeTab === 'competitor-ranking' && (
+            <div className="space-y-6">
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h3 className="text-lg font-bold text-gray-800 mb-4">Compare with Competitors</h3>
+                <p className="text-gray-600 mb-6">Enter competitor details to compare their AI visibility performance with your brand.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Competitor Name
+                    </label>
+                    <input
+                      type="text"
+                      value={competitorName}
+                      onChange={(e) => setCompetitorName(e.target.value)}
+                      placeholder="Enter competitor brand name"
+                      className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 placeholder-gray-400 transition-all"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Competitor Website Link
+                    </label>
+                    <input
+                      type="url"
+                      value={competitorWebsite}
+                      onChange={(e) => setCompetitorWebsite(e.target.value)}
+                      placeholder="https://competitor-website.com"
+                      className="w-full px-4 py-3 bg-white rounded-lg border border-gray-300 focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 placeholder-gray-400 transition-all"
+                    />
+                  </div>
+                </div>
+                
+                <button
+                  onClick={handleCompareCompetitors}
+                  disabled={!competitorName.trim() || !competitorWebsite.trim() || isComparing}
+                  className={`w-full md:w-auto px-6 py-3 rounded-lg font-medium transition-all ${
+                    !competitorName.trim() || !competitorWebsite.trim() || isComparing
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : 'bg-[#4F46E5] text-white hover:bg-[#4338CA]'
+                  }`}
+                >
+                  {isComparing ? (
+                    <span className="flex items-center gap-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                      Comparing...
+                    </span>
+                  ) : (
+                    'Compare Competitors'
+                  )}
+                </button>
               </div>
             </div>
           )}
