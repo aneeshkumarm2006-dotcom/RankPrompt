@@ -74,7 +74,7 @@ const Pricing = () => {
   };
 
   return (
-    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-white relative overflow-hidden">
+    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 bg-white dark:bg-dark-950 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 right-0 w-96 h-96 bg-primary-500/10 rounded-full blur-3xl"></div>
@@ -84,15 +84,15 @@ const Pricing = () => {
       <div className="relative max-w-7xl mx-auto">
         {/* Section Header */}
         <div className="text-center mb-12 sm:mb-16 lg:mb-20 space-y-4 sm:space-y-6 animate-slide-up">
-          <div className="inline-flex items-center space-x-2 bg-purple-100 px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center space-x-2 bg-purple-100 dark:bg-purple-500/10 px-4 py-2 rounded-full text-sm font-medium mb-4">
             <Sparkles className="w-4 h-4 text-purple-600" />
-            <span className="text-gray-800">Flexible Pricing</span>
+            <span className="text-gray-800 dark:text-purple-300">Flexible Pricing</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-800 leading-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-800 dark:text-white leading-tight">
             Choose Your
             <span className="gradient-text"> Plan</span>
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-600 max-w-2xl mx-auto px-4">
+          <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto px-4">
             Start free, upgrade when you're ready. No hidden fees, cancel anytime.
           </p>
         </div>
@@ -123,8 +123,8 @@ const Pricing = () => {
               <div
                 className={`relative h-full p-8 rounded-3xl transition-all duration-300 ${
                   plan.popular
-                    ? 'bg-white border-2 border-purple-600 shadow-2xl shadow-purple-200'
-                    : 'bg-gray-50 border border-gray-200 hover:border-purple-300'
+                    ? 'bg-white dark:bg-dark-900 border-2 border-purple-600 dark:border-primary-500 shadow-2xl shadow-purple-200 dark:shadow-primary-500/20'
+                    : 'bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-700 hover:border-purple-300 dark:hover:border-purple-400'
                 }`}
               >
                 {/* Icon */}
@@ -135,23 +135,23 @@ const Pricing = () => {
                 </div>
 
                 {/* Plan Name */}
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">
                   {plan.name}
                 </h3>
-                <p className="text-gray-600 text-sm mb-1">{plan.subtitle}</p>
-                <p className="text-gray-600 text-xs mb-8">{plan.description}</p>
+                <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">{plan.subtitle}</p>
+                <p className="text-gray-600 dark:text-gray-400 text-xs mb-8">{plan.description}</p>
 
                 {/* Price */}
                 <div className="mb-8">
                   <div className="flex items-baseline">
                     {plan.price !== 'Custom' && (
-                      <span className="text-3xl font-bold text-gray-600">$</span>
+                      <span className="text-3xl font-bold text-gray-600 dark:text-gray-400">$</span>
                     )}
                     <span className="text-6xl font-black gradient-text">
                       {plan.price}
                     </span>
                     {plan.price !== 'Custom' && (
-                      <span className="ml-2 text-gray-600">/month</span>
+                      <span className="ml-2 text-gray-600 dark:text-gray-400">/month</span>
                     )}
                   </div>
                 </div>
@@ -160,14 +160,14 @@ const Pricing = () => {
                 <ul className="space-y-4 mb-8">
                   {plan.features.map((feature, idx) => (
                     <li key={idx} className="flex items-start space-x-3">
-                      <div className={`mt-1 p-1 rounded-full ${feature.available ? 'bg-green-100' : 'bg-gray-200'}`}>
+                      <div className={`mt-1 p-1 rounded-full ${feature.available ? 'bg-green-100 dark:bg-green-500/10' : 'bg-gray-200 dark:bg-dark-700'}`}>
                         {feature.available ? (
                           <Check className="w-4 h-4 text-green-500" />
                         ) : (
-                          <X className="w-4 h-4 text-gray-400" />
+                          <X className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                         )}
                       </div>
-                      <span className={`text-sm ${feature.available ? 'text-gray-800' : 'text-gray-400 line-through'}`}>
+                      <span className={`text-sm ${feature.available ? 'text-gray-800 dark:text-gray-200' : 'text-gray-400 dark:text-gray-500 line-through'}`}>
                         {feature.label}
                       </span>
                     </li>
@@ -180,8 +180,8 @@ const Pricing = () => {
                   disabled={loadingPlan === plan.key}
                   className={`group w-full py-4 rounded-xl font-bold transition-all duration-300 flex items-center justify-center space-x-2 ${
                     plan.popular
-                      ? 'bg-[#4F46E5] text-white hover:bg-purple-700'
-                      : 'bg-white text-gray-800 hover:bg-gray-100 border border-gray-300'
+                      ? 'bg-primary-500 text-white hover:bg-primary-600'
+                      : 'bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-700 border border-gray-300 dark:border-dark-600'
                   } ${loadingPlan === plan.key ? 'opacity-60 cursor-not-allowed' : ''}`}
                 >
                   <span>{loadingPlan === plan.key ? 'Redirecting…' : plan.cta}</span>
@@ -194,7 +194,7 @@ const Pricing = () => {
 
         {/* Money Back Guarantee */}
         <div className="text-center mt-16 space-y-4">
-          <div className="flex items-center justify-center space-x-8 text-sm text-gray-600">
+          <div className="flex items-center justify-center space-x-8 text-sm text-gray-600 dark:text-gray-400">
             <div className="flex items-center space-x-2">
               <Check className="w-5 h-5 text-green-400" />
               <span>30-day money-back guarantee</span>

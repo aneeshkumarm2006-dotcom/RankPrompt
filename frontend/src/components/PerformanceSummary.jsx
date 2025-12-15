@@ -337,12 +337,12 @@ const PerformanceSummary = ({ brandData, reports }) => {
 
   if (!data) {
     return (
-      <div className="p-6 flex items-center justify-center h-full">
+      <div className="p-6 flex items-center justify-center h-full bg-gray-50 dark:bg-dark-950">
         <div className="text-center">
           <TrendingUp className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-800 mb-2">No Reports Yet</h2>
-          <p className="text-gray-600 mb-6">Create your first report to see visibility analytics</p>
-          <button onClick={() => window.location.href = '/reports/new'} className="px-6 py-3 bg-[#4F46E5] text-white rounded-lg hover:bg-purple-700">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">No Reports Yet</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">Create your first report to see visibility analytics</p>
+          <button onClick={() => window.location.href = '/reports/new'} className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600">
             Create First Report
           </button>
         </div>
@@ -351,23 +351,23 @@ const PerformanceSummary = ({ brandData, reports }) => {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 dark:bg-dark-950">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">Performance Summary</h1>
-            <p className="text-gray-600 text-sm sm:text-base">Track your AI visibility across platforms</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2">Performance Summary</h1>
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">Track your AI visibility across platforms</p>
           </div>
         {hasScheduledReport && (
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
               <Calendar className="w-4 h-4" />
-              <span>Next report in: <strong className="text-gray-800">{calculateTimeRemaining()}</strong></span>
+              <span>Next report in: <strong className="text-gray-800 dark:text-white">{calculateTimeRemaining()}</strong></span>
             </div>
             <button
               onClick={() => navigate(`/brands/${brandData._id}/scheduled`)}
-              className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-700 transition-colors text-sm"
             >
               View Schedules
             </button>
@@ -376,17 +376,17 @@ const PerformanceSummary = ({ brandData, reports }) => {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg p-4 mb-6 border border-gray-200">
+      <div className="bg-white dark:bg-dark-900 rounded-lg p-4 mb-6 border border-gray-200 dark:border-dark-700">
         <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-4">
-          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white text-gray-800 rounded-lg border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm">
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm">
             <option>All Categories</option>
             {data.categoryData.map(cat => <option key={cat.name}>{cat.name}</option>)}
           </select>
-          <select value={selectedPlatform} onChange={(e) => setSelectedPlatform(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white text-gray-800 rounded-lg border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm">
+          <select value={selectedPlatform} onChange={(e) => setSelectedPlatform(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm">
             <option>All Platforms</option>
             {data.platformData.map(plat => <option key={plat.name}>{plat.name}</option>)}
           </select>
-          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white text-gray-800 rounded-lg border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none text-sm">
+          <select value={timeRange} onChange={(e) => setTimeRange(e.target.value)} className="w-full sm:w-auto px-4 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm">
             <option value="7">Last 7 days</option>
             <option value="30">Last 30 days</option>
           </select>
@@ -396,13 +396,13 @@ const PerformanceSummary = ({ brandData, reports }) => {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 gap-4 sm:gap-6 mb-4 sm:mb-6">
         {/* Key Metrics */}
-        <div className="bg-white rounded-lg p-4 border border-gray-200">
+        <div className="bg-white dark:bg-dark-900 rounded-lg p-4 border border-gray-200 dark:border-dark-700">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800">Visibility Trend</h3>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">Visibility Trend</h3>
             <div className="relative flex items-center gap-2">
               <button
                 onClick={() => setShowDatePicker(!showDatePicker)}
-                className="flex items-center gap-2 px-3 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+                className="flex items-center gap-2 px-3 py-2 bg-gray-200 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-700 transition-colors text-sm"
               >
                 <CalendarIcon className="w-4 h-4" />
                 {trendDateRange.startDate || trendDateRange.endDate ? 'Custom Range' : 'Select Range'}
@@ -410,16 +410,16 @@ const PerformanceSummary = ({ brandData, reports }) => {
               {(trendDateRange.startDate || trendDateRange.endDate) && (
                 <button
                   onClick={handleClearDateRange}
-                  className="px-3 py-2 bg-gray-200 text-gray-500 rounded-lg hover:bg-gray-300 transition-colors text-sm"
+                  className="px-3 py-2 bg-gray-200 dark:bg-dark-800 text-gray-500 dark:text-gray-400 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-700 transition-colors text-sm"
                 >
                   Clear
                 </button>
               )}
               {showDatePicker && (
-                <div className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-1/2 sm:top-full right-auto sm:right-0 -translate-y-1/2 sm:translate-y-0 sm:mt-2 bg-white border border-gray-200 rounded-lg p-4 shadow-2xl z-50 w-auto sm:min-w-[280px] max-w-sm mx-auto sm:mx-0">
+                <div className="fixed sm:absolute inset-x-4 sm:inset-x-auto top-1/2 sm:top-full right-auto sm:right-0 -translate-y-1/2 sm:translate-y-0 sm:mt-2 bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 shadow-2xl z-50 w-auto sm:min-w-[280px] max-w-sm mx-auto sm:mx-0">
                   <div className="space-y-3">
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">Start Date</label>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Start Date</label>
                       <input
                         type="date"
                         value={trendDateRange.startDate}
@@ -428,7 +428,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                       />
                     </div>
                     <div>
-                      <label className="block text-xs text-gray-500 mb-1">End Date</label>
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">End Date</label>
                       <input
                         type="date"
                         value={trendDateRange.endDate}
@@ -438,7 +438,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                     </div>
                     <button
                       onClick={handleApplyDateRange}
-                      className="w-full px-4 py-2 bg-[#4F46E5] text-white rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium"
+                      className="w-full px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors text-sm font-medium"
                     >
                       Apply
                     </button>
@@ -449,37 +449,37 @@ const PerformanceSummary = ({ brandData, reports }) => {
           </div>
           {trendLoading ? (
             <div className="h-64 flex items-center justify-center">
-              <div className="text-gray-500 text-sm">Loading trend data...</div>
+              <div className="text-gray-500 dark:text-gray-400 text-sm">Loading trend data...</div>
             </div>
           ) : visibilityTrendData.length > 1 ? (
             <>
               <div className="flex flex-wrap items-center gap-3 sm:gap-6 mb-4">
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Avg ChatGPT</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg ChatGPT</div>
                   <span className="text-xl sm:text-3xl font-bold text-green-500">{platformAverages.chatgpt}%</span>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Avg Perplexity</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Perplexity</div>
                   <span className="text-xl sm:text-3xl font-bold text-purple-500">{platformAverages.perplexity}%</span>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Avg Google AI</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Avg Google AI</div>
                   <span className="text-xl sm:text-3xl font-bold text-cyan-500">{platformAverages.googleAiOverviews}%</span>
                 </div>
                 <div>
-                  <div className="text-xs text-gray-500 mb-1">Reports Analyzed</div>
-                  <span className="text-xl sm:text-3xl font-bold text-gray-800">{visibilityTrendData.length}</span>
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Reports Analyzed</div>
+                  <span className="text-xl sm:text-3xl font-bold text-gray-800 dark:text-white">{visibilityTrendData.length}</span>
                 </div>
               </div>
               <ResponsiveContainer width="100%" height={200} className="text-xs sm:text-sm">
                 <LineChart data={visibilityTrendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="date" stroke="#6b7280" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={50} />
-                  <YAxis stroke="#6b7280" style={{ fontSize: '10px' }} domain={[0, 100]} label={{ value: 'Visibility Score (%)', angle: -90, position: 'insideLeft', style: { fontSize: '10px', fill: '#6b7280' } }} />
+                  <XAxis dataKey="date" stroke="#9CA3AF" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={50} tick={{ fill: '#9CA3AF' }} />
+                  <YAxis stroke="#9CA3AF" style={{ fontSize: '10px' }} domain={[0, 100]} label={{ value: 'Visibility Score (%)', angle: -90, position: 'insideLeft', style: { fontSize: '10px', fill: '#9CA3AF' } }} tick={{ fill: '#9CA3AF' }} />
                   <Tooltip 
                     contentStyle={{ 
-                      backgroundColor: '#ffffff', 
-                      border: '1px solid #e5e7eb', 
+                      backgroundColor: '#1F2937', 
+                      border: '1px solid #374151', 
                       borderRadius: '8px',
                       fontSize: '12px'
                     }} 
@@ -528,64 +528,65 @@ const PerformanceSummary = ({ brandData, reports }) => {
         </div>
 
         {/* Category Visibility Chart */}
-        <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Category Visibility</h3>
+        <div className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-dark-700">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-4">Category Visibility</h3>
           {data.categoryData.length > 0 ? (
             <ResponsiveContainer width="100%" height={200} className="text-xs sm:text-sm">
               <BarChart data={data.categoryData} margin={{ top: 5, right: 10, left: 0, bottom: 50 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis 
                   dataKey="name" 
-                  stroke="#6b7280" 
+                  stroke="#9CA3AF" 
                   angle={-45}
                   textAnchor="end"
                   height={50}
                   interval={0}
                   style={{ fontSize: '10px' }}
+                  tick={{ fill: '#9CA3AF' }}
                 />
-                <YAxis stroke="#6b7280" tick={{ fontSize: 10 }} />
+                <YAxis stroke="#9CA3AF" tick={{ fontSize: 10, fill: '#9CA3AF' }} />
                 <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
                 <Legend wrapperStyle={{ fontSize: '11px' }} iconSize={10} />
                 <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-64 flex items-center justify-center text-gray-500">No category data</div>
+            <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">No category data</div>
           )}
-          <div className="mt-2 text-sm text-gray-600">
-            <p>Top: <span className="text-gray-800 font-bold">{data.categoryData[0]?.name || 'N/A'} ({data.categoryData[0]?.visibility || 0}%)</span></p>
+          <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+            <p>Top: <span className="text-gray-800 dark:text-white font-bold">{data.categoryData[0]?.name || 'N/A'} ({data.categoryData[0]?.visibility || 0}%)</span></p>
           </div>
         </div>
       </div>
 
       {/* Platform Scores */}
-      <div className="bg-white rounded-lg p-4 sm:p-6 border border-gray-200 mb-4 sm:mb-6">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4">Visibility Score by Platform</h3>
+      <div className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-dark-700 mb-4 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-4">Visibility Score by Platform</h3>
         <ResponsiveContainer width="100%" height={200}>
           <BarChart data={data.platformData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '10px' }} />
             <YAxis stroke="#6b7280" style={{ fontSize: '10px' }} />
-            <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+            <Tooltip contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }} />
             <Bar dataKey="score" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>
 
       {/* Tabs */}
-      <div className="bg-white rounded-lg border border-gray-200">
-        <div className="border-b border-gray-200 px-4 sm:px-6 py-4">
+      <div className="bg-white dark:bg-dark-900 rounded-lg border border-gray-200 dark:border-dark-700">
+        <div className="border-b border-gray-200 dark:border-dark-700 px-4 sm:px-6 py-4">
           <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto">
-            <button onClick={() => setActiveTab('prompt-results')} className={`${activeTab === 'prompt-results' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+            <button onClick={() => setActiveTab('prompt-results')} className={`${activeTab === 'prompt-results' ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Prompt Results
             </button>
-            <button onClick={() => setActiveTab('sources')} className={`${activeTab === 'sources' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+            <button onClick={() => setActiveTab('sources')} className={`${activeTab === 'sources' ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Sources Ranking
             </button>
-            <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+            <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Results Summary
             </button>
-            <button onClick={() => setActiveTab('competitor-ranking')} className={`${activeTab === 'competitor-ranking' ? 'text-[#4F46E5] border-b-2 border-[#4F46E5]' : 'text-gray-500 hover:text-gray-800'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+            <button onClick={() => setActiveTab('competitor-ranking')} className={`${activeTab === 'competitor-ranking' ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Competitor Ranking
             </button>
           </div>
@@ -597,37 +598,37 @@ const PerformanceSummary = ({ brandData, reports }) => {
             <div className="space-y-6">
               {/* Ranked */}
               <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                   <span className="text-green-500">✓</span> Ranked Prompts ({data.rankedPrompts.length})
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[1000px]">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-dark-800">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">AI</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prompt</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sources</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">AI</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Prompt</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Rank</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sources</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
                       {data.rankedPrompts.slice(0, 10).map((p, i) => (
-                        <tr key={i} className="hover:bg-gray-100">
-                          <td className="px-4 py-3 text-sm text-gray-500">{p.date}</td>
+                        <tr key={i} className="hover:bg-gray-100 dark:hover:bg-dark-800">
+                          <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{p.date}</td>
                           <td className="px-4 py-3">
                             <div className="flex gap-1">
                               {p.aiModels.map((model, idx) => (
-                                <span key={idx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
+                                <span key={idx} className="px-2 py-1 bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded text-xs capitalize">
                                   {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overviews' ? 'AIO' : model}
                                 </span>
                               ))}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-800 max-w-md truncate">{p.prompt}</td>
+                          <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 max-w-md truncate">{p.prompt}</td>
                           <td className="px-4 py-3"><span className="px-2 py-1 bg-green-100 text-green-600 rounded text-xs">{p.index !== null ? `#${p.index}` : '-'}</span></td>
-                          <td className="px-4 py-3 text-sm text-gray-800">{p.sources}</td>
+                          <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">{p.sources}</td>
                           <td className="px-4 py-3">
                             <button 
                               onClick={() => {
@@ -641,7 +642,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                                   });
                                 }
                               }}
-                              className="text-primary-400 hover:text-primary-300 text-sm flex items-center gap-1"
+                              className="text-primary-400 hover:text-primary-300 dark:text-primary-500 dark:hover:text-primary-400 text-sm flex items-center gap-1"
                             >
                               <Eye className="w-4 h-4" /> View
                             </button>
@@ -655,37 +656,37 @@ const PerformanceSummary = ({ brandData, reports }) => {
 
               {/* Missed */}
               <div>
-                <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
                   <span className="text-red-500">✗</span> Missed Prompts ({data.missedPrompts.length})
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full min-w-[1000px]">
-                    <thead className="bg-gray-50">
+                    <thead className="bg-gray-50 dark:bg-dark-800">
                       <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">AI</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Prompt</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Sources</th>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Date</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">AI</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Prompt</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Rank</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Sources</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-200">
+                    <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
                       {data.missedPrompts.slice(0, 10).map((p, i) => (
-                        <tr key={i} className="hover:bg-gray-100">
-                          <td className="px-4 py-3 text-sm text-gray-500">{p.date}</td>
+                        <tr key={i} className="hover:bg-gray-100 dark:hover:bg-dark-800">
+                          <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{p.date}</td>
                           <td className="px-4 py-3">
                             <div className="flex gap-1">
                               {p.aiModels.map((model, idx) => (
-                                <span key={idx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
+                                <span key={idx} className="px-2 py-1 bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded text-xs capitalize">
                                   {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overviews' ? 'AIO' : model}
                                 </span>
                               ))}
                             </div>
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-800 max-w-md truncate">{p.prompt}</td>
+                          <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 max-w-md truncate">{p.prompt}</td>
                           <td className="px-4 py-3"><span className="px-2 py-1 bg-red-100 text-red-600 rounded text-xs">{p.index !== null ? `#${p.index}` : 'MISS'}</span></td>
-                          <td className="px-4 py-3 text-sm text-gray-800">0</td>
+                          <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">0</td>
                           <td className="px-4 py-3">
                             <button 
                               onClick={() => {
@@ -699,7 +700,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                                   });
                                 }
                               }}
-                              className="text-primary-400 hover:text-primary-300 text-sm flex items-center gap-1"
+                              className="text-primary-400 hover:text-primary-300 dark:text-primary-500 dark:hover:text-primary-400 text-sm flex items-center gap-1"
                             >
                               <Eye className="w-4 h-4" /> View
                             </button>

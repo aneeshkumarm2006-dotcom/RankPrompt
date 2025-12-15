@@ -172,25 +172,25 @@ const BrandScheduledReports = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="flex items-center justify-center py-20 bg-gray-50 dark:bg-dark-950 min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading scheduled reports...</p>
+          <p className="text-gray-400 dark:text-gray-500">Loading scheduled reports...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 bg-[#F8FAFC]">
+    <div className="p-4 sm:p-6 lg:p-8 bg-[#F8FAFC] dark:bg-dark-950">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Scheduled Reports</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Scheduled Reports</h1>
           {brandData && (
-            <p className="text-gray-600 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
+            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
           )}
-          <p className="text-xs sm:text-sm text-gray-500 mt-2">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2">
             To create a new scheduled report, go to any report and click "Schedule Report"
           </p>
         </div>
@@ -201,15 +201,15 @@ const BrandScheduledReports = () => {
             {schedules.map((schedule) => (
               <div
                 key={schedule._id}
-                className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-colors"
+                className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-6 hover:border-gray-300 dark:hover:border-dark-600 transition-colors"
               >
                 {/* Header */}
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-gray-800 mb-1">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-1">
                       {schedule.brandName || brandData?.brandName || 'Report'}
                     </h3>
-                    <p className="text-xs text-gray-500">{schedule._id.slice(-6)}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{schedule._id.slice(-6)}</p>
                   </div>
                   {getStatusBadge(schedule)}
                 </div>
@@ -217,12 +217,12 @@ const BrandScheduledReports = () => {
                 {/* Details */}
                 <div className="space-y-3 mb-4">
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Website</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Website</p>
                     <a
                       href={schedule.brandUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-primary-400 hover:text-primary-300 flex items-center gap-1 truncate"
+                      className="text-sm text-primary-400 hover:text-primary-300 dark:text-primary-500 dark:hover:text-primary-400 flex items-center gap-1 truncate"
                     >
                       <Globe className="w-3 h-3 flex-shrink-0" />
                       {schedule.brandUrl}
@@ -231,31 +231,31 @@ const BrandScheduledReports = () => {
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Next Run</p>
-                      <p className="text-sm text-gray-800 font-medium">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Next Run</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">
                         {formatDate(schedule.nextRun)}
                       </p>
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 mb-1">Created</p>
-                      <p className="text-sm text-gray-800 font-medium">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Created</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 font-medium">
                         {formatDate(schedule.createdAt)}
                       </p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Frequency</p>
-                    <span className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Frequency</p>
+                    <span className="px-2 py-1 bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded text-xs capitalize">
                       {schedule.scheduleFrequency}
                     </span>
                   </div>
 
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">AI Models</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">AI Models</p>
                     <div className="flex flex-wrap gap-1">
                       {schedule.aiModels?.map((model, idx) => (
-                        <span key={idx} className="px-2 py-1 bg-gray-200 text-gray-700 rounded text-xs capitalize">
+                        <span key={idx} className="px-2 py-1 bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-300 rounded text-xs capitalize">
                           {model === 'chatgpt' ? 'GPT' : model === 'perplexity' ? 'PPX' : model === 'google_ai_overview' ? 'AIO' : model}
                         </span>
                       ))}
@@ -264,7 +264,7 @@ const BrandScheduledReports = () => {
                 </div>
 
                 {/* Actions */}
-                <div className="flex gap-2 pt-4 border-t border-gray-200">
+                <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-dark-700">
                   <button
                     onClick={() => openEditModal(schedule)}
                     className="flex-1 px-3 py-2 bg-blue-500/20 text-blue-500 rounded hover:bg-blue-500/30 transition-colors text-sm font-medium"
@@ -300,13 +300,13 @@ const BrandScheduledReports = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-            <Calendar className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-800 mb-2">No Scheduled Reports</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-12 text-center">
+            <Calendar className="w-16 h-16 text-gray-600 dark:text-gray-400 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-2">No Scheduled Reports</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-4">
               You haven't scheduled any reports for this brand yet.
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               To schedule a report: Go to <span className="text-primary-400">All Reports</span> → 
               View any report → Click <span className="text-primary-400">"Schedule Report"</span> button
             </p>
@@ -316,16 +316,16 @@ const BrandScheduledReports = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold text-gray-800 mb-4">Delete Scheduled Report?</h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Delete Scheduled Report?</h3>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
               Are you sure you want to delete this scheduled report? This action cannot be undone.
             </p>
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteModal(null)}
-                className="flex-1 px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                className="flex-1 px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600 transition-colors"
               >
                 Cancel
               </button>
@@ -342,18 +342,18 @@ const BrandScheduledReports = () => {
 
       {/* Edit Prompts Modal */}
       {editModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50 p-4">
-          <div className="bg-white border border-gray-200 rounded-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto">
             <div className="flex items-start justify-between gap-3 mb-4">
               <div>
-                <h3 className="text-xl font-bold text-gray-800">Edit Scheduled Prompts</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white">Edit Scheduled Prompts</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Update the prompts that will be used for future runs of this schedule.
                 </p>
               </div>
               <button
                 onClick={() => setEditModal(null)}
-                className="text-gray-500 hover:text-gray-700"
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
               >
                 ✕
               </button>
@@ -363,18 +363,18 @@ const BrandScheduledReports = () => {
               {promptInputs.map((prompt, idx) => (
                 <div key={idx} className="flex items-start gap-3">
                   <div className="flex-1">
-                    <label className="text-xs text-gray-500 mb-1 block">Prompt {idx + 1}</label>
+                    <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Prompt {idx + 1}</label>
                     <textarea
                       value={prompt}
                       onChange={(e) => handlePromptChange(idx, e.target.value)}
                       rows={2}
-                      className="w-full bg-gray-100 text-gray-800 rounded-lg px-3 py-2 border border-gray-300 focus:border-primary-500 focus:outline-none"
+                      className="w-full bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
                       placeholder="Enter prompt text"
                     />
                   </div>
                   <button
                     onClick={() => handleRemovePrompt(idx)}
-                    className="mt-7 px-2 py-1 text-xs text-red-500 hover:text-red-700"
+                    className="mt-7 px-2 py-1 text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400"
                     disabled={promptInputs.length <= 1}
                   >
                     Remove
@@ -384,7 +384,7 @@ const BrandScheduledReports = () => {
 
               <button
                 onClick={handleAddPrompt}
-                className="flex items-center gap-2 text-sm text-primary-500 hover:text-primary-400"
+                className="flex items-center gap-2 text-sm text-primary-500 hover:text-primary-400 dark:text-primary-400 dark:hover:text-primary-300"
               >
                 <Plus className="w-4 h-4" /> Add prompt
               </button>
@@ -393,13 +393,13 @@ const BrandScheduledReports = () => {
             <div className="flex justify-end gap-3 mt-6">
               <button
                 onClick={() => setEditModal(null)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors"
+                className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSavePrompts}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 dark:bg-action-600 dark:hover:bg-action-700 transition-colors"
               >
                 Save Changes
               </button>

@@ -192,21 +192,22 @@ const SharedReport = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4F46E5] mx-auto mb-4" />
-          <p className="text-gray-600">Loading shared report…</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-950 flex items-center justify-center">
+        <div className="text-center py-12">
+          <p className="text-gray-600 dark:text-gray-400">No results found</p>
         </div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4F46E5] mx-auto mb-4" />
+        <p className="text-gray-600 dark:text-gray-400">Loading shared report…</p>
       </div>
     );
   }
 
   if (error || !report) {
     return (
-      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4">
-        <div className="bg-white border border-gray-200 rounded-2xl p-8 max-w-md text-center shadow-lg">
-          <h1 className="text-2xl font-semibold text-gray-800 mb-3">Shared report unavailable</h1>
-          <p className="text-gray-600 mb-6">{error || 'The shared link you used may have expired or been disabled.'}</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-950 flex items-center justify-center px-4">
+        <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-2xl p-8 max-w-md text-center shadow-lg">
+          <h1 className="text-2xl font-semibold text-gray-800 dark:text-white mb-3">Shared report unavailable</h1>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{error || 'The shared link you used may have expired or been disabled.'}</p>
           <button
             onClick={() => navigate('/')}
             className="px-6 py-3 rounded-xl bg-[#4F46E5] text-white font-medium hover:bg-purple-700 transition-colors"
@@ -221,15 +222,15 @@ const SharedReport = () => {
   const totalPrompts = stats.totalPrompts ?? reportData.length;
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-gray-800">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-950 text-gray-800 dark:text-gray-200">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10" id="shared-report-content">
         {/* Header */}
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-lg">
+        <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 mb-6 sm:mb-8 shadow-lg">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6">
             <div className="min-w-0">
-              <p className="text-xs sm:text-sm uppercase tracking-wider text-[#4F46E5] mb-1">Shared Visibility Report</p>
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-2 break-words">{report.brandName} - Visibility Analysis</h1>
-              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600">
+              <p className="text-xs sm:text-sm uppercase tracking-wider text-primary-500 dark:text-primary-400 mb-1">Shared Visibility Report</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white mb-2 break-words">{report.brandName} - Visibility Analysis</h1>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 <span className="break-all">{report.brandUrl}</span>
                 <span className="hidden md:inline">•</span>
                 <span>{new Date(report.reportDate || report.createdAt).toLocaleString()}</span>
@@ -247,14 +248,14 @@ const SharedReport = () => {
             <div className="flex flex-col sm:flex-row lg:flex-col lg:items-end gap-2 sm:gap-3 w-full lg:w-auto">
               <button
                 onClick={handleDownloadPDF}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gray-200 hover:bg-gray-300 transition-colors text-sm sm:text-base whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-dark-600 transition-colors text-sm sm:text-base whitespace-nowrap"
               >
                 <Download className="w-4 h-4" />
                 Download PDF
               </button>
               <button
                 onClick={() => navigate('/login')}
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-[#4F46E5] text-white hover:bg-purple-700 transition-colors text-sm sm:text-base whitespace-nowrap"
+                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors text-sm sm:text-base whitespace-nowrap"
               >
                 <ExternalLink className="w-4 h-4" />
                 Create Your Own Report
@@ -265,20 +266,20 @@ const SharedReport = () => {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-5">
-            <p className="text-xs sm:text-sm text-gray-600 mb-1">Total Prompts</p>
-            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold">{totalPrompts}</p>
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Total Prompts</p>
+            <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-800 dark:text-white">{totalPrompts}</p>
           </div>
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-5">
-            <p className="text-xs sm:text-sm text-gray-600 mb-1">Website Found</p>
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Website Found</p>
             <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-green-500">{stats.websiteFound ?? 0}</p>
           </div>
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-5">
-            <p className="text-xs sm:text-sm text-gray-600 mb-1">Brand Mentioned</p>
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Brand Mentioned</p>
             <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-blue-500">{stats.brandMentioned ?? 0}</p>
           </div>
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-3 sm:p-5">
-            <p className="text-xs sm:text-sm text-gray-600 mb-1">Total Findings</p>
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-3 sm:p-5">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Total Findings</p>
             <p className="text-xl sm:text-2xl lg:text-3xl font-semibold text-purple-500">{stats.totalFindings ?? 0}</p>
           </div>
         </div>
@@ -286,35 +287,35 @@ const SharedReport = () => {
         {/* Visibility Analysis Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* Visibility Score by Platform */}
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Visibility Score by Platform</h3>
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-2 sm:mb-4">Visibility Score by Platform</h3>
             {platformChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={450}>
                 <BarChart data={platformChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="name" stroke="#6b7280" tick={{ fontSize: 12 }} />
-                  <YAxis stroke="#6b7280" tick={{ fontSize: 12 }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="name" stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
+                  <YAxis stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                    labelStyle={{ color: '#4b5563' }}
+                    contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                    labelStyle={{ color: '#F9FAFB' }}
                   />
                   <Legend wrapperStyle={{ paddingTop: '10px' }} />
                   <Bar dataKey="visibility" fill="#8B5CF6" name="Visibility %" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-400">
+              <div className="flex items-center justify-center h-64 text-gray-400 dark:text-gray-500">
                 No platform data available
               </div>
             )}
-            <div className="mt-2 text-sm text-gray-600">
-              <p>Overall Visibility Score: <span className="text-gray-800 font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
+            <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <p>Overall Visibility Score: <span className="text-gray-800 dark:text-white font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
             </div>
           </div>
 
           {/* Category Visibility Trends */}
-          <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6">
-            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-2 sm:mb-4">Category Visibility Trends</h3>
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-2 sm:mb-4">Category Visibility Trends</h3>
             {categoryChartData.length > 0 ? (
               <ResponsiveContainer width="100%" height={450}>
                 <BarChart data={categoryChartData} margin={{ top: 5, right: 10, left: 0, bottom: 70 }}>
@@ -331,33 +332,33 @@ const SharedReport = () => {
                   />
                   <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                   <Tooltip 
-                    contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }}
-                    labelStyle={{ color: '#4b5563' }}
+                    contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
+                    labelStyle={{ color: '#F9FAFB' }}
                   />
                   <Legend wrapperStyle={{ paddingTop: '10px' }} />
                   <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="flex items-center justify-center h-64 text-gray-400">
+              <div className="flex items-center justify-center h-64 text-gray-400 dark:text-gray-500">
                 No category data available
               </div>
             )}
-            <div className="mt-2 text-sm text-gray-600">
-              <p>Top performing category: <span className="text-gray-800 font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
+            <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+              <p>Top performing category: <span className="text-gray-800 dark:text-white font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
             </div>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="bg-white border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8">
+        <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 mb-6 sm:mb-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">Category</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Category</label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full bg-white border border-gray-300 rounded-xl px-3 sm:px-4 py-2 text-gray-800 focus:outline-none focus:border-[#4F46E5] text-sm sm:text-base"
+                className="w-full bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-xl px-3 sm:px-4 py-2 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-primary-500 text-sm sm:text-base"
               >
                 {categories.map(category => (
                   <option key={category} value={category}>{category}</option>
@@ -366,11 +367,11 @@ const SharedReport = () => {
             </div>
 
             <div>
-              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">Platform</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Platform</label>
               <select
                 value={selectedPlatform}
                 onChange={(e) => setSelectedPlatform(e.target.value)}
-                className="w-full bg-white border border-gray-300 rounded-xl px-3 sm:px-4 py-2 text-gray-800 focus:outline-none focus:border-[#4F46E5] text-sm sm:text-base"
+                className="w-full bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-xl px-3 sm:px-4 py-2 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-primary-500 text-sm sm:text-base"
               >
                 <option value="All Platforms">All Platforms</option>
                 <option value="chatgpt">ChatGPT</option>
@@ -380,9 +381,9 @@ const SharedReport = () => {
             </div>
 
             <div className="sm:col-span-2 md:col-span-1">
-              <label className="block text-xs sm:text-sm font-medium text-gray-500 mb-2">Search Prompts</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">Search Prompts</label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -396,55 +397,55 @@ const SharedReport = () => {
         </div>
 
         {/* Results Table - Identical to ReportView */}
-        <div className="bg-white rounded-lg border border-gray-200">
+        <div className="bg-white dark:bg-dark-900 rounded-lg border border-gray-200 dark:border-dark-700">
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1100px]">
-              <thead className="bg-gray-50">
+              <thead className="bg-gray-50 dark:bg-dark-800">
                 <tr>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Prompt
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Platform
                   </th>
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
                     Found
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Index
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Website
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     Brand Mention
                   </th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">AI Response</th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Snippet</th>
-                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Citation</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">AI Response</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Snippet</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Citation</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
                 {filteredData.map((item, idx) => (
                   item.response && Array.isArray(item.response) ? (
                     item.response.map((platformData, pIdx) => (
-                      <tr key={`${idx}-${pIdx}`} className="hover:bg-gray-100 transition-colors">
+                      <tr key={`${idx}-${pIdx}`} className="hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                         {pIdx === 0 && (
-                          <td className="px-3 py-3 text-sm text-gray-800" rowSpan={item.response.length}>
+                          <td className="px-3 py-3 text-sm text-gray-800 dark:text-gray-200" rowSpan={item.response.length}>
                             {item.prompt}
                           </td>
                         )}
                         {pIdx === 0 && (
-                          <td className="px-3 py-3 text-sm text-gray-600" rowSpan={item.response.length}>
-                            <span className="px-2 py-1 bg-gray-200 rounded-full text-xs">
+                          <td className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400" rowSpan={item.response.length}>
+                            <span className="px-2 py-1 bg-gray-200 dark:bg-dark-700 rounded-full text-xs">
                               {item.category}
                             </span>
                           </td>
                         )}
-                        <td className="px-3 py-3 text-sm text-gray-800 capitalize whitespace-nowrap">
+                        <td className="px-3 py-3 text-sm text-gray-800 dark:text-gray-200 capitalize whitespace-nowrap">
                           {platformData.src === 'google_ai_overviews' ? 'Google AI' : platformData.src}
                         </td>
                         <td className="px-3 py-3 text-sm whitespace-nowrap">
@@ -458,13 +459,13 @@ const SharedReport = () => {
                             </span>
                           )}
                         </td>
-                        <td className="px-3 py-3 text-sm text-gray-800 whitespace-nowrap">
+                        <td className="px-3 py-3 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">
                           {platformData.index !== null ? `#${platformData.index}` : '-'}
                         </td>
                         <td className="px-3 py-3 text-sm whitespace-nowrap">
                           {platformData.details?.websiteFound ? (
                             platformData.details?.website ? (
-                              <a href={platformData.details.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600 underline text-xs">View Source</a>
+                              <a href={platformData.details.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs">View Source</a>
                             ) : (
                               <span className="text-green-500">✓ Yes</span>
                             )
@@ -487,7 +488,7 @@ const SharedReport = () => {
                                 answer: platformData.aianswer,
                                 prompt: item.prompt
                               })}
-                              className="px-2 py-1 text-xs bg-purple-600 hover:bg-purple-700 text-white rounded whitespace-nowrap"
+                              className="px-2 py-1 text-xs bg-purple-600 hover:bg-purple-700 dark:bg-action-600 dark:hover:bg-action-700 text-white rounded whitespace-nowrap"
                             >
                               View Response
                             </button>
@@ -502,7 +503,7 @@ const SharedReport = () => {
                                 citation: platformData.details?.snippet || '',
                                 website: platformData.details?.website || platformData.details?.matchedUrl || null,
                               })}
-                              className="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 text-gray-800 rounded whitespace-nowrap"
+                              className="px-2 py-1 text-xs bg-gray-200 dark:bg-dark-700 hover:bg-gray-300 dark:hover:bg-dark-600 text-gray-800 dark:text-gray-200 rounded whitespace-nowrap"
                             >
                               View Snippet
                             </button>
@@ -516,7 +517,7 @@ const SharedReport = () => {
                               href={platformData.details?.website || platformData.details?.matchedUrl} 
                               target="_blank" 
                               rel="noopener noreferrer" 
-                              className="text-blue-500 hover:text-blue-600 underline text-xs flex items-center gap-1"
+                              className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs flex items-center gap-1"
                             >
                               <ExternalLink className="w-3 h-3" />
                               Link
@@ -529,8 +530,8 @@ const SharedReport = () => {
                     ))
                   ) : (
                     <tr key={idx} className="hover:bg-gray-100 transition-colors">
-                      <td colSpan="11" className="px-3 py-3 text-sm text-gray-600">
-                        <div className="text-gray-800">{item.prompt}</div>
+                      <td colSpan="11" className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400">
+                        <div className="text-gray-800 dark:text-gray-200">{item.prompt}</div>
                         <div className="text-red-500 text-xs mt-1">No platform response captured</div>
                       </td>
                     </tr>
@@ -538,27 +539,27 @@ const SharedReport = () => {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
-        </div>
 
         {/* Snippet Modal */}
         {citationContent && (
-          <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50 p-4">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4">Snippet</h3>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 sm:p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4">Snippet</h3>
               {citationContent.citation ? (
-                <p className="text-sm sm:text-base text-gray-800 whitespace-pre-line mb-4">{citationContent.citation}</p>
+                <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>
               ) : (
-                <p className="text-sm text-gray-600 mb-4">No snippet available.</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">No snippet available.</p>
               )}
               {citationContent.website && (
-                <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 underline text-sm sm:text-base">
+                <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-sm sm:text-base">
                   <ExternalLink className="w-4 h-4" />
                   Open Source
                 </a>
               )}
               <div className="flex justify-end mt-6">
-                <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm sm:text-base">Close</button>
+                <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600 text-sm sm:text-base">Close</button>
               </div>
             </div>
           </div>
@@ -566,35 +567,35 @@ const SharedReport = () => {
 
         {/* AI Answer Modal */}
         {aiAnswerContent && (
-          <div className="fixed inset-0 bg-black bg-opacity-25 flex items-center justify-center z-50 p-4">
-            <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[85vh] overflow-y-auto">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[85vh] overflow-y-auto">
               <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">AI Response</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 break-words">
-                    <span className="font-medium text-gray-700">Platform:</span> <span className="capitalize">{aiAnswerContent.platform}</span>
+                  <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2">AI Response</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 break-words">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Platform:</span> <span className="capitalize">{aiAnswerContent.platform}</span>
                   </p>
-                  <p className="text-xs sm:text-sm text-gray-600 mt-1 break-words">
-                    <span className="font-medium text-gray-700">Prompt:</span> {aiAnswerContent.prompt}
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 break-words">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">Prompt:</span> {aiAnswerContent.prompt}
                   </p>
                 </div>
               </div>
-              <div className="bg-gray-50 rounded-lg p-4 mb-4 max-h-[50vh] overflow-y-auto">
-                <p className="text-sm sm:text-base text-gray-800 whitespace-pre-wrap leading-relaxed">{aiAnswerContent.answer}</p>
+              <div className="bg-gray-50 dark:bg-dark-800 rounded-lg p-4 mb-4 max-h-[50vh] overflow-y-auto">
+                <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{aiAnswerContent.answer}</p>
               </div>
               <div className="flex justify-end">
-                <button onClick={() => setAiAnswerContent(null)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm sm:text-base">Close</button>
+                <button onClick={() => setAiAnswerContent(null)} className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600 text-sm sm:text-base">Close</button>
               </div>
             </div>
           </div>
         )}
 
-        <div className="mt-12 text-center text-gray-600 text-sm">
+        <div className="mt-12 text-center text-gray-600 dark:text-gray-400 text-sm">
           <p>
             Want more visibility insights like this?{' '}
             <button
               onClick={() => navigate('/register')}
-              className="text-[#4F46E5] hover:text-purple-700 font-medium"
+              className="text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
             >
               Create a free RankPrompt account
             </button>

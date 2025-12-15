@@ -560,14 +560,14 @@ const Reports = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-dark-950">
       <Sidebar />
       
       <div className="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8 mt-16 lg:mt-0">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-800 mb-3 sm:mb-4 px-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-800 dark:text-white mb-3 sm:mb-4 px-2">
               Check Your Client's Visibility
             </h1>
             <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-3 sm:mb-4 px-2">
@@ -588,12 +588,12 @@ const Reports = () => {
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : currentStep > 1
                     ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-gray-300 text-gray-500'
+                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
                 }`}>
                   {currentStep > 1 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '1'}
                 </div>
                 <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
-                  currentStep >= 1 ? 'text-gray-800' : 'text-gray-500'
+                  currentStep >= 1 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
                 }`}>
                   Brand Details
                 </span>
@@ -601,7 +601,7 @@ const Reports = () => {
 
               {/* Connector */}
               <div className={`w-8 sm:w-16 h-0.5 ${
-                currentStep > 1 ? 'bg-green-500' : 'bg-gray-300'
+                currentStep > 1 ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-700'
               }`}></div>
 
               {/* Step 2 */}
@@ -611,12 +611,12 @@ const Reports = () => {
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : currentStep > 2
                     ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-gray-300 text-gray-500'
+                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
                 }`}>
                   {currentStep > 2 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '2'}
                 </div>
                 <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
-                  currentStep >= 2 ? 'text-gray-800' : 'text-gray-500'
+                  currentStep >= 2 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
                 }`}>
                   Generate Prompts
                 </span>
@@ -624,7 +624,7 @@ const Reports = () => {
 
               {/* Connector */}
               <div className={`w-16 h-0.5 ${
-                currentStep > 2 ? 'bg-green-500' : 'bg-gray-300'
+                currentStep > 2 ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-700'
               }`}></div>
 
               {/* Step 3 */}
@@ -632,12 +632,12 @@ const Reports = () => {
                 <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${
                   currentStep === 3 
                     ? 'bg-primary-500 border-primary-500 text-white'
-                    : 'border-gray-300 text-gray-500'
+                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
                 }`}>
                   3
                 </div>
                 <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
-                  currentStep >= 3 ? 'text-gray-800' : 'text-gray-500'
+                  currentStep >= 3 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
                 }`}>
                   Test Visibility
                 </span>
@@ -647,11 +647,11 @@ const Reports = () => {
 
           {/* Step 1: Brand Details Form */}
           {currentStep === 1 && (
-          <div className="bg-[#F8FAFC] border border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
-            <div className="space-y-4 sm:space-y-6">
+            <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
+              <div className="space-y-4 sm:space-y-6">
               {/* Brand Name */}
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
                   Brand Name
                 </label>
                 <input
@@ -660,13 +660,13 @@ const Reports = () => {
                   value={formData.brandName}
                   onChange={handleInputChange}
                   placeholder="rocket"
-                  className="w-full px-4 py-3 bg-white rounded-xl border border-gray-300 focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 placeholder-gray-400 transition-all"
+                  className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                 />
               </div>
 
               {/* Website URL */}
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
                   Website URL
                 </label>
                 <input
@@ -675,16 +675,16 @@ const Reports = () => {
                   value={formData.websiteUrl}
                   onChange={handleInputChange}
                   placeholder="www.rocket.com"
-                  className="w-full px-4 py-3 bg-white rounded-xl border border-gray-300 focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 placeholder-gray-400 transition-all"
+                  className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                 />
-                <p className="text-gray-600 text-xs mt-2">
+                <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
                   Just drop your domain here, we'll fetch try all
                 </p>
               </div>
 
               {/* Prompt/Search Scope */}
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
                   Prompt/Search Scope
                 </label>
                 <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -692,8 +692,8 @@ const Reports = () => {
                     onClick={() => setFormData(prev => ({ ...prev, searchScope: 'local' }))}
                     className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${
                       formData.searchScope === 'local'
-                        ? 'bg-[#4F46E5] text-white'
-                        : 'bg-gray-100 border border-[#CBD5E1] text-gray-700 hover:bg-gray-200'
+                        ? 'bg-action-600 text-white'
+                        : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
                     }`}
                   >
                     <Search className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -703,15 +703,15 @@ const Reports = () => {
                     onClick={() => setFormData(prev => ({ ...prev, searchScope: 'national' }))}
                     className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${
                       formData.searchScope === 'national'
-                        ? 'bg-[#4F46E5] text-white'
-                        : 'bg-gray-100 border border-[#CBD5E1] text-gray-700 hover:bg-gray-200'
+                        ? 'bg-action-600 text-white'
+                        : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
                     }`}
                   >
                     <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="text-sm sm:text-base font-medium">National Search</span>
                   </button>
                 </div>
-                <p className="text-gray-600 text-xs mt-2">
+                <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
                   {formData.searchScope === 'local' 
                     ? "Target customers in your city or region (e.g., 'Best dentist in Dallas')"
                     : 'Target customers nationwide. Use this marketing approach'}
@@ -721,7 +721,7 @@ const Reports = () => {
               {/* Local Search - City Input */}
               {formData.searchScope === 'local' && (
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
                     City & Country Code
                   </label>
                   <input
@@ -730,25 +730,28 @@ const Reports = () => {
                     value={formData.localSearchCity}
                     onChange={handleInputChange}
                     placeholder="e.g., Delhi, IN or New York, US"
-                    className="w-full px-4 py-3 bg-white rounded-xl border border-[#CBD5E1] focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 placeholder-gray-400 transition-all"
+                    className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                   />
+                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
+                    Just drop your domain here, we'll fetch try all
+                  </p>
                 </div>
               )}
 
               {/* National Search - Country Dropdown */}
               {formData.searchScope === 'national' && (
                 <div>
-                  <label className="block text-gray-700 text-sm font-medium mb-2">
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
                     Target Country
                   </label>
                   <select
                     name="targetCountry"
                     value={formData.targetCountry}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white rounded-xl border border-gray-300 focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 placeholder-gray-400 transition-all appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all appearance-none cursor-pointer"
                   >
                     {countries.map((country) => (
-                      <option key={country.code} value={country.code} className="bg-white">
+                      <option key={country.code} value={country.code} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
                         {country.name}, {country.code}
                       </option>
                     ))}
@@ -758,17 +761,17 @@ const Reports = () => {
 
               {/* Language */}
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
                   Language
                 </label>
                 <select
                   name="language"
                   value={formData.language}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-white border border-gray-300 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-purple-500/20 transition-all appearance-none cursor-pointer"
+                  className="w-full px-4 py-3 bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 transition-all appearance-none cursor-pointer"
                 >
                   {languages.map((lang) => (
-                    <option key={lang} value={lang} className="bg-white">
+                    <option key={lang} value={lang} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
                       {lang}
                     </option>
                   ))}
@@ -777,7 +780,7 @@ const Reports = () => {
 
               {/* AI Platforms */}
               <div>
-                <label className="block text-gray-700 text-sm font-medium mb-3">
+                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-3">
                   AI Platforms
                 </label>
                 <div className="space-y-3">
@@ -792,10 +795,10 @@ const Reports = () => {
                       />
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                         formData.platforms.perplexity
-                          ? 'bg-[#4F46E5] border-[#4F46E5]'
+                          ? 'bg-action-600 border-action-600'
                           : isFreeTier
-                          ? 'border-gray-200 bg-gray-100'
-                          : 'border-gray-300 group-hover:border-gray-400'
+                          ? 'border-gray-200 dark:border-dark-600 bg-gray-100 dark:bg-dark-800'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
                       }`}>
                         {formData.platforms.perplexity && (
                           <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -811,8 +814,8 @@ const Reports = () => {
                         className="w-4 h-4"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
-                      <span className={`group-hover:text-gray-800 transition-colors ${
-                        isFreeTier ? 'text-gray-400' : 'text-gray-700'
+                      <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${
+                        isFreeTier ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'
                       }`}>
                         Perplexity
                       </span>
@@ -829,8 +832,8 @@ const Reports = () => {
                       />
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                         formData.platforms.chatgpt
-                          ? 'bg-[#4F46E5] border-[#4F46E5]'
-                          : 'border-gray-300 group-hover:border-gray-400'
+                          ? 'bg-action-600 border-action-600'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
                       }`}>
                         {formData.platforms.chatgpt && (
                           <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -846,7 +849,7 @@ const Reports = () => {
                         className="w-4 h-4"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
-                      <span className="text-gray-700 group-hover:text-gray-800 transition-colors">
+                      <span className={`text-gray-700 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white transition-colors`}>
                         ChatGPT
                       </span>
                     </div>
@@ -863,10 +866,10 @@ const Reports = () => {
                       />
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                         formData.platforms.googleAiOverviews
-                          ? 'bg-[#4F46E5] border-[#4F46E5]'
+                          ? 'bg-action-600 border-action-600'
                           : isFreeTier
-                          ? 'border-gray-200 bg-gray-100'
-                          : 'border-gray-300 group-hover:border-gray-400'
+                          ? 'border-gray-200 dark:border-dark-600 bg-gray-100 dark:bg-dark-800'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
                       }`}>
                         {formData.platforms.googleAiOverviews && (
                           <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -882,8 +885,8 @@ const Reports = () => {
                         className="w-4 h-4"
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
-                      <span className={`group-hover:text-gray-800 transition-colors ${
-                        isFreeTier ? 'text-gray-400' : 'text-gray-700'
+                      <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${
+                        isFreeTier ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'
                       }`}>
                         Google AI Overviews
                       </span>
@@ -891,11 +894,11 @@ const Reports = () => {
                   </label>
                 </div>
                 
-                <div className="mt-4 p-3 bg-purple-50 rounded-lg">
-                  <p className="text-purple-600 text-xs">
+                <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-500/10 rounded-lg">
+                  <p className="text-purple-600 dark:text-purple-400 text-xs">
                     <span className="font-semibold">💎 Google AI Overview</span>
                   </p>
-                  <p className="text-gray-600 text-xs mt-1">
+                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
                     Use it to evaluate & optimize against Google AI Overviews or get ranked.
                   </p>
                 </div>
@@ -903,13 +906,13 @@ const Reports = () => {
 
               {/* Favicon Preview */}
               {formData.brandFavicon && (
-                <div className="flex items-center space-x-3 p-3 bg-gray-100 rounded-lg">
+                <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-dark-800 rounded-lg">
                   <img 
                     src={formData.brandFavicon} 
                     alt="Brand Favicon" 
                     className="w-8 h-8 rounded"
                   />
-                  <span className="text-gray-800 text-sm">Brand favicon fetched successfully</span>
+                  <span className="text-gray-800 dark:text-gray-200 text-sm">Brand favicon fetched successfully</span>
                 </div>
               )}
 
@@ -917,7 +920,7 @@ const Reports = () => {
               <button
                 onClick={handleAnalyzeBrand}
                 disabled={isFetchingBrandInfo}
-                className="w-full bg-[#4F46E5] text-white font-bold py-4 px-6 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+                className="w-full bg-action-600 text-white font-bold py-4 px-6 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center space-x-2 hover:bg-action-700"
               >
                 <Search className="w-5 h-5" />
                 <span>{isFetchingBrandInfo ? 'Analyzing Brand...' : 'Analyze Brand'}</span>
@@ -951,15 +954,15 @@ const Reports = () => {
       {/* Existing Brand Modal */}
       {showBrandModal && existingBrand && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/25 backdrop-blur-sm">
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 max-w-sm w-full shadow-2xl animate-slide-up">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 w-sm w-full shadow-2xl animate-slide-up">
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-800">Existing Brand Found</h3>
+              <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">Existing Brand Found</h3>
               <button
                 onClick={() => setShowBrandModal(false)}
                 className="p-1 hover:bg-white/10 rounded-lg transition-colors"
               >
-                <X className="w-5 h-5 text-gray-600 hover:text-gray-800" />
+                <X className="w-5 h-5 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white" />
               </button>
             </div>
 
@@ -977,16 +980,16 @@ const Reports = () => {
                 )}
               </div>
               
-              <p className="text-gray-800 mb-2">
+              <p className="text-gray-800 dark:text-gray-200 mb-2">
                 We notice you already have a saved brand named{' '}
-                <span className="text-gray-900 font-semibold">{existingBrand.name}</span>
+                <span className="text-gray-900 dark:text-white font-semibold">{existingBrand.name}</span>
               </p>
               
-              <p className="text-gray-600 text-sm mb-1">
-                Website: <span className="text-gray-900">{existingBrand.website}</span>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">
+                Website: <span className="text-gray-900 dark:text-white">{existingBrand.website}</span>
               </p>
               
-              <p className="text-gray-800 mt-4">
+              <p className="text-gray-800 dark:text-gray-200 mt-4">
                 Do you want to add this report to this brand?
               </p>
             </div>
@@ -1000,7 +1003,7 @@ const Reports = () => {
                   setShowBrandModal(false);
                   // You'll integrate with your n8n agent here
                 }}
-                className="w-full bg-[#4F46E5] hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center space-x-2"
+                className="w-full bg-action-600 hover:bg-action-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center space-x-2"
               >
                 <span>Yes, add to this brand</span>
               </button>
@@ -1012,7 +1015,7 @@ const Reports = () => {
                   setShowBrandModal(false);
                   // Continue with analysis
                 }}
-                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 hover:text-gray-900 font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center space-x-2"
+                className="w-full bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center space-x-2"
               >
                 <span>🔬 No, just experimenting</span>
               </button>

@@ -93,11 +93,11 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden py-12">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-950 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden py-12">
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-primary-500/20 rounded-full blur-3xl animate-float"></div>
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-primary-500/10 dark:bg-primary-500/20 rounded-full blur-3xl animate-float"></div>
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent-500/10 dark:bg-accent-500/20 rounded-full blur-3xl animate-float" style={{ animationDelay: '2s' }}></div>
       </div>
 
       <div className="relative max-w-md w-full">
@@ -113,10 +113,10 @@ const Register = () => {
         </Link>
 
         {/* Register Card */}
-        <div className="bg-white rounded-3xl p-8 border border-gray-200 shadow-lg">
+        <div className="glass-effect rounded-3xl p-8 shadow-lg dark:shadow-2xl">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-black text-gray-800 mb-2">Create Account</h2>
-            <p className="text-gray-600">Start tracking your AI rankings today</p>
+            <h2 className="text-3xl font-black text-gray-800 dark:text-white mb-2">Create Account</h2>
+            <p className="text-gray-600 dark:text-gray-300">Start tracking your AI rankings today</p>
           </div>
 
           {error && (
@@ -128,7 +128,7 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Full Name
               </label>
               <div className="relative">
@@ -149,7 +149,7 @@ const Register = () => {
 
             {/* Email Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -170,7 +170,7 @@ const Register = () => {
 
             {/* Password Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Password
               </label>
               <div className="relative">
@@ -183,13 +183,13 @@ const Register = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-12 pr-12 py-3 bg-white rounded-xl border border-gray-300 focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-200 text-gray-800 placeholder-gray-400 transition-all"
+                  className="w-full pl-12 pr-12 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 hover:text-gray-700 transition-colors"
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />
@@ -202,7 +202,7 @@ const Register = () => {
 
             {/* Confirm Password Field */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                 Confirm Password
               </label>
               <div className="relative">
@@ -223,8 +223,8 @@ const Register = () => {
 
             {/* Referral Code Field (Optional) */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Referral Code <span className="text-gray-500 text-xs font-normal">(Optional)</span>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Referral Code <span className="text-gray-500 dark:text-gray-400 text-xs font-normal">(Optional)</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -234,13 +234,13 @@ const Register = () => {
                   type="text"
                   value={referralCode}
                   onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
-                  className="w-full pl-12 pr-4 py-3 bg-white rounded-xl border border-gray-300 focus:border-[#4F46E5] focus:outline-none focus:ring-2 focus:ring-purple-200 text-gray-800 placeholder-gray-400 transition-all uppercase"
+                  className="w-full pl-12 pr-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all uppercase"
                   placeholder="Enter referral code"
                   maxLength={8}
                 />
               </div>
               {referralCode && (
-                <p className="mt-2 text-xs text-purple-600">
+                <p className="mt-2 text-xs text-action-500 dark:text-action-400">
                   🎁 You'll earn bonus credits when you sign up with this referral code!
                 </p>
               )}
@@ -251,15 +251,15 @@ const Register = () => {
               <input
                 type="checkbox"
                 required
-                className="mt-1 w-4 h-4 rounded border-gray-300 bg-gray-100 text-[#4F46E5] focus:ring-2 focus:ring-purple-200"
+                className="mt-1 w-4 h-4 rounded border-gray-300 dark:border-dark-600 bg-gray-100 dark:bg-dark-800 text-action-600 focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50"
               />
-              <label className="text-sm text-gray-600">
+              <label className="text-sm text-gray-600 dark:text-gray-400">
                 I agree to the{' '}
-                <Link to="/terms" className="text-[#4F46E5] hover:text-purple-700">
+                <Link to="/terms" className="text-action-600 hover:text-action-700 dark:text-action-500 dark:hover:text-action-400">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link to="/privacy" className="text-[#4F46E5] hover:text-purple-700">
+                <Link to="/privacy" className="text-action-600 hover:text-action-700 dark:text-action-500 dark:hover:text-action-400">
                   Privacy Policy
                 </Link>
               </label>
@@ -269,7 +269,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#4F46E5] text-white px-6 py-3.5 rounded-xl font-bold hover:bg-purple-700 transition-all duration-300 flex items-center justify-center space-x-2"
+              className="w-full bg-action-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-action-700 transition-all duration-300 flex items-center justify-center space-x-2"
             >
               {loading ? (
                 <span>Creating account...</span>
@@ -284,9 +284,9 @@ const Register = () => {
 
           {/* Divider */}
           <div className="my-8 flex items-center">
-            <div className="flex-1 border-t border-gray-200"></div>
-            <span className="px-4 text-sm text-gray-500">or</span>
-            <div className="flex-1 border-t border-gray-200"></div>
+            <div className="flex-1 border-t border-gray-200 dark:border-dark-700"></div>
+            <span className="px-4 text-sm text-gray-500 dark:text-gray-400">or</span>
+            <div className="flex-1 border-t border-gray-200 dark:border-dark-700"></div>
           </div>
 
           {/* Google Sign Up */}
@@ -294,7 +294,7 @@ const Register = () => {
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={handleGoogleError}
-              theme="outline"
+              theme={document.documentElement.classList.contains('dark') ? 'filled_black' : 'outline'}
               size="large"
               width="100%"
               text="signup_with"
@@ -302,11 +302,11 @@ const Register = () => {
           </div>
 
           {/* Sign In Link */}
-          <p className="mt-8 text-center text-sm text-gray-600">
+          <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
             Already have an account?{' '}
             <Link
               to="/login"
-              className="text-[#4F46E5] hover:text-purple-700 font-semibold transition-colors"
+              className="text-action-600 hover:text-action-700 dark:text-action-500 dark:hover:text-action-400 font-semibold transition-colors"
             >
               Sign in
             </Link>

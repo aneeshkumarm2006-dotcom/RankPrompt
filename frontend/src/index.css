@@ -4,15 +4,29 @@
 
 @layer base {
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-  
+
   body {
-    @apply font-sans antialiased bg-white text-gray-900;
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  :root {
+    --background: 255 255 255;
+    --foreground: 15 23 42;
+  }
+
+  .dark {
+    --background: 15 23 42;
+    --foreground: 248 250 252;
   }
 }
 
 @layer components {
   .gradient-bg {
-    @apply bg-gradient-to-br from-white via-gray-100 to-white;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+  
+  .dark .gradient-bg {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   }
   
   .gradient-text {
@@ -20,11 +34,11 @@
   }
   
   .glass-effect {
-    @apply bg-white/50 backdrop-blur-xl border border-gray-200/50;
+    @apply bg-white/50 backdrop-blur-xl border border-gray-200/50 dark:bg-dark-800/50 dark:border-dark-700/50;
   }
   
   .glass-light {
-    @apply bg-white/5 backdrop-blur-md border border-white/10;
+    @apply bg-white/5 backdrop-blur-md border border-white/10 dark:bg-dark-900/5 dark:border-dark-800/10;
   }
   
   .glow-border {
