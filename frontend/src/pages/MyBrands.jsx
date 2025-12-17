@@ -185,7 +185,7 @@ const MyBrands = () => {
                         {brand.brandName}
                       </h3>
                       <a
-                        href={brand.websiteUrl}
+                        href={brand.websiteUrl.startsWith('http') ? brand.websiteUrl : `https://${brand.websiteUrl}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center gap-1 truncate"

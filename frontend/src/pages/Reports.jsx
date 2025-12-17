@@ -563,15 +563,17 @@ const Reports = () => {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-6 sm:mb-8 mt-16 lg:mt-0">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-800 dark:text-white mb-3 sm:mb-4 px-2">
-              Check Your Client's Visibility
-            </h1>
-            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-3 sm:mb-4 px-2">
-              <span className="gradient-text">in AI Assistants</span>
-            </h2>
-            <p className="text-gray-600 text-xs mt-2">
-              Find out if ChatGPT recommends your client - and what to do if it doesn't.
-            </p>
+            <div className="px-4 sm:px-6 md:px-8 lg:px-0">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-gray-800 dark:text-white mb-3 sm:mb-4">
+                Check Your Client's Visibility
+              </h1>
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black mb-3 sm:mb-4">
+                <span className="gradient-text">in AI Assistants</span>
+              </h2>
+              <p className="text-gray-600 text-xs mt-2">
+                Find out if ChatGPT recommends your client - and what to do if it doesn't.
+              </p>
+            </div>
           </div>
 
           {/* Step Indicators */}

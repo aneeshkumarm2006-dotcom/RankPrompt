@@ -2,7 +2,6 @@ import { Menu, X, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import ThemeToggle from './ThemeToggle';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -56,14 +55,10 @@ const Navbar = () => {
                 </Link>
               </>
             )}
-            <div className="ml-4">
-              <ThemeToggle />
-            </div>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center">
-            <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 p-2 ml-2"

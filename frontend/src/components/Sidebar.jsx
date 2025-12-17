@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import ThemeToggle from './ThemeToggle';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -92,14 +93,17 @@ const Sidebar = () => {
       }`}>
       {/* Logo */}
       <div className="p-6 border-b border-gray-200 dark:border-dark-700">
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl blur-lg opacity-50"></div>
-            <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 p-2 rounded-xl">
-              <Zap className="w-5 h-5 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-xl blur-lg opacity-50"></div>
+              <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 p-2 rounded-xl">
+                <Zap className="w-5 h-5 text-white" />
+              </div>
             </div>
+            <span className="text-xl font-bold gradient-text">RankPrompt</span>
           </div>
-          <span className="text-xl font-bold gradient-text">RankPrompt</span>
+          <ThemeToggle />
         </div>
       </div>
 
