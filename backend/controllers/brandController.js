@@ -235,13 +235,6 @@ export const deleteBrand = async (req, res) => {
     // Finally, delete the brand itself
     await Brand.findByIdAndDelete(id);
 
-    console.log('✅ Brand and associated data deleted:', {
-      brandId: id,
-      brandName: brand.brandName,
-      deletedReports: deletedReports.deletedCount,
-      deletedSchedules: deletedSchedules.deletedCount,
-    });
-
     res.status(200).json({
       success: true,
       message: 'Brand and all associated data deleted successfully',

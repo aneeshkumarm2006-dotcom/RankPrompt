@@ -1,9 +1,12 @@
 import crypto from 'crypto';
-import axios from 'axios';
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
-import ScheduledPrompt from '../models/ScheduledPrompt.js';
+import User from '../models/User.js';
 import Report from '../models/Report.js';
+import Brand from '../models/Brand.js';
+import ScheduledPrompt from '../models/ScheduledPrompt.js';
+import { deductCredits } from './creditController.js';
+import axios from 'axios';
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import PromptSent from '../models/PromptSent.js';
 
 
@@ -533,7 +536,6 @@ export const receiveN8nResult = async (req, res) => {
     }
 
     const { data } = req.body;
-    console.log('Received n8n result:', data);
 
     res.status(200).json({
       success: true,
@@ -891,12 +893,20 @@ export const n8nSaveReport = async (req, res) => {
       reportDate: payload.reportDate ? new Date(payload.reportDate) : new Date(),
     });
 
-    console.log('✅ N8N report saved successfully:', {
-      reportId: report._id,
-      userId: userId.toString(),
-      brandId: brandId ? brandId.toString() : 'none',
-      brandName: payload.brandName,
-    });
+    // Deduct credits for report generation
+    try {
+      const creditsToDeduct = reportData.length * (payload.platforms ? Object.keys(payload.platforms).filter(p => payload.platforms[p]).length : 1);
+      await deductCredits(
+        userId,
+        creditsToDeduct,
+        'report_analysis',
+        `Credits used for ${payload.brandName} report generation`,
+        { reportId: report._id, brandName: payload.brandName }
+      );
+    } catch (creditError) {
+      console.error('Failed to deduct credits:', creditError);
+      // Continue with report save even if credit deduction fails
+    }
 
     // Automatically find and update the scheduled prompt for this brand/user
     let scheduledPromptUpdate = null;
@@ -945,17 +955,12 @@ export const n8nSaveReport = async (req, res) => {
             scheduleFrequency: scheduledPrompt.scheduleFrequency,
           };
           
-          console.log('✅ Scheduled prompt updated automatically:', {
-            scheduledPromptId: scheduledPrompt._id.toString(),
-            brandName: scheduledPrompt.brandName,
-            lastRun: scheduledPrompt.lastRun,
-            nextRun: scheduledPrompt.nextRun,
-          });
+          
         } else {
-          console.log('ℹ️ No active scheduled prompt found for this brand/user (or none are due)');
+          console.log('No active scheduled prompt found for this brand/user (or none are due)');
         }
       } catch (updateError) {
-        console.error('❌ Error updating scheduled prompt:', updateError);
+        console.error('Error updating scheduled prompt:', updateError);
         // Don't fail the whole request if scheduled prompt update fails
       }
     }

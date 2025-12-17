@@ -68,8 +68,8 @@ const Profile = () => {
 
   const creditData = {
     availableCredits: user?.credits || 0,
-    billingCycleStarted: 'October 28, 2025',
-    lastCreditReset: 'October 28, 2025',
+    billingCycleStarted: user?.subscriptionStartDate ? new Date(user.subscriptionStartDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A',
+    lastCreditReset: user?.lastCreditReset ? new Date(user.lastCreditReset).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'N/A',
     monthlyCreditsBuilt: '0 of each month',
     monthlyPlanCredits: { used: 0, total: 0 },
     topUpCredits: { used: 0, total: 0 }
@@ -203,21 +203,6 @@ const Profile = () => {
                     <div className="text-center mb-3 sm:mb-4">
                       <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">Available Credits</p>
                       <p className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-white">{creditData.availableCredits}</p>
-                    </div>
-                    <div className="h-px bg-gray-200 dark:bg-dark-700 mb-3 sm:mb-4"></div>
-                    <div className="space-y-2 sm:space-y-0 sm:grid sm:grid-cols-3 sm:gap-3 text-xs">
-                      <div className="bg-gray-100 dark:bg-dark-700/50 rounded-lg p-2 sm:p-2.5">
-                        <p className="text-gray-500 dark:text-gray-400 mb-0.5">Cycle Started</p>
-                        <p className="text-gray-800 dark:text-gray-200 font-medium">{creditData.billingCycleStarted}</p>
-                      </div>
-                      <div className="bg-gray-100 dark:bg-dark-700/50 rounded-lg p-2 sm:p-2.5">
-                        <p className="text-gray-500 dark:text-gray-400 mb-0.5">Last Reset</p>
-                        <p className="text-gray-800 dark:text-gray-200 font-medium">{creditData.lastCreditReset}</p>
-                      </div>
-                      <div className="bg-gray-100 dark:bg-dark-700/50 rounded-lg p-2 sm:p-2.5">
-                        <p className="text-gray-500 dark:text-gray-400 mb-0.5">Monthly Built</p>
-                        <p className="text-gray-800 dark:text-gray-200 font-medium">{creditData.monthlyCreditsBuilt}</p>
-                      </div>
                     </div>
                   </div>
                 </div>

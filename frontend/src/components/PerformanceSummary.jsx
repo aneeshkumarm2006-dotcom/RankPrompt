@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, TrendingUp, Eye, ExternalLink, CalendarIcon } from 'lucide-react';
+import { Calendar, TrendingUp, Eye, ExternalLink, CalendarIcon, RefreshCw, Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -21,8 +21,22 @@ const PerformanceSummary = ({ brandData, reports }) => {
   const [trendDateRange, setTrendDateRange] = useState({ startDate: '', endDate: '' });
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [platformAverages, setPlatformAverages] = useState({ chatgpt: 0, perplexity: 0, googleAiOverviews: 0 });
+  const [competitors, setCompetitors] = useState([{ name: '', website: '' }]);
+  const [competitorSnapshot, setCompetitorSnapshot] = useState(null);
+  const [competitorLoading, setCompetitorLoading] = useState(false);
+  const [runningComparison, setRunningComparison] = useState(false);
 
   const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444'];
+  const latestReportId = reports?.[0]?._id;
+
+  const tooltipStyle = {
+    backgroundColor: '#0f172a',
+    color: '#e2e8f0',
+    border: '1px solid #1f2937',
+    borderRadius: '8px',
+    fontSize: '12px',
+  };
+  const tooltipTextStyle = { color: '#e2e8f0', fontSize: 12 };
 
   // Check for scheduled reports
   useEffect(() => {
@@ -93,6 +107,176 @@ const PerformanceSummary = ({ brandData, reports }) => {
     
     fetchVisibilityTrend();
   }, [brandData, reports.length, trendDateRange]);
+
+  // Fetch competitor comparison snapshot for latest report
+  useEffect(() => {
+    const fetchCompetitorComparison = async () => {
+      if (!latestReportId) return;
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+      setCompetitorLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/reports/${latestReportId}/competitor-comparison`, {
+          credentials: 'include',
+        });
+        if (response.ok) {
+          const { data } = await response.json();
+          if (data) {
+            setCompetitorSnapshot(data);
+            if (Array.isArray(data.competitors) && data.competitors.length) {
+              setCompetitors(data.competitors.slice(0, 3));
+            }
+          } else {
+            setCompetitorSnapshot(null);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching competitor comparison:', error);
+      } finally {
+        setCompetitorLoading(false);
+      }
+    };
+    fetchCompetitorComparison();
+  }, [latestReportId]);
+
+  const handleCompetitorChange = (index, field, value) => {
+    setCompetitors((prev) => prev.map((c, idx) => (idx === index ? { ...c, [field]: value } : c)));
+  };
+
+  const addCompetitorRow = () => {
+    setCompetitors((prev) => (prev.length >= 3 ? prev : [...prev, { name: '', website: '' }]));
+  };
+
+  const removeCompetitorRow = (index) => {
+    setCompetitors((prev) => prev.filter((_, idx) => idx !== index));
+  };
+
+  const runCompetitorComparison = async () => {
+    if (!latestReportId) {
+      toast.error('Create a report first to compare competitors');
+      return;
+    }
+
+    const cleaned = competitors
+      .map((c) => ({
+        name: (c.name || '').trim(),
+        website: (c.website || '').trim(),
+      }))
+      .filter((c) => c.name && c.website)
+      .slice(0, 3);
+
+    if (!cleaned.length) {
+      toast.error('Add at least one competitor (name + website). Max 3.');
+      return;
+    }
+
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    setRunningComparison(true);
+    try {
+      const response = await fetch(`${API_URL}/reports/${latestReportId}/competitor-comparison`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ competitors: cleaned }),
+      });
+      const result = await response.json();
+      if (response.ok && result?.data) {
+        setCompetitorSnapshot(result.data);
+        setCompetitors(result.data.competitors || cleaned);
+        toast.success('Competitor comparison ready');
+        setActiveTab('competitor');
+      } else {
+        toast.error(result?.message || 'Failed to run competitor comparison');
+      }
+    } catch (error) {
+      console.error('Run competitor comparison error:', error);
+      toast.error('Failed to run competitor comparison');
+    } finally {
+      setRunningComparison(false);
+    }
+  };
+
+  const resetCompetitorComparison = async () => {
+    if (!latestReportId) return;
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      const response = await fetch(`${API_URL}/reports/${latestReportId}/competitor-comparison`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (response.ok) {
+        setCompetitorSnapshot(null);
+        setCompetitors([{ name: '', website: '' }]);
+        toast.success('Competitors reset. Re-run to refresh results.');
+      } else {
+        const data = await response.json();
+        toast.error(data?.message || 'Failed to reset competitors');
+      }
+    } catch (error) {
+      console.error('Reset competitor comparison error:', error);
+      toast.error('Failed to reset competitors');
+    }
+  };
+
+  const buildComparisonData = (snapshot) => {
+    if (!snapshot?.response) return null;
+    const payload = Array.isArray(snapshot.response) ? snapshot.response[0] : snapshot.response;
+    if (!payload) return null;
+
+    const meta = payload.metadata || {};
+    const brandLabel = meta.brandName || brandData?.brandName || 'Your Brand';
+
+    const promptKeys = Object.keys(payload).filter((key) => key.startsWith('prompt') && typeof payload[key] === 'object');
+    const promptChartData = promptKeys.map((key, idx) => {
+      const entry = payload[key] || {};
+      const row = {
+        name: entry.prompt || `Prompt ${idx + 1}`,
+        [brandLabel]: Number.isFinite(Number(entry.originalBrandRank)) ? Number(entry.originalBrandRank) : null,
+      };
+
+      const competitorNames = [entry.comp1Name, entry.comp2Name, entry.comp3Name].filter(Boolean);
+      competitorNames.forEach((cName, cIdx) => {
+        const rankVal = entry[`comp${cIdx + 1}Rank`];
+        row[cName] = Number.isFinite(Number(rankVal)) ? Number(rankVal) : null;
+      });
+      return row;
+    });
+
+    const summary = payload.summary || {};
+    const avgData = [];
+    if (summary.originalBrandAverageRank !== undefined) {
+      avgData.push({
+        name: brandLabel,
+        rank: Number(summary.originalBrandAverageRank),
+      });
+    }
+    if (summary.competitorAverageRanks && typeof summary.competitorAverageRanks === 'object') {
+      Object.entries(summary.competitorAverageRanks).forEach(([name, rank]) => {
+        if (rank !== undefined && rank !== null) {
+          avgData.push({ name, rank: Number(rank) });
+        }
+      });
+    }
+
+    const competitorNames = meta.competitors?.filter(Boolean) || [];
+
+    return {
+      brandLabel,
+      promptChartData,
+      avgData,
+      competitorNames,
+    };
+  };
+
+  const comparisonCharts = buildComparisonData(competitorSnapshot);
+  const seriesKeys = comparisonCharts
+    ? Array.from(
+        new Set(
+          comparisonCharts.promptChartData.flatMap((row) =>
+            Object.keys(row).filter((key) => key !== 'name')
+          )
+        )
+      )
+    : [];
 
   // Handle date range apply
   const handleApplyDateRange = () => {
@@ -421,14 +605,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                   <XAxis dataKey="date" stroke="#9CA3AF" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={50} tick={{ fill: '#9CA3AF' }} />
                   <YAxis stroke="#9CA3AF" style={{ fontSize: '10px' }} domain={[0, 100]} label={{ value: 'Visibility Score (%)', angle: -90, position: 'insideLeft', style: { fontSize: '10px', fill: '#9CA3AF' } }} tick={{ fill: '#9CA3AF' }} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: '#1F2937', 
-                      border: '1px solid #374151', 
-                      borderRadius: '8px',
-                      fontSize: '12px'
-                    }} 
-                  />
+                  <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipTextStyle} itemStyle={tooltipTextStyle} />
                   <Legend wrapperStyle={{ fontSize: '11px' }} iconSize={10} />
                   <Line 
                     type="monotone" 
@@ -490,7 +667,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                   tick={{ fill: '#9CA3AF' }}
                 />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 10, fill: '#9CA3AF' }} />
-                <Tooltip contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
+                <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipTextStyle} itemStyle={tooltipTextStyle} />
                 <Legend wrapperStyle={{ fontSize: '11px' }} iconSize={10} />
                 <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
               </BarChart>
@@ -512,7 +689,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '10px' }} />
             <YAxis stroke="#6b7280" style={{ fontSize: '10px' }} />
-            <Tooltip contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }} />
+            <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipTextStyle} itemStyle={tooltipTextStyle} />
             <Bar dataKey="score" fill="#8b5cf6" radius={[8, 8, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -530,6 +707,9 @@ const PerformanceSummary = ({ brandData, reports }) => {
             </button>
             <button onClick={() => setActiveTab('summary')} className={`${activeTab === 'summary' ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
               Results Summary
+            </button>
+            <button onClick={() => setActiveTab('competitor')} className={`${activeTab === 'competitor' ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500' : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'} font-semibold pb-2 whitespace-nowrap text-sm sm:text-base`}>
+              Competitor Comparison
             </button>
           </div>
         </div>
@@ -735,6 +915,185 @@ const PerformanceSummary = ({ brandData, reports }) => {
                   <span className="text-2xl font-bold text-white">1</span><span className="text-gray-400 text-sm ml-1">active</span>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Competitor Comparison Tab */}
+          {activeTab === 'competitor' && (
+            <div className="space-y-6">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                <div>
+                  <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">Competitor Comparison</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Add up to 3 competitors to compare ranks across prompts.</p>
+                  {competitorSnapshot?.updatedAt && (
+                    <p className="text-xs text-gray-400 mt-1">Last updated: {new Date(competitorSnapshot.updatedAt).toLocaleString()}</p>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={runCompetitorComparison}
+                    disabled={runningComparison}
+                    className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 text-sm flex items-center gap-2 disabled:opacity-60"
+                  >
+                    {runningComparison ? 'Running...' : 'Run Comparison'}
+                  </button>
+                  <button
+                    onClick={resetCompetitorComparison}
+                    className="px-4 py-2 bg-gray-200 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-700 text-sm flex items-center gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Reset
+                  </button>
+                </div>
+              </div>
+
+              {/* Competitor input rows */}
+              <div className="bg-gray-50 dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 space-y-3">
+                {competitors.map((comp, idx) => (
+                  <div key={idx} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-center">
+                    <div className="md:col-span-2">
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Competitor Name</label>
+                      <input
+                        value={comp.name}
+                        onChange={(e) => handleCompetitorChange(idx, 'name', e.target.value)}
+                        placeholder="e.g., edX"
+                        className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
+                      />
+                    </div>
+                    <div className="md:col-span-3">
+                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Website</label>
+                      <input
+                        value={comp.website}
+                        onChange={(e) => handleCompetitorChange(idx, 'website', e.target.value)}
+                        placeholder="https://example.com"
+                        className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
+                      />
+                    </div>
+                    <div className="flex justify-end md:justify-start">
+                      {competitors.length > 1 && (
+                        <button
+                          onClick={() => removeCompetitorRow(idx)}
+                          className="px-3 py-2 bg-red-100 text-red-600 rounded-lg text-xs flex items-center gap-1 hover:bg-red-200"
+                        >
+                          <X className="w-4 h-4" /> Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+                {competitors.length < 3 && (
+                  <button
+                    onClick={addCompetitorRow}
+                    className="px-3 py-2 bg-gray-200 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-300 dark:hover:bg-dark-700"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add Competitor
+                  </button>
+                )}
+              </div>
+
+              {/* Charts */}
+              {competitorLoading ? (
+                <div className="h-48 flex items-center justify-center text-gray-500 dark:text-gray-400 text-sm">Loading competitor data...</div>
+              ) : competitorSnapshot && comparisonCharts ? (
+                <div className="space-y-4">
+                  <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 h-full">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">Average Rank (lower is better)</h4>
+                      <span className="text-xs text-gray-500">Lower = better</span>
+                    </div>
+                    {comparisonCharts.avgData.length ? (
+                      <ResponsiveContainer width="100%" height={240}>
+                        <BarChart data={comparisonCharts.avgData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                          <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '11px' }} />
+                          <YAxis stroke="#6b7280" style={{ fontSize: '11px' }} />
+                          <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipTextStyle} itemStyle={tooltipTextStyle} />
+                          <Bar dataKey="rank" fill="#8b5cf6" radius={[6, 6, 0, 0]} />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-48 flex items-center justify-center text-gray-500 text-sm">No average ranks available</div>
+                    )}
+                  </div>
+
+                  <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 h-full">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white">Per-Prompt Rank Comparison</h4>
+                      <span className="text-xs text-gray-500">Lower = better</span>
+                    </div>
+                    {comparisonCharts.promptChartData.length ? (
+                      <ResponsiveContainer width="100%" height={320}>
+                        <BarChart data={comparisonCharts.promptChartData} margin={{ top: 5, right: 10, left: 0, bottom: 50 }}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                          <XAxis dataKey="name" stroke="#6b7280" style={{ fontSize: '10px' }} angle={-45} textAnchor="end" height={70} interval={0} />
+                          <YAxis stroke="#6b7280" style={{ fontSize: '10px' }} />
+                          <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipTextStyle} itemStyle={tooltipTextStyle} />
+                          <Legend wrapperStyle={{ fontSize: '11px' }} />
+                          {seriesKeys.map((key, idx) => (
+                            <Bar key={key} dataKey={key} fill={COLORS[idx % COLORS.length]} radius={[4, 4, 0, 0]} />
+                          ))}
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="h-48 flex items-center justify-center text-gray-500 text-sm">No prompt-level data yet</div>
+                    )}
+                  </div>
+
+                  {/* Prompt table for readability */}
+                  {comparisonCharts.promptChartData.length ? (
+                    <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 h-full">
+                      <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-3">Per-Prompt Details</h4>
+                      <div className="overflow-x-auto">
+                        <table className="min-w-full text-sm">
+                          <thead>
+                            <tr className="bg-gray-50 dark:bg-dark-800 text-gray-600 dark:text-gray-300">
+                              <th className="px-3 py-2 text-left font-semibold">Prompt</th>
+                              {seriesKeys.map((key) => (
+                                <th key={key} className="px-3 py-2 text-left font-semibold">{key}</th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
+                            {comparisonCharts.promptChartData.map((row, idx) => (
+                              <tr key={idx} className="hover:bg-gray-50 dark:hover:bg-dark-800">
+                                <td className="px-3 py-2 text-gray-800 dark:text-gray-200 min-w-[180px]">{row.name}</td>
+                                {seriesKeys.map((key) => (
+                                  <td key={key} className="px-3 py-2 text-gray-700 dark:text-gray-300">
+                                    {row[key] !== null && row[key] !== undefined ? row[key] : '—'}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <div className="bg-gray-50 dark:bg-dark-900 border border-dashed border-gray-300 dark:border-dark-700 rounded-lg p-6 text-center text-sm text-gray-600 dark:text-gray-400">
+                  Add competitors and click “Run Comparison” to see charts.
+                </div>
+              )}
+
+              {/* Competitor list */}
+              {competitorSnapshot?.competitors?.length ? (
+                <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4">
+                  <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-white mb-3">Saved Competitors</h4>
+                  <div className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                    {competitorSnapshot.competitors.map((c, idx) => (
+                      <div key={`${c.name}-${idx}`} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-gray-100 dark:border-dark-800 pb-2 last:border-none last:pb-0">
+                        <span className="font-medium">{c.name}</span>
+                        <a href={c.website} target="_blank" rel="noreferrer" className="text-primary-500 hover:text-primary-400 break-words flex items-center gap-1">
+                          {c.website}
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
           )}
         </div>

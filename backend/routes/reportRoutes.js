@@ -10,6 +10,9 @@ import {
   getReportByBrandId,
   getReportsByBrand,
   getVisibilityTrend,
+  runCompetitorComparison,
+  getCompetitorComparison,
+  resetCompetitorComparison,
 } from '../controllers/reportController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -26,6 +29,9 @@ router.get('/brand/:brandId/visibility-trend', protect, getVisibilityTrend);
 router.get('/:id', protect, getReportById);
 router.post('/:id/share', protect, shareReport);
 router.delete('/:id', protect, deleteReport);
+router.post('/:id/competitor-comparison', protect, runCompetitorComparison);
+router.get('/:id/competitor-comparison', protect, getCompetitorComparison);
+router.delete('/:id/competitor-comparison', protect, resetCompetitorComparison);
 
 // Public route for shared reports
 router.get('/shared/:token', getSharedReport);

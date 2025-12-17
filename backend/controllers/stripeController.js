@@ -186,7 +186,7 @@ async function handleCheckoutCompleted(session) {
       subscriptionTier: planKey || 'free',
       credits: (plan?.credits ?? 0) + currentCredits,
       allowedModels: plan?.allowedModels ?? undefined,
-      currentPlanPeriodEnd: new Date(subscription.current_period_end * 1000),
+      currentPlanPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
       creditsUsed: 0,
     };
     const updated = await User.findByIdAndUpdate(userId, update, { new: true });
@@ -240,7 +240,7 @@ async function handleSubscriptionUpdate(subscription) {
     allowedModels: plan?.allowedModels ?? undefined,
     credits: plan?.credits ?? 0,
     creditsUsed: 0,
-    currentPlanPeriodEnd: new Date(subscription.current_period_end * 1000),
+    currentPlanPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
   });
 }
 

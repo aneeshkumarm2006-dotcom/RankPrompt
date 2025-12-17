@@ -59,6 +59,21 @@ const reportSchema = new mongoose.Schema(
       totalFindings: { type: Number, default: 0 },
       successRate: { type: Number, default: 0 },
     },
+    // Competitor comparison snapshot from n8n
+    competitorComparison: {
+      competitors: [
+        {
+          name: { type: String },
+          website: { type: String },
+        },
+      ],
+      response: {
+        type: mongoose.Schema.Types.Mixed,
+      },
+      updatedAt: {
+        type: Date,
+      },
+    },
     // Report metadata
     reportDate: {
       type: Date,

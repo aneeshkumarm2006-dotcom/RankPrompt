@@ -442,13 +442,10 @@ const Reports = () => {
         });
       });
 
-      console.log(`\nWaiting for all ${totalJobs} requests to complete...\n`);
 
       // Wait for ALL requests to complete
       const results = await Promise.all(n8nPromises);
 
-      // Save report to database
-      console.log('Saving report to database...');
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         const promptsResponsesPayloads = results.map((result, index) => ({
@@ -489,7 +486,6 @@ const Reports = () => {
 
         if (saveResponse.ok) {
           const { data: savedReport } = await saveResponse.json();
-          console.log('Report saved successfully:', savedReport._id);
           
           // Refresh user data to update credits in sidebar
           await refreshUser();
@@ -904,15 +900,14 @@ const Reports = () => {
                 </div>
               </div>
 
-              {/* Favicon Preview */}
+              {/* Favicon Preview - Hidden from clients */}
               {formData.brandFavicon && (
-                <div className="flex items-center space-x-3 p-3 bg-gray-100 dark:bg-dark-800 rounded-lg">
+                <div className="hidden">
                   <img 
                     src={formData.brandFavicon} 
                     alt="Brand Favicon" 
                     className="w-8 h-8 rounded"
                   />
-                  <span className="text-gray-800 dark:text-gray-200 text-sm">Brand favicon fetched successfully</span>
                 </div>
               )}
 
@@ -999,7 +994,6 @@ const Reports = () => {
               <button
                 onClick={() => {
                   // Handle adding report to existing brand
-                  console.log('Adding report to brand:', existingBrand);
                   setShowBrandModal(false);
                   // You'll integrate with your n8n agent here
                 }}
@@ -1011,7 +1005,6 @@ const Reports = () => {
               <button
                 onClick={() => {
                   // Handle experimenting without saving
-                  console.log('Just experimenting');
                   setShowBrandModal(false);
                   // Continue with analysis
                 }}

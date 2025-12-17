@@ -45,8 +45,6 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   
   // Debug log to check subscription tier
   useEffect(() => {
-    console.log('User subscription tier:', user?.subscriptionTier);
-    console.log('Max categories allowed:', maxCategories);
   }, [user?.subscriptionTier, maxCategories]);
 
   useEffect(() => {

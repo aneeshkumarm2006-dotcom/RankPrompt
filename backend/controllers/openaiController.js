@@ -261,7 +261,6 @@ Please provide the 10 categories based on your research:`,
     if (categories.length < 10) {
       console.warn(`Only generated ${categories.length} categories instead of 10`);
     } else if (categories.length > 10) {
-      console.log(`Trimming from ${categories.length} to 10 categories`);
       categories = categories.slice(0, 10);
     }
     
@@ -430,11 +429,6 @@ IMPORTANT: Generate exactly ${promptCount} prompts, no markdown, no code blocks,
     allPrompts.forEach(p => {
       categoryBreakdown[p.category] = (categoryBreakdown[p.category] || 0) + 1;
     });
-    console.log('\nBreakdown by category:');
-    Object.entries(categoryBreakdown).forEach(([cat, count]) => {
-      console.log(`  - ${cat}: ${count} prompts`);
-    });
-    console.log('='.repeat(60) + '\n');
 
     res.status(200).json({
       success: true,
