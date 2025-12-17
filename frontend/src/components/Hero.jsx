@@ -32,7 +32,7 @@ const Hero = () => {
             
             {/* Description */}
             <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
-              Monitor your brand across ChatGPT, Gemini, Claude & more. Get real-time insights 
+              Monitor your brand across ChatGPT, Gemini, Perplexity & more. Get real-time insights 
               and climb the AI rankings with data-driven optimization.
             </p>
             
@@ -134,7 +134,7 @@ const Hero = () => {
                         <Star className="w-6 h-6 text-white fill-white" />
                       </div>
                       <div>
-                        <div className="font-bold text-gray-800 dark:text-white">Claude</div>
+                        <div className="font-bold text-gray-800 dark:text-white">Perplexity</div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">Ranking #3</div>
                       </div>
                     </div>
@@ -159,8 +159,8 @@ const Hero = () => {
                   {[60, 72, 68, 85, 78, 92, 98].map((height, index) => (
                     <div key={index} className="flex-1 group cursor-pointer">
                       <div
-                        className="bg-gradient-to-t from-primary-500 to-accent-500 rounded-t-lg transition-all duration-300 group-hover:from-primary-400 group-hover:to-accent-400"
-                        style={{ height: `${height}%` }}
+                        className="bg-gradient-to-t from-blue-500 to-purple-500 rounded-t-lg transition-all duration-300 group-hover:from-blue-400 group-hover:to-purple-400"
+                        style={{ height: `${height * 0.9}px` }}
                       />
                     </div>
                   ))}

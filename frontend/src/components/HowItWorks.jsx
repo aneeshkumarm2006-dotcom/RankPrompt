@@ -100,13 +100,13 @@ const HowItWorks = () => {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-12 sm:mt-16 lg:mt-20">
+        {/* <div className="text-center mt-12 sm:mt-16 lg:mt-20">
           <button className="bg-primary-500 text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-primary-600 transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3">
             <span>Start Your Free Trial</span>
             <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
           </button>
           <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mt-3 sm:mt-4">No credit card required • 14-day free trial</p>
-        </div>
+        </div> */}
       </div>
     </section>
   );

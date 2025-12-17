@@ -60,7 +60,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-dark-950 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <div className="min-h-screen bg-gray-50 dark:bg-dark-950 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden py-12">
       {/* Animated Background Elements */}
       <div className="absolute inset-0">
         <div className="absolute top-20 left-10 w-72 h-72 bg-primary-500/10 dark:bg-primary-500/20 rounded-full blur-3xl animate-float"></div>
@@ -147,14 +147,14 @@ const Login = () => {
             </div>
 
             {/* Forgot Password */}
-            <div className="flex items-center justify-end">
+            {/* <div className="flex items-center justify-end">
               <Link
                 to="/forgot-password"
                 className="text-sm text-action-600 hover:text-action-700 dark:text-action-500 dark:hover:text-action-400 transition-colors"
               >
                 Forgot password?
               </Link>
-            </div>
+            </div> */}
 
             {/* Submit Button */}
             <button
@@ -174,7 +174,7 @@ const Login = () => {
           </form>
 
           {/* Divider */}
-          <div className="my-8 flex items-center">
+          <div className="my-2 flex items-center">
             <div className="flex-1 border-t border-gray-200 dark:border-dark-700"></div>
             <span className="px-4 text-sm text-gray-500 dark:text-gray-400">or</span>
             <div className="flex-1 border-t border-gray-200 dark:border-dark-700"></div>
@@ -193,7 +193,7 @@ const Login = () => {
           </div>
 
           {/* Sign Up Link */}
-          <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
             Don't have an account?{' '}
             <Link
               to="/register"

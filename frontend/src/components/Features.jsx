@@ -80,19 +80,24 @@ const Features = () => {
               className="group bg-gray-50 dark:bg-dark-900 rounded-xl sm:rounded-2xl p-6 sm:p-8 card-hover border border-gray-200 dark:border-dark-700"
             >
               {/* Icon */}
-              <div className="relative mb-4 sm:mb-6">
-                <div className={`absolute inset-0 bg-gradient-to-r ${feature.color} rounded-xl sm:rounded-2xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity`}></div>
-                <div className={`relative inline-flex p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r ${feature.color}`}>
+              <div className="relative mb-4 sm:mb-6 flex justify-center">
+                <div 
+                  className="absolute inset-0 rounded-xl sm:rounded-2xl blur-xl opacity-75 group-hover:opacity-100 transition-opacity"
+                  style={{
+                    background: `radial-gradient(circle, ${feature.color.includes('primary') ? '#F45A2F' : feature.color.includes('accent') ? '#ec4899' : feature.color.includes('purple') ? '#a855f7' : feature.color.includes('pink') ? '#ec4899' : feature.color.includes('green') ? '#10b981' : feature.color.includes('emerald') ? '#10b981' : feature.color.includes('blue') ? '#3b82f6' : feature.color.includes('cyan') ? '#06b6d4' : feature.color.includes('orange') ? '#f97316' : feature.color.includes('yellow') ? '#eab308' : feature.color.includes('red') ? '#ef4444' : '#8b5cf6'} 0%, transparent 70%)`
+                  }}
+                ></div>
+                <div className={`relative flex p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-r ${feature.color}`}>
                   <feature.icon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
                 </div>
               </div>
               
               {/* Content */}
-              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2 sm:mb-3 group-hover:gradient-text transition-all">
+              <h3 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white mb-2 sm:mb-3 text-center group-hover:gradient-text transition-all">
                 {feature.title}
               </h3>
               
-              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-4 sm:mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 text-center leading-relaxed mb-4 sm:mb-6">
                 {feature.description}
               </p>
               
@@ -106,12 +111,12 @@ const Features = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-12 sm:mt-16 text-center">
+        {/* <div className="mt-12 sm:mt-16 text-center">
           <button className="bg-primary-500 text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl font-semibold hover:bg-primary-600 transition-all flex items-center justify-center space-x-2 text-sm sm:text-base">
             <span>View All Features</span>
             <Zap className="w-5 h-5 group-hover:rotate-12 transition-transform" />
           </button>
-        </div>
+        </div> */}
       </div>
     </section>
   );

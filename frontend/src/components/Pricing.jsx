@@ -1,7 +1,9 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Check, Sparkles, Crown, Zap, ArrowRight, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createCheckoutSession } from '../services/stripeService';
+import { useAuth } from '../context/AuthContext';
 
 const plans = [
   {
@@ -56,9 +58,18 @@ const plans = [
 
 const Pricing = () => {
   const [loadingPlan, setLoadingPlan] = useState(null);
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
   const handleSelectPlan = async (plan) => {
     if (!plan?.key) return;
+    
+    // Check if user is authenticated
+    if (!isAuthenticated) {
+      navigate('/login');
+      return;
+    }
+    
     try {
       setLoadingPlan(plan.key);
       const resp = await createCheckoutSession(plan.key);

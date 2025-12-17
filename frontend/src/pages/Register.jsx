@@ -283,7 +283,7 @@ const Register = () => {
           </form>
 
           {/* Divider */}
-          <div className="my-8 flex items-center">
+          <div className="my-2 flex items-center">
             <div className="flex-1 border-t border-gray-200 dark:border-dark-700"></div>
             <span className="px-4 text-sm text-gray-500 dark:text-gray-400">or</span>
             <div className="flex-1 border-t border-gray-200 dark:border-dark-700"></div>
@@ -302,7 +302,7 @@ const Register = () => {
           </div>
 
           {/* Sign In Link */}
-          <p className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
             Already have an account?{' '}
             <Link
               to="/login"
