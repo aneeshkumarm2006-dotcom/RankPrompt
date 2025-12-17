@@ -191,8 +191,8 @@ const Sidebar = () => {
             onClick={logout}
             className="w-full flex items-center justify-center space-x-2 p-2 hover:bg-gray-100 dark:hover:bg-dark-700 rounded-lg transition-all text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white"
           >
-            <LogOut className="w-4 h-4" />
-            <span className="text-sm">Sign Out</span>
+            <LogOut className="w-4 h-4 text-red-600" />
+            <span className="text-sm text-red-600">Sign Out</span>
           </button>
         </div>
       </div>
