@@ -13,7 +13,6 @@ import {
   deleteScheduledPrompt,
   updateScheduledPrompt,
   n8nSaveReport,
-  compareCompetitors,
 } from '../controllers/analysisController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -29,7 +28,6 @@ router.post('/schedule-from-report', protect, scheduleFromReport);
 router.put('/scheduled-prompts/:id/toggle', protect, toggleScheduledPrompt);
 router.delete('/scheduled-prompts/:id', protect, deleteScheduledPrompt);
 router.put('/scheduled-prompts/:id', protect, updateScheduledPrompt);
-router.post('/compare-competitors', protect, compareCompetitors);
 
 // Public routes for n8n (protected by API key in controller)
 router.get('/prompts-due', getPromptsDue);
