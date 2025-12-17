@@ -37,6 +37,8 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const data = await authAPI.register(userData);
       setUser(data.user);
+      // Refresh user data to get updated credits
+      await refreshUser();
       return { success: true };
     } catch (err) {
       setError(err.message);
@@ -72,6 +74,8 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const data = await authAPI.googleLogin(credential, referralCode);
       setUser(data.user);
+      // Refresh user data to get updated credits
+      await refreshUser();
       return { success: true };
     } catch (err) {
       setError(err.message);
