@@ -93,25 +93,25 @@ const MyBrands = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-900">
+      <div className="flex h-screen bg-gray-50 dark:bg-dark-950">
         <Sidebar />
         <div className="flex-1 lg:ml-64 mt-16 lg:mt-0 flex items-center justify-center">
-          <div className="text-white text-xl">Loading brands...</div>
+          <div className="text-gray-800 dark:text-gray-200 text-xl">Loading brands...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-gray-900">
+    <div className="flex h-screen bg-gray-50 dark:bg-dark-950">
       <Sidebar />
       <div className="flex-1 lg:ml-64 mt-16 lg:mt-0 overflow-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           {/* Header */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">My Brands</h1>
-              <p className="text-gray-400">Manage your brands and their visibility reports</p>
+              <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">My Brands</h1>
+              <p className="text-gray-600 dark:text-gray-400">Manage your brands and their visibility reports</p>
             </div>
             <button
               onClick={() => navigate('/reports/new')}
@@ -125,19 +125,19 @@ const MyBrands = () => {
           {/* Search and Sort */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">
             <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
               <input
                 type="text"
                 placeholder="Search by brand name or website..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-primary-500 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
               />
             </div>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-2 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-primary-500 focus:outline-none"
+              className="px-4 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
             >
               <option value="newest">Newest First</option>
               <option value="oldest">Oldest First</option>
@@ -146,10 +146,10 @@ const MyBrands = () => {
 
           {/* Brands Grid */}
           {sortedBrands.length === 0 ? (
-            <div className="bg-gray-800 rounded-lg p-12 text-center border border-gray-700">
-              <Building2 className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-              <h2 className="text-xl font-bold text-white mb-2">No Brands Yet</h2>
-              <p className="text-gray-400 mb-6">Create your first brand to start tracking visibility</p>
+            <div className="bg-white dark:bg-dark-900 rounded-lg p-12 text-center border border-gray-200 dark:border-dark-700">
+              <Building2 className="w-16 h-16 text-gray-600 dark:text-gray-400 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2">No Brands Yet</h2>
+              <p className="text-gray-600 dark:text-gray-400 mb-6">Create your first brand to start tracking visibility</p>
               <button
                 onClick={() => navigate('/reports/new')}
                 className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
@@ -162,7 +162,7 @@ const MyBrands = () => {
               {sortedBrands.map((brand) => (
                 <div
                   key={brand._id}
-                  className="bg-gray-800 rounded-lg p-6 border border-gray-700 hover:border-gray-600 transition-all"
+                  className="bg-white dark:bg-dark-900 rounded-lg p-6 border border-gray-200 dark:border-dark-700 hover:border-gray-300 dark:hover:border-dark-600 transition-all"
                 >
                   {/* Brand Header */}
                   <div className="flex items-start gap-3 mb-4">
@@ -181,14 +181,14 @@ const MyBrands = () => {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="text-xl font-bold text-white mb-1 truncate">
+                      <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-1 truncate">
                         {brand.brandName}
                       </h3>
                       <a
-                        href={brand.websiteUrl}
+                        href={brand.websiteUrl.startsWith('http') ? brand.websiteUrl : `https://${brand.websiteUrl}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-primary-400 hover:text-primary-300 flex items-center gap-1 truncate"
+                        className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 flex items-center gap-1 truncate"
                       >
                         <ExternalLink className="w-3 h-3 flex-shrink-0" />
                         {brand.websiteUrl.replace(/^https?:\/\//, '')}
@@ -200,13 +200,13 @@ const MyBrands = () => {
                   <div className="space-y-3 mb-4">
                     {brand.lastReportVisibility !== undefined && (
                       <div className="flex items-center justify-between">
-                        <span className="text-gray-400 text-sm">Visibility</span>
+                        <span className="text-gray-800 dark:text-gray-300 text-sm">Visibility</span>
                         <span className="text-green-400 font-semibold">
                           {brand.lastReportVisibility}%
                         </span>
                       </div>
                     )}
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                       <Calendar className="w-3 h-3" />
                       Created {new Date(brand.createdAt).toLocaleDateString()}
                     </div>
@@ -222,7 +222,7 @@ const MyBrands = () => {
                     </button>
                     <button
                       onClick={() => setEditingBrand(brand)}
-                      className="px-3 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                      className="px-3 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600"
                       title="Edit Brand"
                     >
                       <Edit className="w-4 h-4" />
@@ -244,9 +244,9 @@ const MyBrands = () => {
 
       {/* Edit Brand Modal */}
       {editingBrand && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold text-white mb-4">Edit Brand</h3>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Edit Brand</h3>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -259,7 +259,7 @@ const MyBrands = () => {
             >
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Brand Name
                   </label>
                   <input
@@ -267,11 +267,11 @@ const MyBrands = () => {
                     name="brandName"
                     defaultValue={editingBrand.brandName}
                     required
-                    className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none"
+                    className="w-full px-4 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Website URL
                   </label>
                   <input
@@ -279,7 +279,7 @@ const MyBrands = () => {
                     name="websiteUrl"
                     defaultValue={editingBrand.websiteUrl}
                     required
-                    className="w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-primary-500 focus:outline-none"
+                    className="w-full px-4 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -287,7 +287,7 @@ const MyBrands = () => {
                 <button
                   type="button"
                   onClick={() => setEditingBrand(null)}
-                  className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                  className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600"
                 >
                   Cancel
                 </button>
@@ -305,10 +305,10 @@ const MyBrands = () => {
 
       {/* Delete Confirmation Modal */}
       {deletingBrand && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 w-full max-w-md">
-            <h3 className="text-xl font-bold text-white mb-4">Delete Brand</h3>
-            <p className="text-gray-300 mb-2">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Delete Brand</h3>
+            <p className="text-gray-700 dark:text-gray-300 mb-2">
               Are you sure you want to delete <strong>{deletingBrand.brandName}</strong>?
             </p>
             <p className="text-red-400 text-sm mb-6">
@@ -317,7 +317,7 @@ const MyBrands = () => {
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setDeletingBrand(null)}
-                className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600"
               >
                 Cancel
               </button>

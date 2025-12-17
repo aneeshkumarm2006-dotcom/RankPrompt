@@ -24,36 +24,98 @@ export const analyzeBrand = async (req, res) => {
       });
     }
 
-    // Generate brand summary using OpenAI
+    // Generate brand summary using OpenAI with web search for consistency
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-5-chat-latest',
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "web_search",
+            description: "Search the web for current information about a brand or company",
+            parameters: {
+              type: "object",
+              properties: {
+                query: {
+                  type: "string",
+                  description: "Search query to find information about the brand", 
+                },
+                num_results: {
+                  type: "integer",
+                  description: "Number of search results to return",
+                },
+              },
+              required: ["query"],
+            },
+          },
+        },
+      ],
+      tool_choice: "auto",
       messages: [
         {
           role: 'system',
-          content: 'You are an SEO and brand analysis expert. Provide concise, accurate brand summaries based on the information provided.',
+          content: 'You are an SEO and brand analysis expert. When you use web search, you MUST process the search results and write a professional, well-structured brand summary in proper English. Do NOT return the raw search results or JSON. Instead, analyze the information and create a coherent, fluent paragraph that reads like a professional business analysis.',
         },
         {
           role: 'user',
-          content: `Analyze the brand "${brandName}" with website ${websiteUrl}. Provide a comprehensive summary covering:
+          content: `I need you to analyze the brand "${brandName}" with website ${websiteUrl}. 
+
+Step 1: Use web search to find current information about this brand.
+Step 2: Process all search results and combine with the provided information.
+Step 3: Write a professional brand summary based on your research.
+
+CRITICAL: Do NOT output web search results or JSON. Write a flowing, professional paragraph in proper English.
+
+The summary should cover:
 1. What the company does and its main business model
-2. Target customers and market segment
+2. Target customers and market segment  
 3. Key products or services
 4. Industry position and competitive advantages
 5. Geographic presence and scale of operations
 
-Keep the summary between 150-200 words, professional, and factual. Format it as a single flowing paragraph.`,
+Requirements:
+- Write in proper, professional English
+- Keep the summary between 150-200 words
+- Format as a single, well-structured paragraph
+- Be factual and accurate based on your research
+- Ensure the summary flows naturally and is grammatically correct
+
+Please provide the complete brand summary as a proper paragraph:`,
         },
       ],
-      temperature: 0.7,
+      temperature: 0.3, // Lower temperature for more consistent results
       max_tokens: 500,
     });
 
     const summary = completion.choices[0].message.content;
 
+    // Clean up any JSON artifacts or web search results that might appear in the response
+    let cleanedSummary = summary;
+    
+    // Remove any JSON-like structures that might have been included
+    cleanedSummary = cleanedSummary.replace(/\{[^}]*\}/g, '');
+    cleanedSummary = cleanedSummary.replace(/\[[^\]]*\]/g, '');
+    
+    // Remove any "query" or "search results" text that might appear
+    cleanedSummary = cleanedSummary.replace(/"query":\s*"[^"]*"/g, '');
+    cleanedSummary = cleanedSummary.replace(/"num_results":\s*\d+/g, '');
+    cleanedSummary = cleanedSummary.replace(/"results":\s*\[[^\]]*\]/g, '');
+    
+    // Clean up extra whitespace and ensure proper formatting
+    cleanedSummary = cleanedSummary.replace(/\s+/g, ' ').trim();
+    
+    // Ensure it starts with a capital letter and ends with proper punctuation
+    if (cleanedSummary.length > 0) {
+      cleanedSummary = cleanedSummary.charAt(0).toUpperCase() + cleanedSummary.slice(1);
+      if (!cleanedSummary.match(/[.!?]$/)) {
+        cleanedSummary += '.';
+      }
+    }
+
     res.status(200).json({
       success: true,
       data: {
-        summary,
+        summary: cleanedSummary,
         brandName,
         websiteUrl,
       },
@@ -84,17 +146,52 @@ export const generateCategories = async (req, res) => {
       });
     }
 
-    // Generate 10 SEO categories using OpenAI
+    // Generate 10 SEO categories using OpenAI with web search for consistency
     const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
+      model: 'gpt-5-chat-latest',
+      tools: [
+        {
+          type: "function",
+          function: {
+            name: "web_search",
+            description: "Search the web for current information about a brand or company",
+            parameters: {
+              type: "object",
+              properties: {
+                query: {
+                  type: "string",
+                  description: "Search query to find information about the brand and its industry", 
+                },
+                num_results: {
+                  type: "integer",
+                  description: "Number of search results to return",
+                },
+              },
+              required: ["query"],
+            },
+          },
+        },
+      ],
+      tool_choice: "auto",
       messages: [
         {
           role: 'system',
-          content: 'You are an SEO expert specializing in categorizing business types and generating relevant search categories. You must return a valid JSON object with a "categories" key containing an array of category objects.',
+          content: 'You are an SEO expert specializing in categorizing business types and generating relevant search categories. Use web search to verify information about brands, especially small brands. Based on your research and the provided information, generate exactly 10 distinct SEO/business categories in proper English. Categories should be professional, clear, and accurately reflect the business type.',
         },
         {
           role: 'user',
-          content: `Based on the brand "${brandName}" (${websiteUrl})${summary ? ` with the following description: ${summary}` : ''}, generate EXACTLY 10 distinct SEO/business categories that would be most relevant for this brand's online visibility and search optimization.
+          content: `I need you to research and categorize the brand "${brandName}" (${websiteUrl}).
+
+First, use web search to find current information about this brand to understand their actual business model and industry, especially important for small brands.
+
+Then, based on your verified research, generate EXACTLY 10 distinct SEO/business categories that would be most relevant for this brand's online visibility and search optimization.
+
+Requirements:
+- Generate exactly 10 categories, no more, no less
+- Categories must be in proper, professional English
+- Each category should be clear, specific, and relevant to SEO/content strategy
+- Base categories on actual business information from your research
+- Examples: "E-commerce Marketplace", "Consumer Electronics", "Fashion Retail", "Home Essentials", "Online Shopping Platform", etc.
 
 Return a valid JSON object in this EXACT format:
 {
@@ -105,12 +202,10 @@ Return a valid JSON object in this EXACT format:
   ]
 }
 
-Make categories specific, relevant, and useful for SEO/content strategy. Examples: "E-commerce Marketplace", "Consumer Electronics", "Fashion Retail", "Home Essentials", "Online Shopping Platform", etc.
-
-IMPORTANT: Return exactly 10 categories, no more, no less.`,
+Please provide the 10 categories based on your research:`,
         },
       ],
-      temperature: 0.7,
+      temperature: 0.3, // Lower temperature for more consistent results
       max_tokens: 1000,
       response_format: { type: "json_object" },
     });
@@ -166,7 +261,6 @@ IMPORTANT: Return exactly 10 categories, no more, no less.`,
     if (categories.length < 10) {
       console.warn(`Only generated ${categories.length} categories instead of 10`);
     } else if (categories.length > 10) {
-      console.log(`Trimming from ${categories.length} to 10 categories`);
       categories = categories.slice(0, 10);
     }
     
@@ -335,11 +429,6 @@ IMPORTANT: Generate exactly ${promptCount} prompts, no markdown, no code blocks,
     allPrompts.forEach(p => {
       categoryBreakdown[p.category] = (categoryBreakdown[p.category] || 0) + 1;
     });
-    console.log('\nBreakdown by category:');
-    Object.entries(categoryBreakdown).forEach(([cat, count]) => {
-      console.log(`  - ${cat}: ${count} prompts`);
-    });
-    console.log('='.repeat(60) + '\n');
 
     res.status(200).json({
       success: true,

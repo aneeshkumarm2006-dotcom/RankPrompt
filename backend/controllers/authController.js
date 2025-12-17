@@ -45,6 +45,19 @@ export const register = async (req, res) => {
       referredBy: referrerId,
     });
 
+    // Seed free tier benefits + log
+    user.allowedModels = ['chatgpt'];
+    user.currentPlan = 'free';
+    user.subscriptionTier = 'free';
+    await user.save();
+    await addCredits(
+      user._id,
+      25,
+      'earned',
+      'trial',
+      'Signup bonus (free tier)'
+    );
+
     // Award referral credits if referred
     if (referrerId) {
       try {
@@ -198,6 +211,19 @@ export const googleAuth = async (req, res) => {
         isEmailVerified: true,
         referredBy: referrerId,
       });
+
+      // Seed free tier benefits for new Google users + log
+      user.allowedModels = ['chatgpt'];
+      user.currentPlan = 'free';
+      user.subscriptionTier = 'free';
+      await user.save();
+      await addCredits(
+        user._id,
+        25,
+        'earned',
+        'trial',
+        'Signup bonus (free tier)'
+      );
 
       // Award referral credits if referred
       if (referrerId) {

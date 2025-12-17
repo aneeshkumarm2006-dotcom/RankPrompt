@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
  * Create a Stripe Checkout Session for subscription
@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
  * @param {string} planType - Plan type (e.g., 'pro_monthly', 'pro_yearly')
  * @returns {Promise<object>} Response data
  */
-export const createCheckoutSession = async (priceId, planType) => {
+export const createCheckoutSession = async (planKey) => {
   try {
     const response = await fetch(`${API_URL}/stripe/create-checkout-session`, {
       method: 'POST',
@@ -15,8 +15,7 @@ export const createCheckoutSession = async (priceId, planType) => {
       },
       credentials: 'include',
       body: JSON.stringify({
-        priceId,
-        planType,
+        planKey,
       }),
     });
 
@@ -40,7 +39,7 @@ export const createCheckoutSession = async (priceId, planType) => {
  * @param {number} credits - Number of credits to add
  * @returns {Promise<object>} Response data
  */
-export const createTopUpSession = async (priceId, credits) => {
+export const createTopUpSession = async (topupKey) => {
   try {
     const response = await fetch(`${API_URL}/stripe/create-topup-session`, {
       method: 'POST',
@@ -49,8 +48,7 @@ export const createTopUpSession = async (priceId, credits) => {
       },
       credentials: 'include',
       body: JSON.stringify({
-        priceId,
-        credits,
+        topupKey,
       }),
     });
 

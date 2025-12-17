@@ -56,17 +56,17 @@ const BrandDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-900">
+      <div className="flex h-screen bg-[#F8FAFC] dark:bg-dark-950">
         <BrandSidebar brandData={brandData} />
         <div className="flex-1 lg:ml-64 mt-16 lg:mt-0 flex items-center justify-center">
-          <div className="text-white text-xl">Loading dashboard...</div>
+          <div className="text-gray-800 dark:text-gray-200 text-xl">Loading dashboard...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-900 overflow-x-hidden">
+    <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-dark-950 overflow-x-hidden">
       <BrandSidebar brandData={brandData} />
       <div className="flex-1 lg:ml-64 mt-16 lg:mt-0 overflow-x-hidden">
         <Routes>

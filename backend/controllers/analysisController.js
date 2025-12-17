@@ -1,10 +1,101 @@
 import crypto from 'crypto';
-import axios from 'axios';
-import jwt from 'jsonwebtoken';
-import mongoose from 'mongoose';
-import ScheduledPrompt from '../models/ScheduledPrompt.js';
+import User from '../models/User.js';
 import Report from '../models/Report.js';
+import Brand from '../models/Brand.js';
+import ScheduledPrompt from '../models/ScheduledPrompt.js';
+import { deductCredits } from './creditController.js';
+import axios from 'axios';
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import PromptSent from '../models/PromptSent.js';
+
+
+/**
+ * Update scheduled prompt details (currently supports prompts text)
+ * @route PUT /api/analysis/scheduled-prompts/:id
+ * @access Private
+ */
+export const updateScheduledPrompt = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { prompts } = req.body;
+
+    const scheduledPrompt = await ScheduledPrompt.findById(id);
+
+    if (!scheduledPrompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Scheduled report not found',
+      });
+    }
+
+    // Verify ownership
+    if (scheduledPrompt.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to edit this scheduled report',
+      });
+    }
+
+    // Validate prompts
+    if (!Array.isArray(prompts) || prompts.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one prompt is required',
+      });
+    }
+
+    let cleanedPrompts = prompts
+      .map((p, idx) => {
+        const promptText = typeof p === 'string' ? p : p?.prompt;
+        const trimmed = typeof promptText === 'string' ? promptText.trim() : '';
+        if (!trimmed) return null;
+
+        // Preserve any extra fields sent by client while ensuring required fields
+        const base = typeof p === 'object' && p !== null ? { ...p } : {};
+
+        return {
+          ...base,
+          prompt: trimmed,
+          promptIndex: typeof base.promptIndex === 'number' ? base.promptIndex : idx,
+          brand: base.brand || scheduledPrompt.brandName,
+          brandUrl: base.brandUrl || scheduledPrompt.brandUrl,
+        };
+      })
+      .filter(Boolean);
+
+    if (cleanedPrompts.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Prompts cannot be empty',
+      });
+    }
+
+    // Normalize promptIndex sequencing
+    cleanedPrompts = cleanedPrompts.map((p, idx) => ({
+      ...p,
+      promptIndex: idx,
+    }));
+
+    scheduledPrompt.prompts = cleanedPrompts;
+    scheduledPrompt.lastUpdated = new Date();
+
+    await scheduledPrompt.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Scheduled prompts updated successfully',
+      data: scheduledPrompt,
+    });
+  } catch (error) {
+    console.error('Update scheduled prompt error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update scheduled prompts',
+      error: error.message,
+    });
+  }
+};
 
 /**
  * Store prompts for scheduling after step 3 (generate-prompts)
@@ -44,6 +135,32 @@ export const storePromptsForScheduling = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'At least one AI model must be selected',
+      });
+    }
+
+    // Enforce plan-based model access and limits
+    const allowedModels = req.user?.allowedModels || ['chatgpt'];
+    const isAllowed = aiModels.every((m) => allowedModels.includes(m));
+    if (!isAllowed) {
+      return res.status(403).json({
+        success: false,
+        message: 'Selected AI models are not available on your plan.',
+      });
+    }
+
+    const tier = req.user?.subscriptionTier || 'free';
+    const maxPrompts = tier === 'free' ? 50 : 150;
+    const maxCategories = tier === 'free' ? 3 : 10;
+    if (Array.isArray(prompts) && prompts.length > maxPrompts) {
+      return res.status(400).json({
+        success: false,
+        message: `Your plan allows up to ${maxPrompts} prompts per report.`,
+      });
+    }
+    if (Array.isArray(categories) && categories.length > maxCategories) {
+      return res.status(400).json({
+        success: false,
+        message: `Your plan allows up to ${maxCategories} categories.`,
       });
     }
 
@@ -105,6 +222,16 @@ export const initiateAnalysis = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Brand name, URL, prompts, and AI models are required',
+      });
+    }
+
+    // Enforce plan-based model access
+    const allowedModels = req.user?.allowedModels || ['chatgpt'];
+    const isAllowed = aiModels.every((m) => allowedModels.includes(m));
+    if (!isAllowed) {
+      return res.status(403).json({
+        success: false,
+        message: 'Selected AI models are not available on your plan.',
       });
     }
 
@@ -409,7 +536,6 @@ export const receiveN8nResult = async (req, res) => {
     }
 
     const { data } = req.body;
-    console.log('Received n8n result:', data);
 
     res.status(200).json({
       success: true,
@@ -767,12 +893,20 @@ export const n8nSaveReport = async (req, res) => {
       reportDate: payload.reportDate ? new Date(payload.reportDate) : new Date(),
     });
 
-    console.log('✅ N8N report saved successfully:', {
-      reportId: report._id,
-      userId: userId.toString(),
-      brandId: brandId ? brandId.toString() : 'none',
-      brandName: payload.brandName,
-    });
+    // Deduct credits for report generation
+    try {
+      const creditsToDeduct = reportData.length * (payload.platforms ? Object.keys(payload.platforms).filter(p => payload.platforms[p]).length : 1);
+      await deductCredits(
+        userId,
+        creditsToDeduct,
+        'report_analysis',
+        `Credits used for ${payload.brandName} report generation`,
+        { reportId: report._id, brandName: payload.brandName }
+      );
+    } catch (creditError) {
+      console.error('Failed to deduct credits:', creditError);
+      // Continue with report save even if credit deduction fails
+    }
 
     // Automatically find and update the scheduled prompt for this brand/user
     let scheduledPromptUpdate = null;
@@ -821,17 +955,12 @@ export const n8nSaveReport = async (req, res) => {
             scheduleFrequency: scheduledPrompt.scheduleFrequency,
           };
           
-          console.log('✅ Scheduled prompt updated automatically:', {
-            scheduledPromptId: scheduledPrompt._id.toString(),
-            brandName: scheduledPrompt.brandName,
-            lastRun: scheduledPrompt.lastRun,
-            nextRun: scheduledPrompt.nextRun,
-          });
+          
         } else {
-          console.log('ℹ️ No active scheduled prompt found for this brand/user (or none are due)');
+          console.log('No active scheduled prompt found for this brand/user (or none are due)');
         }
       } catch (updateError) {
-        console.error('❌ Error updating scheduled prompt:', updateError);
+        console.error('Error updating scheduled prompt:', updateError);
         // Don't fail the whole request if scheduled prompt update fails
       }
     }

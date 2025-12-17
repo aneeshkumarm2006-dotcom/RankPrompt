@@ -8,7 +8,7 @@ const Navbar = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <nav className="fixed w-full z-50 glass-effect border-b border-white/5">
+    <nav className="fixed w-full z-50 bg-white dark:bg-dark-900 border-b border-gray-200 dark:border-dark-700 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -26,19 +26,19 @@ const Navbar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-1">
-            <a href="#features" className="px-4 py-2 text-gray-300 hover:text-primary-400 transition-colors rounded-lg hover:bg-white/5">
+            <a href="#features" className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800">
               Features
             </a>
-            <a href="#how-it-works" className="px-4 py-2 text-gray-300 hover:text-primary-400 transition-colors rounded-lg hover:bg-white/5">
+            <a href="#how-it-works" className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800">
               How It Works
             </a>
-            <a href="#pricing" className="px-4 py-2 text-gray-300 hover:text-primary-400 transition-colors rounded-lg hover:bg-white/5">
+            <a href="#pricing" className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800">
               Pricing
             </a>
             {isAuthenticated ? (
               <Link
                 to="/dashboard"
-                className="ml-4 px-4 py-2 text-gray-300 hover:text-primary-400 transition-colors rounded-lg hover:bg-white/5"
+                className="ml-4 px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800"
               >
                 Dashboard
               </Link>
@@ -46,25 +46,22 @@ const Navbar = () => {
               <>
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-gray-300 hover:text-primary-400 transition-colors rounded-lg hover:bg-white/5 ml-4"
+                  className="px-4 py-2 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-dark-800 ml-4"
                 >
                   Sign In
                 </Link>
-                <Link to="/register" className="ml-2 relative group">
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary-500 to-accent-500 rounded-full blur group-hover:blur-lg transition-all"></div>
-                  <div className="relative bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-2.5 rounded-full font-semibold hover:shadow-xl hover:shadow-primary-500/50 transition-all duration-300">
-                    Get Started Free
-                  </div>
+                <Link to="/register" className="ml-2 bg-action-600 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-action-700 transition-all duration-300">
+                  Get Started Free
                 </Link>
               </>
             )}
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden">
+          <div className="md:hidden flex items-center">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-300 hover:text-primary-400 p-2"
+              className="text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 p-2 ml-2"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -73,26 +70,26 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden py-4 space-y-2 border-t border-white/5 animate-slide-down">
-            <a href="#features" className="block px-4 py-3 text-gray-300 hover:text-primary-400 hover:bg-white/5 rounded-lg transition-colors">
+          <div className="md:hidden py-4 space-y-2 border-t border-gray-200 dark:border-dark-700 animate-slide-down bg-white dark:bg-dark-900">
+            <a href="#features" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-colors">
               Features
             </a>
-            <a href="#how-it-works" className="block px-4 py-3 text-gray-300 hover:text-primary-400 hover:bg-white/5 rounded-lg transition-colors">
+            <a href="#how-it-works" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-colors">
               How It Works
             </a>
-            <a href="#pricing" className="block px-4 py-3 text-gray-300 hover:text-primary-400 hover:bg-white/5 rounded-lg transition-colors">
+            <a href="#pricing" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-colors">
               Pricing
             </a>
             {isAuthenticated ? (
-              <Link to="/dashboard" className="block px-4 py-3 text-gray-300 hover:text-primary-400 hover:bg-white/5 rounded-lg transition-colors">
+              <Link to="/dashboard" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-colors">
                 Dashboard
               </Link>
             ) : (
               <>
-                <Link to="/login" className="block px-4 py-3 text-gray-300 hover:text-primary-400 hover:bg-white/5 rounded-lg transition-colors">
+                <Link to="/login" onClick={() => setIsOpen(false)} className="block px-4 py-3 text-gray-600 dark:text-gray-300 hover:text-action-500 dark:hover:text-action-400 hover:bg-gray-100 dark:hover:bg-dark-800 rounded-lg transition-colors">
                   Sign In
                 </Link>
-                <Link to="/register" className="block w-full bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all mt-2 text-center">
+                <Link to="/register" onClick={() => setIsOpen(false)} className="block w-full bg-action-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-action-700 transition-all mt-2 text-center">
                   Get Started Free
                 </Link>
               </>

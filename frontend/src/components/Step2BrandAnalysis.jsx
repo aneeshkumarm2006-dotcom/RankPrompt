@@ -21,14 +21,14 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   const hasCalledAPI = useRef(false);
 
   // Prompt options based on subscription tier
-  const promptOptions = user?.subscriptionTier === 'free' 
+  const isFreeTier = (user?.subscriptionTier || user?.currentPlan || 'free') === 'free';
+
+  const promptOptions = isFreeTier
     ? [
         { value: 1, label: '1' },
         { value: 10, label: '10' },
         { value: 25, label: '25' },
         { value: 50, label: '50' },
-        { value: 100, label: '100', disabled: true, pro: true },
-        { value: 150, label: '150', disabled: true, pro: true },
       ]
     : [
         { value: 1, label: '1' },
@@ -41,12 +41,10 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
 
   // Calculate max categories based on subscription tier
   // Free tier: 3 categories, Paid tiers: 10 categories
-  const maxCategories = user?.subscriptionTier === 'free' ? 3 : 10;
+  const maxCategories = isFreeTier ? 3 : 10;
   
   // Debug log to check subscription tier
   useEffect(() => {
-    console.log('User subscription tier:', user?.subscriptionTier);
-    console.log('Max categories allowed:', maxCategories);
   }, [user?.subscriptionTier, maxCategories]);
 
   useEffect(() => {
@@ -177,10 +175,10 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[400px]">
-        <Loader className="w-12 h-12 text-primary-500 animate-spin mb-4" />
-        <p className="text-gray-300 text-lg">Analyzing your brand...</p>
-        <p className="text-gray-500 text-sm mt-2">This may take a few moments</p>
+      <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 dark:bg-dark-950">
+        <Loader className="w-12 h-12 text-purple-600 animate-spin mb-4" />
+        <p className="text-gray-800 dark:text-white text-lg">Analyzing your brand...</p>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mt-2">This may take a few moments</p>
       </div>
     );
   }
@@ -191,7 +189,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
         <p className="text-red-400 mb-4">Error: {error}</p>
         <button
           onClick={analyzeBrandAndGenerateCategories}
-          className="bg-gradient-to-r from-primary-500 to-accent-500 text-white px-6 py-2 rounded-xl"
+          className="bg-[#4F46E5] text-white px-6 py-2 rounded-xl"
         >
           Try Again
         </button>
@@ -202,7 +200,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Brand Summary Card */}
-      <div className="glass-effect rounded-xl sm:rounded-2xl border border-white/10 p-4 sm:p-6">
+      <div className="bg-white dark:bg-dark-900 rounded-xl sm:rounded-2xl border border-gray-200 dark:border-dark-700 p-4 sm:p-6">
         <div className="flex flex-col sm:flex-row items-start space-y-3 sm:space-y-0 sm:space-x-4 mb-4">
           {brandData.brandFavicon && (
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center flex-shrink-0">
@@ -215,22 +213,22 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
           )}
           <div className="flex-1 w-full">
             <div className="flex items-center justify-between mb-2 gap-2">
-              <h2 className="text-xl sm:text-2xl font-bold text-white break-words">{brandData.brandName}</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white break-words">{brandData.brandName}</h2>
               <a
                 href={brandData.websiteUrl.startsWith('http') ? brandData.websiteUrl : `https://${brandData.websiteUrl}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-primary-400 hover:text-primary-300 transition-colors"
+                className="text-purple-600 hover:text-purple-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors"
               >
                 <ExternalLink className="w-5 h-5" />
               </a>
             </div>
-            <p className="text-gray-400 text-xs sm:text-sm mb-1 break-all">{brandData.websiteUrl}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1 break-all">{brandData.websiteUrl}</p>
           </div>
         </div>
 
         <div>
-          <p className="text-gray-300 text-xs sm:text-sm leading-relaxed">
+          <p className="text-gray-800 dark:text-gray-200 text-xs sm:text-sm leading-relaxed">
             {showMore || brandSummary.length < 300
               ? brandSummary
               : `${brandSummary.substring(0, 300)}...`}
@@ -238,7 +236,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
           {brandSummary.length > 300 && (
             <button
               onClick={() => setShowMore(!showMore)}
-              className="text-primary-400 hover:text-primary-300 text-sm mt-2 flex items-center space-x-1"
+              className="text-purple-600 hover:text-purple-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm mt-2 flex items-center space-x-1"
             >
               <span>{showMore ? 'Show Less' : 'Show More'}</span>
               {showMore ? (
@@ -252,38 +250,38 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
       </div>
 
       {/* Initial Analysis Complete Section */}
-      <div className="glass-effect rounded-xl sm:rounded-2xl border border-green-500/30 p-4 sm:p-6">
-        <h3 className="text-lg sm:text-xl font-bold text-white mb-2">Initial Analysis Complete</h3>
-        <p className="text-gray-300 text-xs sm:text-sm mb-4">
+      <div className="bg-white dark:bg-dark-900 rounded-xl sm:rounded-2xl border border-green-200 dark:border-green-500/30 p-4 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-2">Initial Analysis Complete</h3>
+        <p className="text-gray-800 dark:text-gray-200 text-xs sm:text-sm mb-4">
           We've analyzed your brand's visibility. Select business categories and how many prompts you'd like to generate for a detailed analysis.
         </p>
 
         {/* Tabs */}
-        <div className="flex flex-col sm:flex-row space-y-0 sm:space-x-2 mb-4 sm:mb-6 border-b border-white/10">
+        <div className="flex flex-col sm:flex-row space-y-0 sm:space-x-2 mb-4 sm:mb-6 border-b border-gray-200 dark:border-dark-700">
           <button
             onClick={() => setActiveTab('generate')}
             className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${
               activeTab === 'generate'
-                ? 'text-primary-400'
-                : 'text-gray-400 hover:text-gray-300'
+                ? 'text-purple-600 dark:text-primary-400'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
             }`}
           >
             Generate Prompts by Category
             {activeTab === 'generate' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-400"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600"></div>
             )}
           </button>
           <button
             onClick={() => setActiveTab('custom')}
             className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${
               activeTab === 'custom'
-                ? 'text-primary-400'
-                : 'text-gray-400 hover:text-gray-300'
+                ? 'text-purple-600 dark:text-primary-400'
+                : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
             }`}
           >
             Write Your Own Prompts
             {activeTab === 'custom' && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-400"></div>
+              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-purple-600"></div>
             )}
           </button>
         </div>
@@ -293,10 +291,10 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
           <div>
             <div className="mb-6">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
-                <label className="text-gray-300 text-sm sm:text-base font-medium">
+                <label className="text-gray-800 dark:text-white text-sm sm:text-base font-medium">
                   Select Business Categories (up to {maxCategories})
                 </label>
-                <span className="text-primary-400 text-xs sm:text-sm font-semibold">
+                <span className="text-purple-600 dark:text-primary-400 text-xs sm:text-sm font-semibold">
                   {selectedCategories.length}/{maxCategories} selected
                 </span>
               </div>
@@ -310,17 +308,17 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                       onClick={() => toggleCategory(category)}
                       className={`p-4 rounded-xl cursor-pointer transition-all ${
                         isSelected
-                          ? 'bg-purple-500/20 border-2 border-purple-500'
-                          : 'glass-light hover:bg-white/10 border-2 border-transparent'
+                          ? 'bg-purple-100 dark:bg-purple-500/10 border-2 border-purple-600 dark:border-primary-500'
+                          : 'bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700 border-2 border-transparent'
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
                           <div className="flex items-center space-x-2 mb-1">
-                            <span className="text-white font-medium">{category.name}</span>
-                            {isSelected && <Check className="w-4 h-4 text-purple-400" />}
+                            <span className="text-gray-800 dark:text-white font-medium">{category.name}</span>
+                            {isSelected && <Check className="w-4 h-4 text-purple-600" />}
                           </div>
-                          <p className="text-gray-400 text-sm">{category.description}</p>
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">{category.description}</p>
                         </div>
                       </div>
                     </div>
@@ -332,7 +330,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
               {!showCustomInput && selectedCategories.length < maxCategories && (
                 <button
                   onClick={() => setShowCustomInput(true)}
-                  className="mt-3 text-primary-400 hover:text-primary-300 text-sm flex items-center space-x-1"
+                  className="mt-3 text-purple-600 hover:text-purple-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm flex items-center space-x-1"
                 >
                   <Plus className="w-4 h-4" />
                   <span>Add Custom Category</span>
@@ -346,12 +344,12 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                     value={customCategory}
                     onChange={(e) => setCustomCategory(e.target.value)}
                     placeholder="Enter custom category name"
-                    className="flex-1 px-4 py-2 glass-light rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 px-4 py-2 bg-white dark:bg-dark-700 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 dark:text-gray-200 placeholder-gray-500 transition-all"
                     onKeyPress={(e) => e.key === 'Enter' && addCustomCategory()}
                   />
                   <button
                     onClick={addCustomCategory}
-                    className="bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-xl transition-colors"
+                    className="bg-primary-500 text-white px-4 py-2 rounded-xl transition-colors"
                   >
                     Add
                   </button>
@@ -360,7 +358,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                       setShowCustomInput(false);
                       setCustomCategory('');
                     }}
-                    className="glass-light hover:bg-white/10 text-gray-300 px-4 py-2 rounded-xl transition-colors"
+                    className="bg-gray-100 dark:bg-dark-700 hover:bg-gray-200 dark:hover:bg-dark-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-xl transition-colors"
                   >
                     Cancel
                   </button>
@@ -370,7 +368,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
 
             {/* Number of Prompts */}
             <div>
-              <label className="block text-gray-300 font-medium mb-3">
+              <label className="block text-gray-800 dark:text-white font-medium mb-3">
                 Number of Prompts to Generate
               </label>
               <div className="flex flex-wrap gap-3">
@@ -381,15 +379,15 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                     disabled={option.disabled}
                     className={`px-6 py-3 rounded-xl font-semibold transition-all ${
                       numberOfPrompts === option.value && !option.disabled
-                        ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white'
+                        ? 'bg-primary-500 text-white'
                         : option.disabled
-                        ? 'glass-light text-gray-500 cursor-not-allowed opacity-50'
-                        : 'glass-light text-gray-300 hover:bg-white/10 hover:text-white'
+                        ? 'bg-gray-100 dark:bg-dark-800 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50'
+                        : 'bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white'
                     }`}
                   >
                     {option.label}
                     {option.pro && (
-                      <span className="ml-2 text-xs bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded">
+                      <span className="ml-2 text-xs bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 px-2 py-0.5 rounded">
                         PRO
                       </span>
                     )}
@@ -404,15 +402,15 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
         {activeTab === 'custom' && (
           <div>
             <div className="mb-4">
-              <h4 className="text-lg font-bold text-white mb-2">Write Your Own Prompts</h4>
-              <p className="text-gray-300 text-sm mb-4">
+              <h4 className="text-lg font-bold text-gray-800 dark:text-white mb-2">Write Your Own Prompts</h4>
+              <p className="text-gray-800 dark:text-gray-200 text-sm mb-4">
                 Add up to 25 prompts. You can optionally add a category for each prompt.
               </p>
 
               <button
                 onClick={handleAddCustomPrompt}
                 disabled={customPrompts.length >= 25}
-                className="mb-4 text-primary-400 hover:text-primary-300 text-sm flex items-center space-x-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mb-4 text-purple-600 hover:text-purple-700 dark:text-primary-400 dark:hover:text-primary-300 text-sm flex items-center space-x-1 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="w-4 h-4" />
                 <span>Add Prompt</span>
@@ -427,12 +425,12 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                     value={prompt}
                     onChange={(e) => handleCustomPromptChange(index, e.target.value)}
                     placeholder={`Prompt #${index + 1}`}
-                    className="flex-1 px-4 py-3 glass-light rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="flex-1 px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20 text-gray-800 dark:text-gray-200 placeholder-gray-500 transition-all"
                   />
                   {customPrompts.length > 1 && (
                     <button
                       onClick={() => handleRemoveCustomPrompt(index)}
-                      className="p-3 glass-light hover:bg-red-500/20 hover:text-red-400 rounded-xl transition-colors"
+                      className="p-3 bg-gray-100 dark:bg-dark-700 hover:bg-red-100 dark:hover:bg-red-500/20 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-colors"
                     >
                       ×
                     </button>
@@ -441,7 +439,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
               ))}
             </div>
 
-            <p className="text-gray-500 text-sm mt-4">
+            <p className="text-gray-600 dark:text-gray-400 text-sm mt-4">
               {customPrompts.filter((p) => p.trim()).length} / 25 prompts
             </p>
           </div>
@@ -452,13 +450,13 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="glass-light hover:bg-white/10 text-gray-300 hover:text-white font-medium py-3 px-8 rounded-xl transition-all"
+          className="bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium py-3 px-8 rounded-xl transition-all"
         >
           ← Back
         </button>
         <button
           onClick={handleGeneratePrompts}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-bold py-3 px-8 rounded-xl transition-all flex items-center space-x-2"
+          className="bg-primary-500 text-white font-bold py-3 px-8 rounded-xl transition-all flex items-center space-x-2"
         >
           <span>
             {activeTab === 'generate'

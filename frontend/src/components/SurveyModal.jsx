@@ -165,29 +165,29 @@ const SurveyModal = ({ onClose, onComplete }) => {
   const progress = (currentQuestion / totalQuestions) * 100;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="glass-effect border border-white/20 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-slide-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+      <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-slide-up">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex-1">
-            <p className="text-primary-400 text-sm font-medium">
+            <p className="text-primary-500 dark:text-primary-400 text-sm font-medium">
               Question {currentQuestion} of {totalQuestions}
             </p>
-            <p className="text-white text-xs mt-1">{Math.round(progress)}%</p>
+            <p className="text-gray-800 dark:text-gray-200 text-xs mt-1">{Math.round(progress)}%</p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 hover:bg-white/10 rounded-lg transition-colors"
+            className="p-1 hover:bg-gray-200 dark:hover:bg-dark-700 rounded-lg transition-colors"
           >
-            <X className="w-5 h-5 text-gray-400 hover:text-white" />
+            <X className="w-5 h-5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white" />
           </button>
         </div>
 
         {/* Progress Bar */}
         <div className="mb-6">
-          <div className="w-full h-1 bg-white/10 rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-gray-200 dark:bg-dark-700 rounded-full overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-primary-500 to-accent-500 transition-all duration-300"
+              className="h-full bg-primary-500 transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -195,7 +195,7 @@ const SurveyModal = ({ onClose, onComplete }) => {
 
         {/* Question */}
         <div className="mb-6">
-          <h3 className="text-white text-lg font-bold mb-4">{currentQ.question}</h3>
+          <h3 className="text-gray-800 dark:text-white text-lg font-bold mb-4">{currentQ.question}</h3>
 
           {/* Single Choice / Multiple Choice */}
           {(currentQ.type === 'single' || currentQ.type === 'multiple') && (
@@ -212,8 +212,8 @@ const SurveyModal = ({ onClose, onComplete }) => {
                     onClick={() => handleOptionSelect(questionKey, option)}
                     className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
                       isSelected
-                        ? 'bg-primary-500/20 border-2 border-primary-500 text-white'
-                        : 'glass-light border-2 border-transparent text-gray-300 hover:border-white/20 hover:text-white'
+                        ? 'bg-purple-100 dark:bg-purple-500/10 border-2 border-primary-500 text-gray-800 dark:text-white'
+                        : 'bg-white dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-dark-600'
                     }`}
                   >
                     {option}
@@ -221,7 +221,7 @@ const SurveyModal = ({ onClose, onComplete }) => {
                 );
               })}
               {currentQ.note && (
-                <p className="text-gray-500 text-xs mt-2">{currentQ.note}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">{currentQ.note}</p>
               )}
             </div>
           )}
@@ -236,8 +236,8 @@ const SurveyModal = ({ onClose, onComplete }) => {
                     onClick={() => setResponses({ ...responses, question5: i })}
                     className={`w-10 h-10 rounded-lg font-bold transition-all ${
                       responses.question5 === i
-                        ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white scale-110'
-                        : 'glass-light text-gray-400 hover:text-white hover:bg-white/10'
+                        ? 'bg-primary-500 text-white scale-110'
+                        : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-700'
                     }`}
                   >
                     {i}
@@ -245,8 +245,8 @@ const SurveyModal = ({ onClose, onComplete }) => {
                 ))}
               </div>
               <div className="flex items-center justify-between mt-3">
-                <span className="text-gray-500 text-xs">{currentQ.labels[0]}</span>
-                <span className="text-gray-500 text-xs">{currentQ.labels[10]}</span>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">{currentQ.labels[0]}</span>
+                <span className="text-gray-500 dark:text-gray-400 text-xs">{currentQ.labels[10]}</span>
               </div>
             </div>
           )}
@@ -258,7 +258,7 @@ const SurveyModal = ({ onClose, onComplete }) => {
               onChange={(e) => setResponses({ ...responses, question6: e.target.value })}
               placeholder={currentQ.placeholder}
               rows={4}
-              className="w-full px-4 py-3 glass-light rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all resize-none"
+              className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 transition-all resize-none"
             />
           )}
         </div>
@@ -271,7 +271,7 @@ const SurveyModal = ({ onClose, onComplete }) => {
             className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
               currentQuestion === 1
                 ? 'opacity-0 cursor-not-allowed'
-                : 'glass-light text-gray-300 hover:text-white hover:bg-white/10'
+                : 'bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-dark-600'
             }`}
           >
             <ChevronLeft className="w-4 h-4" />
@@ -283,8 +283,8 @@ const SurveyModal = ({ onClose, onComplete }) => {
             disabled={!isCurrentQuestionAnswered()}
             className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-bold transition-all ${
               isCurrentQuestionAnswered()
-                ? 'bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white'
-                : 'glass-light text-gray-500 cursor-not-allowed'
+                ? 'bg-primary-500 text-white'
+                : 'bg-gray-200 dark:bg-dark-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
             }`}
           >
             <span>{currentQuestion === totalQuestions ? 'Submit' : 'Next'}</span>

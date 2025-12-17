@@ -163,25 +163,25 @@ const ReportView = () => {
 
   if (loading) {
     return (
-      <div className="flex h-screen bg-gray-900">
+      <div className="flex h-screen bg-gray-50 dark:bg-dark-950">
         <Sidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-            <p className="text-gray-400">Loading report...</p>
+            <p className="text-gray-600 dark:text-gray-400">Loading report...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (!reportData) {
+  if (!reportData || !brandData) {
     return (
-      <div className="flex h-screen bg-gray-900">
+      <div className="flex h-screen bg-gray-50 dark:bg-dark-950">
         <Sidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-white mb-4">No Report Data</h2>
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">No Report Data</h2>
             <button
               onClick={() => navigate('/reports/new')}
               className="px-6 py-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
@@ -199,6 +199,7 @@ const ReportView = () => {
   const platforms = ['chatgpt', 'perplexity', 'google_ai_overviews'];
   
   const stats = {
+    totalPrompts: reportData.length,
     websiteFound: 0,
     brandMentioned: 0,
     totalFindings: 0,
@@ -388,27 +389,27 @@ const ReportView = () => {
     }
   };
 
-  return (
-    <div className="flex h-screen bg-gray-900">
+    return (
+    <div className="flex h-screen bg-gray-50 dark:bg-dark-950">
       <Sidebar />
       
-      <div className="flex-1 overflow-auto lg:ml-64 mt-16 lg:mt-0">
+      <div className="flex-1 overflow-auto lg:ml-64">
         <div className="max-w-7xl mx-auto p-4 sm:p-6" id="report-content">
           {/* Header */}
-          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-700">
+          <div className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-200 dark:border-dark-700">
             <div className="flex flex-col lg:flex-row justify-between items-start gap-4 mb-4">
               <div className="min-w-0 w-full lg:w-auto">
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 break-words">
+                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white mb-2 break-words">
                   {brandData?.brandName || 'Brand'} - Visibility Analysis
                 </h1>
-                <p className="text-sm sm:text-base text-gray-400 break-all">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 break-all">
                   {brandData?.websiteUrl || 'N/A'} • {brandData?.reportDate ? new Date(brandData.reportDate).toLocaleString() : 'N/A'}
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full lg:w-auto">
                 <button
                   onClick={handleDownloadPDF}
-                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm sm:text-base whitespace-nowrap"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600 transition-colors text-sm sm:text-base whitespace-nowrap"
                 >
                   <Download className="w-4 h-4 flex-shrink-0" />
                   Download PDF
@@ -444,21 +445,21 @@ const ReportView = () => {
 
             {/* Stats Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mt-4 sm:mt-6">
-              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
-                <div className="text-gray-400 text-xs sm:text-sm mb-1">Total Prompts</div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white">{totalPrompts}</div>
+              <div className="bg-gray-100 dark:bg-dark-800 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">Total Prompts</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">{totalPrompts}</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
-                <div className="text-gray-400 text-xs sm:text-sm mb-1">Website Found</div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-400">{stats.websiteFound}</div>
+              <div className="bg-gray-100 dark:bg-dark-800 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">Website Found</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-500">{stats.websiteFound}</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
-                <div className="text-gray-400 text-xs sm:text-sm mb-1">Brand Mentioned</div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-400">{stats.brandMentioned}</div>
+              <div className="bg-gray-100 dark:bg-dark-800 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">Brand Mentioned</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-500">{stats.brandMentioned}</div>
               </div>
-              <div className="bg-gray-700 rounded-lg p-3 sm:p-4">
-                <div className="text-gray-400 text-xs sm:text-sm mb-1">Total Findings</div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-400">{stats.totalFindings}</div>
+              <div className="bg-gray-100 dark:bg-dark-800 rounded-lg p-3 sm:p-4">
+                <div className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-1">Total Findings</div>
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-500">{stats.totalFindings}</div>
               </div>
             </div>
           </div>
@@ -466,79 +467,77 @@ const ReportView = () => {
           {/* Visibility Analysis Charts */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
             {/* Visibility Score by Platform */}
-            <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-4">Visibility Score by Platform</h3>
+            <div className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-dark-700">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-2 sm:mb-4">Visibility Score by Platform</h3>
               {platformChartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={450}>
                   <BarChart data={platformChartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="name" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                    <XAxis dataKey="name" stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
+                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
-                      labelStyle={{ color: '#F3F4F6' }}
+                      labelStyle={{ color: '#F9FAFB' }}
                     />
                     <Legend wrapperStyle={{ paddingTop: '10px' }} />
                     <Bar dataKey="visibility" fill="#8B5CF6" name="Visibility %" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-64 text-gray-400">
+                <div className="flex items-center justify-center h-64 text-gray-600 dark:text-gray-400">
                   No platform data available
                 </div>
               )}
-              <div className="mt-2 text-sm text-gray-400">
-                <p>Overall Visibility Score: <span className="text-white font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
+              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p>Overall Visibility Score: <span className="text-gray-800 dark:text-white font-bold">{platformChartData.length > 0 ? Math.round(platformChartData.reduce((acc, p) => acc + p.score, 0) / platformChartData.length) : 0}%</span></p>
               </div>
             </div>
 
             {/* Category Visibility Trends */}
-            <div className="bg-gray-800 rounded-lg p-4 sm:p-6 border border-gray-700">
-              <h3 className="text-lg sm:text-xl font-bold text-white mb-2 sm:mb-4">Category Visibility Trends</h3>
+            <div className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-dark-700">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-2 sm:mb-4">Category Visibility Trends</h3>
               {categoryChartData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={450}>
                   <BarChart data={categoryChartData} margin={{ top: 5, right: 10, left: 0, bottom: 70 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
                     <XAxis 
                       dataKey="name" 
-                      stroke="#9CA3AF" 
+                      stroke="#6B7280" 
                       angle={0}
                       textAnchor="middle"
                       height={70}
-                      interval={0}
-                      width={120}
                       tick={<CustomCategoryTick />}
                     />
-                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
                     <Tooltip 
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
-                      labelStyle={{ color: '#F3F4F6' }}
+                      labelStyle={{ color: '#F9FAFB' }}
                     />
                     <Legend wrapperStyle={{ paddingTop: '10px' }} />
                     <Bar dataKey="visibility" fill="#10B981" name="Visibility %" />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
-                <div className="flex items-center justify-center h-64 text-gray-400">
+                <div className="flex items-center justify-center h-64 text-gray-600 dark:text-gray-400">
                   No category data available
                 </div>
               )}
-              <div className="mt-2 text-sm text-gray-400">
-                <p>Top performing category: <span className="text-white font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
+              <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                <p>Top performing category: <span className="text-gray-800 dark:text-white font-bold">{categoryChartData[0]?.name || 'N/A'} ({categoryChartData[0]?.visibility || 0}%)</span></p>
               </div>
             </div>
           </div>
 
           {/* Filters */}
-          <div className="bg-gray-800 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-700">
+          <div className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 mb-4 sm:mb-6 border border-gray-200 dark:border-dark-700">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
               {/* Category Filter */}
               <div className="relative">
-                <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Category</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Category</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                  className="w-full bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg px-3 sm:px-4 py-2 border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
                 >
                   {categories.map(cat => (
                     <option key={cat} value={cat}>{cat}</option>
@@ -548,11 +547,11 @@ const ReportView = () => {
 
               {/* Platform Filter */}
               <div className="relative">
-                <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Platform</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Platform</label>
                 <select
                   value={selectedPlatform}
                   onChange={(e) => setSelectedPlatform(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-3 sm:px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                  className="w-full bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg px-3 sm:px-4 py-2 border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
                 >
                   <option value="All Platforms">All Platforms</option>
                   <option value="chatgpt">ChatGPT</option>
@@ -563,15 +562,15 @@ const ReportView = () => {
 
               {/* Search */}
               <div className="relative sm:col-span-2 md:col-span-1">
-                <label className="block text-xs sm:text-sm font-medium text-gray-400 mb-2">Search Prompts</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">Search Prompts</label>
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search..."
-                    className="w-full bg-gray-700 text-white rounded-lg pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
+                    className="w-full bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg pl-9 sm:pl-10 pr-3 sm:pr-4 py-2 border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm sm:text-base"
                   />
                 </div>
               </div>
@@ -579,87 +578,90 @@ const ReportView = () => {
           </div>
 
           {/* Results Table */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700">
+          <div className="bg-white dark:bg-dark-900 rounded-lg border border-gray-200 dark:border-dark-700">
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1100px]">
-                <thead className="bg-gray-750">
+                <thead className="bg-gray-50 dark:bg-dark-800">
                   <tr>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Prompt
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Category
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Platform
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider whitespace-nowrap">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider whitespace-nowrap">
                       Found
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Index
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Website
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Brand Mention
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">AI Response</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Snippet</th>
-                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Citation</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">AI Response</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Snippet</th>
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Citation</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-700">
+                <tbody className="divide-y divide-gray-200 dark:divide-dark-700">
                   {filteredData.map((item, idx) => (
                     item.response && Array.isArray(item.response) ? (
                       item.response.map((platformData, pIdx) => (
-                        <tr key={`${idx}-${pIdx}`} className="hover:bg-gray-750 transition-colors">
+                        <tr key={`${idx}-${pIdx}`} className="hover:bg-gray-50 dark:hover:bg-dark-800 transition-colors">
                           {pIdx === 0 && (
-                            <td className="px-3 py-3 text-sm text-gray-300" rowSpan={item.response.length}>
+                            <td className="px-3 py-3 text-sm text-gray-800 dark:text-gray-200" rowSpan={item.response.length}>
                               {item.prompt}
                             </td>
                           )}
                           {pIdx === 0 && (
-                            <td className="px-3 py-3 text-sm text-gray-400" rowSpan={item.response.length}>
-                              <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
+                            <td className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400" rowSpan={item.response.length}>
+                              <span className="px-2 py-1 bg-gray-200 dark:bg-dark-700 rounded-full text-xs">
                                 {item.category}
                               </span>
                             </td>
                           )}
-                          <td className="px-3 py-3 text-sm text-gray-300 capitalize whitespace-nowrap">
+                          <td className="px-3 py-3 text-sm text-gray-800 dark:text-gray-200 capitalize whitespace-nowrap">
                             {platformData.src === 'google_ai_overviews' ? 'Google AI' : platformData.src}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.found ? (
-                              <span className="inline-flex items-center px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
+                              <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-medium">
                                 ✓ Yes
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
+                              <span className="inline-flex items-center px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-medium">
                                 ✗ No
                               </span>
                             )}
                           </td>
-                          <td className="px-3 py-3 text-sm text-gray-300 whitespace-nowrap">
+                          <td className="px-3 py-3 text-sm text-gray-800 dark:text-gray-200 whitespace-nowrap">
                             {platformData.index !== null ? `#${platformData.index}` : '-'}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.details?.websiteFound ? (
                               platformData.details?.website ? (
-                                <a href={platformData.details.website} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 underline text-xs">View Source</a>
+                                <a href={platformData.details?.website || platformData.details?.matchedUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs flex items-center gap-1">
+                                  <ExternalLink className="w-3 h-3" />
+                                  View Source
+                                </a>
                               ) : (
-                                <span className="text-green-400">✓ Yes</span>
+                                <span className="text-green-600">✓ Yes</span>
                               )
                             ) : (
-                              <span className="text-gray-500">-</span>
+                              <span className="text-red-600">✗ No</span>
                             )}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.details?.brandMentionFound ? (
-                              <span className="text-blue-400">✓ Yes</span>
+                              <span className="text-green-600">✓ Yes</span>
                             ) : (
-                              <span className="text-gray-500">-</span>
+                              <span className="text-red-600">✗ No</span>
                             )}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
@@ -670,7 +672,7 @@ const ReportView = () => {
                                   answer: platformData.aianswer,
                                   prompt: item.prompt
                                 })}
-                                className="px-2 py-1 text-xs bg-primary-600 hover:bg-primary-700 text-white rounded whitespace-nowrap"
+                                className="px-2 py-1 text-xs bg-primary-500 hover:bg-primary-600 text-white dark:bg-action-600 dark:hover:bg-action-700 rounded whitespace-nowrap"
                               >
                                 View Response
                               </button>
@@ -685,7 +687,7 @@ const ReportView = () => {
                                   citation: platformData.details?.snippet || '',
                                   website: platformData.details?.website || platformData.details?.matchedUrl || null,
                                 })}
-                                className="px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 text-white rounded whitespace-nowrap"
+                                className="px-2 py-1 text-xs bg-gray-200 dark:bg-dark-700 hover:bg-gray-300 dark:hover:bg-dark-600 text-gray-800 dark:text-gray-200 rounded whitespace-nowrap"
                               >
                                 View Snippet
                               </button>
@@ -699,7 +701,7 @@ const ReportView = () => {
                                 href={platformData.details?.website || platformData.details?.matchedUrl} 
                                 target="_blank" 
                                 rel="noopener noreferrer" 
-                                className="text-blue-400 hover:text-blue-300 underline text-xs flex items-center gap-1"
+                                className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs"
                               >
                                 <ExternalLink className="w-3 h-3" />
                                 Link
@@ -711,8 +713,8 @@ const ReportView = () => {
                         </tr>
                       ))
                     ) : (
-                      <tr key={idx} className="hover:bg-gray-750">
-                        <td colSpan="11" className="px-3 py-3 text-sm text-gray-500 text-center">
+                      <tr key={idx} className="hover:bg-gray-50">
+                        <td colSpan="11" className="px-3 py-3 text-sm text-gray-600 dark:text-gray-400">
                           No response data
                         </td>
                       </tr>
@@ -724,28 +726,30 @@ const ReportView = () => {
 
             {filteredData.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-gray-400">No results found</p>
+                <p className="text-gray-600">No results found</p>
               </div>
             )}
           </div>
           {/* Schedule Modal */}
           {showScheduleModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-md">
-                <h3 className="text-lg font-semibold text-white mb-4">Schedule this report</h3>
-                <label className="block text-sm text-gray-300 mb-2">Frequency</label>
+              <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 sm:p-6 w-full max-w-md">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Schedule this report</h3>
+                <label className="block text-sm text-gray-700 dark:text-gray-300 mb-2">Frequency</label>
                 <select
                   value={scheduleFrequency}
                   onChange={(e) => setScheduleFrequency(e.target.value)}
-                  className="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-primary-500 focus:outline-none mb-4"
+                  className="w-full bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-lg px-4 py-2 text-gray-800 dark:text-gray-200 focus:outline-none focus:border-primary-500 mb-4"
                 >
                   <option value="daily">Daily</option>
                   <option value="weekly">Weekly</option>
                   <option value="monthly">Monthly</option>
                 </select>
-                <div className="flex justify-end gap-3">
-                  <button onClick={() => setShowScheduleModal(false)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600">Cancel</button>
-                  <button onClick={handleSchedule} disabled={scheduling} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50">{scheduling ? 'Scheduling...' : 'Confirm'}</button>
+                <div className="flex justify-end gap-4">
+                  <button onClick={() => setShowScheduleModal(false)} className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600">Cancel</button>
+                  <button onClick={handleSchedule} disabled={scheduling} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed">
+                    {scheduling ? 'Scheduling...' : 'Schedule Now'}
+                  </button>
                 </div>
               </div>
             </div>
@@ -754,21 +758,21 @@ const ReportView = () => {
           {/* Citation Modal */}
           {citationContent && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
-                <h3 className="text-lg sm:text-xl font-semibold text-white mb-4">Snippet</h3>
+              <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 sm:p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-4">Snippet</h3>
                 {citationContent.citation ? (
-                  <p className="text-sm sm:text-base text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>
+                  <p className="text-sm sm:text-base text-gray-800 dark:text-gray-200 whitespace-pre-line mb-4">{citationContent.citation}</p>
                 ) : (
-                  <p className="text-sm text-gray-400 mb-4">No snippet available.</p>
+                  <p className="text-sm text-gray-600 mb-4">No snippet available.</p>
                 )}
                 {citationContent.website && (
-                  <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 underline text-sm sm:text-base">
+                  <a href={citationContent.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-sm sm:text-base">
                     <ExternalLink className="w-4 h-4" />
                     Open Source
                   </a>
                 )}
                 <div className="flex justify-end mt-6">
-                  <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base">Close</button>
+                  <button onClick={() => setCitationContent(null)} className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600 text-sm sm:text-base">Close</button>
                 </div>
               </div>
             </div>
@@ -777,23 +781,23 @@ const ReportView = () => {
           {/* AI Answer Modal */}
           {aiAnswerContent && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[85vh] overflow-y-auto">
+              <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 sm:p-6 w-full max-w-4xl max-h-[85vh] overflow-y-auto">
                 <div className="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl font-semibold text-white mb-2">AI Response</h3>
-                    <p className="text-xs sm:text-sm text-gray-400 break-words">
-                      <span className="font-medium text-gray-300">Platform:</span> <span className="capitalize">{aiAnswerContent.platform}</span>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-white mb-2">AI Response</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 break-words">
+                      <span className="font-medium text-gray-700">Platform:</span> <span className="capitalize">{aiAnswerContent.platform}</span>
                     </p>
-                    <p className="text-xs sm:text-sm text-gray-400 mt-1 break-words">
-                      <span className="font-medium text-gray-300">Prompt:</span> {aiAnswerContent.prompt}
+                    <p className="text-xs sm:text-sm text-gray-600 mt-1 break-words">
+                      <span className="font-medium text-gray-700">Prompt:</span> {aiAnswerContent.prompt}
                     </p>
                   </div>
                 </div>
-                <div className="bg-gray-900 rounded-lg p-4 mb-4 max-h-[50vh] overflow-y-auto">
-                  <p className="text-sm sm:text-base text-gray-200 whitespace-pre-wrap leading-relaxed">{aiAnswerContent.answer}</p>
+                <div className="bg-gray-50 rounded-lg p-4 mb-4 max-h-[50vh] overflow-y-auto">
+                  <p className="text-sm sm:text-base text-gray-700 whitespace-pre-wrap leading-relaxed">{aiAnswerContent.answer}</p>
                 </div>
                 <div className="flex justify-end">
-                  <button onClick={() => setAiAnswerContent(null)} className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 text-sm sm:text-base">Close</button>
+                  <button onClick={() => setAiAnswerContent(null)} className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 text-sm sm:text-base">Close</button>
                 </div>
               </div>
             </div>

@@ -3,6 +3,8 @@ import PromptSent from '../models/PromptSent.js';
 import PromptResponse from '../models/PromptResponse.js';
 import User from '../models/User.js';
 import crypto from 'crypto';
+import axios from 'axios';
+import { deductCredits } from './creditController.js';
 
 /**
  * @desc    Save report with all prompts and responses
@@ -50,10 +52,14 @@ export const saveReport = async (req, res) => {
         });
       }
 
-      // Deduct credits and update usage
-      user.credits -= promptsCount;
-      user.creditsUsed += promptsCount;
-      await user.save();
+      // Deduct credits and log the transaction
+      await deductCredits(
+        userId,
+        promptsCount,
+        'report_analysis',
+        `Credits used for ${brandData.brandName} report generation`,
+        { brandName: brandData.brandName, promptsCount }
+      );
     }
 
     // Calculate statistics
@@ -168,6 +174,158 @@ export const saveReport = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error saving report',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Run competitor comparison via n8n webhook and persist snapshot
+ * @route   POST /api/reports/:id/competitor-comparison
+ * @access  Private
+ */
+export const runCompetitorComparison = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+    const { competitors = [] } = req.body || {};
+
+    const cleanedCompetitors = Array.isArray(competitors)
+      ? competitors
+          .slice(0, 3)
+          .map((c) => ({
+            name: typeof c?.name === 'string' ? c.name.trim() : '',
+            website: typeof c?.website === 'string' ? c.website.trim() : '',
+          }))
+          .filter((c) => c.name && c.website)
+      : [];
+
+    if (!cleanedCompetitors.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one competitor with name and website is required (max 3).',
+      });
+    }
+
+    const report = await Report.findOne({ _id: id, userId });
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found',
+      });
+    }
+
+    const webhookUrl = process.env.N8N_COMPETITOR_ANALYSIS_WEBHOOK_URL;
+    if (!webhookUrl) {
+      return res.status(500).json({
+        success: false,
+        message: 'N8N_COMPETITOR_ANALYSIS_WEBHOOK_URL is not configured',
+      });
+    }
+
+    let comparisonResponse;
+    try {
+      const response = await axios.post(
+        webhookUrl,
+        {
+          competitors: cleanedCompetitors,
+          reportId: id.toString(),
+        },
+        { timeout: 120000 }
+      );
+      comparisonResponse = response.data;
+    } catch (error) {
+      console.error('Competitor comparison webhook error:', error.response?.data || error.message);
+      return res.status(502).json({
+        success: false,
+        message: 'Failed to fetch competitor comparison from workflow',
+        error: error.response?.data || error.message,
+      });
+    }
+
+    report.competitorComparison = {
+      competitors: cleanedCompetitors,
+      response: comparisonResponse,
+      updatedAt: new Date(),
+    };
+    await report.save();
+
+    return res.status(200).json({
+      success: true,
+      data: report.competitorComparison,
+    });
+  } catch (error) {
+    console.error('Run competitor comparison error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to run competitor comparison',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Get saved competitor comparison snapshot
+ * @route   GET /api/reports/:id/competitor-comparison
+ * @access  Private
+ */
+export const getCompetitorComparison = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const report = await Report.findOne({ _id: id, userId }).select('competitorComparison');
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: report.competitorComparison || null,
+    });
+  } catch (error) {
+    console.error('Get competitor comparison error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to fetch competitor comparison',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Reset competitor comparison snapshot for a report
+ * @route   DELETE /api/reports/:id/competitor-comparison
+ * @access  Private
+ */
+export const resetCompetitorComparison = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user._id;
+
+    const report = await Report.findOne({ _id: id, userId });
+    if (!report) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found',
+      });
+    }
+
+    report.competitorComparison = undefined;
+    await report.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Competitor comparison reset successfully',
+    });
+  } catch (error) {
+    console.error('Reset competitor comparison error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to reset competitor comparison',
       error: error.message,
     });
   }

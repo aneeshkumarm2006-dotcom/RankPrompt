@@ -34,9 +34,31 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  allowedModels: {
+    type: [String],
+    default: ['chatgpt'],
+  },
+  stripeCustomerId: {
+    type: String,
+    default: null,
+  },
+  stripeSubscriptionId: {
+    type: String,
+    default: null,
+  },
+  subscriptionStatus: {
+    type: String,
+    enum: ['active', 'canceled', 'past_due', 'inactive'],
+    default: 'inactive',
+  },
+  currentPlan: {
+    type: String,
+    enum: ['free', 'starter', 'pro', 'agency'],
+    default: 'free',
+  },
   subscriptionTier: {
     type: String,
-    enum: ['free', 'paid'],
+    enum: ['free', 'starter', 'pro', 'agency'],
     default: 'free',
   },
   creditsUsed: {
