@@ -184,7 +184,7 @@ async function handleCheckoutCompleted(session) {
       subscriptionStatus: 'active',
       currentPlan: planKey || 'free',
       subscriptionTier: planKey || 'free',
-      credits: (plan?.credits ?? 0) + currentCredits,
+      credits: currentCredits + (plan?.credits ?? 0),
       allowedModels: plan?.allowedModels ?? undefined,
       currentPlanPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
       creditsUsed: 0,
@@ -233,15 +233,19 @@ async function handleSubscriptionUpdate(subscription) {
   const planKey = subscription.metadata?.planType;
   const plan = PLAN_CONFIG[planKey];
 
-  await User.findByIdAndUpdate(userId, {
-    subscriptionStatus: subscription.status,
-    currentPlan: planKey || 'free',
-    subscriptionTier: planKey || 'free',
-    allowedModels: plan?.allowedModels ?? undefined,
-    credits: plan?.credits ?? 0,
-    creditsUsed: 0,
-    currentPlanPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
-  });
+  // Get current user to preserve existing credits
+    const currentUser = await User.findById(userId);
+    const currentCredits = currentUser?.credits || 0;
+    
+    await User.findByIdAndUpdate(userId, {
+      subscriptionStatus: subscription.status,
+      currentPlan: planKey || 'free',
+      subscriptionTier: planKey || 'free',
+      allowedModels: plan?.allowedModels ?? undefined,
+      credits: currentCredits, // Preserve existing credits, don't overwrite
+      creditsUsed: 0,
+      currentPlanPeriodEnd: subscription.current_period_end ? new Date(subscription.current_period_end * 1000) : null,
+    });
 }
 
 async function handleSubscriptionDeleted(subscription) {
