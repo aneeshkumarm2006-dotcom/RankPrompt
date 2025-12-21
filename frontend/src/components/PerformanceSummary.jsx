@@ -950,34 +950,36 @@ const PerformanceSummary = ({ brandData, reports }) => {
               {/* Competitor input rows */}
               <div className="bg-gray-50 dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 space-y-3">
                 {competitors.map((comp, idx) => (
-                  <div key={idx} className="grid grid-cols-1 md:grid-cols-5 gap-3 items-center">
-                    <div className="md:col-span-2">
-                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Competitor Name</label>
-                      <input
-                        value={comp.name}
-                        onChange={(e) => handleCompetitorChange(idx, 'name', e.target.value)}
-                        placeholder="e.g., edX"
-                        className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
-                      />
-                    </div>
-                    <div className="md:col-span-3">
-                      <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Website</label>
-                      <input
-                        value={comp.website}
-                        onChange={(e) => handleCompetitorChange(idx, 'website', e.target.value)}
-                        placeholder="https://example.com"
-                        className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
-                      />
-                    </div>
-                    <div className="flex justify-end md:justify-start">
-                      {competitors.length > 1 && (
-                        <button
-                          onClick={() => removeCompetitorRow(idx)}
-                          className="px-3 py-2 bg-red-100 text-red-600 rounded-lg text-xs flex items-center gap-1 hover:bg-red-200"
-                        >
-                          <X className="w-4 h-4" /> Remove
-                        </button>
-                      )}
+                  <div key={idx} className="space-y-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+                      <div className="sm:col-span-4">
+                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Competitor Name</label>
+                        <input
+                          value={comp.name}
+                          onChange={(e) => handleCompetitorChange(idx, 'name', e.target.value)}
+                          placeholder="e.g., edX"
+                          className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
+                        />
+                      </div>
+                      <div className="sm:col-span-6">
+                        <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">Website</label>
+                        <input
+                          value={comp.website}
+                          onChange={(e) => handleCompetitorChange(idx, 'website', e.target.value)}
+                          placeholder="https://example.com"
+                          className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
+                        />
+                      </div>
+                      <div className="sm:col-span-2 flex justify-end sm:justify-start items-end">
+                        {competitors.length > 1 && (
+                          <button
+                            onClick={() => removeCompetitorRow(idx)}
+                            className="px-3 py-2 bg-red-100 text-red-600 rounded-lg text-xs flex items-center gap-1 hover:bg-red-200"
+                          >
+                            <X className="w-4 h-4" /> Remove
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

@@ -112,6 +112,7 @@ export const storePromptsForScheduling = async (req, res) => {
       aiModels,
       searchScope,
       location,
+      country,
       language,
       scheduleFrequency,
     } = req.body;
@@ -177,6 +178,7 @@ export const storePromptsForScheduling = async (req, res) => {
       aiModels,
       searchScope: searchScope || 'global',
       location: location || null,
+      country: country || null,
       language: language || 'English',
       scheduleFrequency: scheduleFrequency || 'daily',
       nextRun,
@@ -692,6 +694,7 @@ export const scheduleFromReport = async (req, res) => {
       aiModels,
       searchScope: report.searchScope === 'local' ? 'local' : 'national',
       location: report.location || null,
+      country: report.country || null,
       language: report.language || 'English',
       isActive: true,
       scheduleFrequency: frequency,
@@ -871,112 +874,143 @@ export const n8nSaveReport = async (req, res) => {
       ? Math.round((reportData.filter(r => r.success).length / stats.totalPrompts) * 100)
       : 0;
 
-    // Create report document
-    const report = await Report.create({
-      userId: userId,
-      brandId: brandId,
-      searchScope: payload.searchScope || 'national',
-      location: payload.location || null,
-      country: payload.country || 'US',
-      language: payload.language || 'English',
-      brandName: payload.brandName,
-      brandUrl: payload.brandUrl,
-      favicon: payload.favicon,
-      platforms: payload.platforms || {
-        chatgpt: false,
-        perplexity: false,
-        googleAiOverviews: false
-      },
-      reportData: reportData,
-      stats: stats,
-      status: payload.status || 'completed',
-      reportDate: payload.reportDate ? new Date(payload.reportDate) : new Date(),
-    });
-
-    // Deduct credits for report generation
+    // Check if user has sufficient credits before creating report
+    const creditsToDeduct = reportData.length * (payload.platforms ? Object.keys(payload.platforms).filter(p => payload.platforms[p]).length : 1);
+    
     try {
-      const creditsToDeduct = reportData.length * (payload.platforms ? Object.keys(payload.platforms).filter(p => payload.platforms[p]).length : 1);
+      // Check credits first
+      const user = await User.findById(userId);
+      if (!user) {
+        return res.status(404).json({
+          success: false,
+          message: 'User not found',
+        });
+      }
+
+      if (user.credits < creditsToDeduct) {
+        // Don't create report if insufficient credits
+        return res.status(402).json({
+          success: false,
+          message: 'Insufficient credits for scheduled report',
+          data: {
+            required: creditsToDeduct,
+            available: user.credits,
+            userId: userId,
+            brandName: payload.brandName,
+          }
+        });
+      }
+
+      // Create report document only after credit check passes
+      const report = await Report.create({
+        userId: userId,
+        brandId: brandId,
+        searchScope: payload.searchScope || 'national',
+        location: payload.location || null,
+        country: payload.country || 'US',
+        language: payload.language || 'English',
+        brandName: payload.brandName,
+        brandUrl: payload.brandUrl,
+        favicon: payload.favicon,
+        platforms: payload.platforms || {
+          chatgpt: false,
+          perplexity: false,
+          googleAiOverviews: false
+        },
+        reportData: reportData,
+        stats: stats,
+        status: payload.status || 'completed',
+        reportDate: payload.reportDate ? new Date(payload.reportDate) : new Date(),
+      });
+
+      // Deduct credits for report generation
       await deductCredits(
         userId,
         creditsToDeduct,
         'report_analysis',
-        `Credits used for ${payload.brandName} report generation`,
-        { reportId: report._id, brandName: payload.brandName }
+        `Credits used for ${payload.brandName} scheduled report generation`,
+        { reportId: report._id, brandName: payload.brandName, scheduled: true }
       );
-    } catch (creditError) {
-      console.error('Failed to deduct credits:', creditError);
-      // Continue with report save even if credit deduction fails
-    }
 
-    // Automatically find and update the scheduled prompt for this brand/user
-    let scheduledPromptUpdate = null;
-    if (brandId) {
-      try {
-        // Find the most recent active scheduled prompt that is due for this brand/user
-        const scheduledPrompt = await ScheduledPrompt.findOne({
-          user: userId,
-          brandId: brandId,
-          isActive: true,
-          nextRun: { $lte: new Date() } // Only update prompts that are due
-        }).sort({ nextRun: 1 }); // Get the one that's been waiting longest
-        
-        if (scheduledPrompt) {
-          // Use provided reportDate or report's date
-          const lastRunDate = payload.reportDate ? new Date(payload.reportDate) : report.reportDate || new Date();
+      // Automatically find and update the scheduled prompt for this brand/user
+      // Only update if report was successfully created and credits deducted
+      let scheduledPromptUpdate = null;
+      if (brandId) {
+        try {
+          // Find the most recent active scheduled prompt that is due for this brand/user
+          const scheduledPrompt = await ScheduledPrompt.findOne({
+            user: userId,
+            brandId: brandId,
+            isActive: true,
+            nextRun: { $lte: new Date() } // Only update prompts that are due
+          }).sort({ nextRun: 1 }); // Get the one that's been waiting longest
           
-          scheduledPrompt.lastRun = lastRunDate;
-          scheduledPrompt.lastReportId = report._id;
-          
-          // Calculate next run based on frequency
-          const nextRun = new Date(lastRunDate);
-          switch (scheduledPrompt.scheduleFrequency) {
-            case 'daily':
-              nextRun.setDate(nextRun.getDate() + 1);
-              break;
-            case 'weekly':
-              nextRun.setDate(nextRun.getDate() + 7);
-              break;
-            case 'monthly':
-              nextRun.setMonth(nextRun.getMonth() + 1);
-              break;
-            default:
-              nextRun.setDate(nextRun.getDate() + 1);
+          if (scheduledPrompt) {
+            // Use provided reportDate or report's date
+            const lastRunDate = payload.reportDate ? new Date(payload.reportDate) : report.reportDate || new Date();
+            
+            scheduledPrompt.lastRun = lastRunDate;
+            scheduledPrompt.lastReportId = report._id;
+            
+            // Calculate next run based on frequency
+            const nextRun = new Date(lastRunDate);
+            switch (scheduledPrompt.scheduleFrequency) {
+              case 'daily':
+                nextRun.setDate(nextRun.getDate() + 1);
+                break;
+              case 'weekly':
+                nextRun.setDate(nextRun.getDate() + 7);
+                break;
+              case 'monthly':
+                nextRun.setMonth(nextRun.getMonth() + 1);
+                break;
+              default:
+                nextRun.setDate(nextRun.getDate() + 1);
+            }
+            
+            scheduledPrompt.nextRun = nextRun;
+            scheduledPrompt.lastUpdated = new Date();
+            
+            await scheduledPrompt.save();
+            
+            scheduledPromptUpdate = {
+              scheduledPromptId: scheduledPrompt._id,
+              lastRun: scheduledPrompt.lastRun,
+              nextRun: scheduledPrompt.nextRun,
+              scheduleFrequency: scheduledPrompt.scheduleFrequency,
+            };
+            
+          } else {
+            console.log('No active scheduled prompt found for this brand/user (or none are due)');
           }
-          
-          scheduledPrompt.nextRun = nextRun;
-          scheduledPrompt.lastUpdated = new Date();
-          
-          await scheduledPrompt.save();
-          
-          scheduledPromptUpdate = {
-            scheduledPromptId: scheduledPrompt._id,
-            lastRun: scheduledPrompt.lastRun,
-            nextRun: scheduledPrompt.nextRun,
-            scheduleFrequency: scheduledPrompt.scheduleFrequency,
-          };
-          
-          
-        } else {
-          console.log('No active scheduled prompt found for this brand/user (or none are due)');
+        } catch (scheduleError) {
+          console.error('Failed to update scheduled prompt:', scheduleError);
+          // Don't fail the whole request if scheduled prompt update fails
         }
-      } catch (updateError) {
-        console.error('Error updating scheduled prompt:', updateError);
-        // Don't fail the whole request if scheduled prompt update fails
       }
-    }
 
-    res.status(201).json({
-      success: true,
-      message: 'Report saved successfully via n8n webhook',
-      data: {
-        reportId: report._id,
-        userId: report.userId,
-        brandId: report.brandId,
-        brandName: report.brandName,
-        stats: report.stats,
-        scheduledPromptUpdate: scheduledPromptUpdate,
-      },
-    });
+    // Send success response only after everything is completed successfully
+      res.status(201).json({
+        success: true,
+        message: 'Report saved successfully via n8n webhook',
+        data: {
+          reportId: report._id,
+          userId: report.userId,
+          brandId: report.brandId,
+          brandName: report.brandName,
+          stats: report.stats,
+          scheduledPromptUpdate: scheduledPromptUpdate,
+        },
+      });
+
+    } catch (creditError) {
+      console.error('Credit operation failed:', creditError);
+      return res.status(500).json({
+        success: false,
+        message: 'Failed to process credits for scheduled report',
+        error: creditError.message,
+      });
+    }
   } catch (error) {
     console.error('❌ N8N save report error:', error);
     res.status(500).json({

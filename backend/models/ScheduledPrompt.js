@@ -67,6 +67,10 @@ const scheduledPromptSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  country: {
+    type: String,
+    default: null,
+  },
   language: {
     type: String,
     default: 'English',
