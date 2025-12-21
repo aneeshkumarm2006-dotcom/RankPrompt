@@ -20,8 +20,8 @@ const Reports = () => {
     brandName: '',
     websiteUrl: '',
     searchScope: 'local', // 'local' or 'national'
-    localSearchCity: 'Delhi, IN',
-    targetCountry: 'IN',
+    localSearchCity: 'Toronto, CA',
+    targetCountry: 'CA',
     language: 'English',
     platforms: {
       perplexity: false,
@@ -141,10 +141,10 @@ const Reports = () => {
   };
 
   const countries = [
+    { code: 'CA', name: 'Canada' },
     { code: 'IN', name: 'India' },
     { code: 'US', name: 'United States' },
     { code: 'GB', name: 'United Kingdom' },
-    { code: 'CA', name: 'Canada' },
     { code: 'AU', name: 'Australia' },
     { code: 'DE', name: 'Germany' },
     { code: 'FR', name: 'France' },
@@ -542,8 +542,8 @@ const Reports = () => {
       brandName: '',
       websiteUrl: '',
       searchScope: 'local',
-      localSearchCity: 'Delhi, IN',
-      targetCountry: 'IN',
+      localSearchCity: 'Toronto, CA',
+      targetCountry: 'CA',
       language: 'English',
       platforms: {
         perplexity: false,
@@ -727,7 +727,7 @@ const Reports = () => {
                     name="localSearchCity"
                     value={formData.localSearchCity}
                     onChange={handleInputChange}
-                    placeholder="e.g., Delhi, IN or New York, US"
+                    placeholder="e.g., Toronto, CA or New York, US"
                     className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                   />
                   <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
