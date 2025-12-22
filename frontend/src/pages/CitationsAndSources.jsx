@@ -48,33 +48,35 @@ const CitationsAndSources = () => {
         reports.forEach(report => {
           if (report.reportData) {
             report.reportData.forEach(item => {
-              item.response?.forEach(resp => {
-                const url = resp.details?.website || resp.details?.matchedUrl;
-                if (url) {
-                  if (!sourcesMap[url]) {
-                    sourcesMap[url] = {
-                      url,
-                      frequency: 0,
-                      domain: new URL(url).hostname,
-                      lastSeen: report.reportDate || report.createdAt,
-                      reports: [],
-                      platforms: new Set(),
-                      categories: new Set()
-                    };
+              if (Array.isArray(item.response)) {
+                item.response.forEach(resp => {
+                  const url = resp.details?.website || resp.details?.matchedUrl;
+                  if (url) {
+                    if (!sourcesMap[url]) {
+                      sourcesMap[url] = {
+                        url,
+                        frequency: 0,
+                        domain: new URL(url).hostname,
+                        lastSeen: report.reportDate || report.createdAt,
+                        reports: [],
+                        platforms: new Set(),
+                        categories: new Set()
+                      };
+                    }
+                    sourcesMap[url].frequency++;
+                    sourcesMap[url].reports.push(report._id);
+                    sourcesMap[url].platforms.add(resp.src);
+                    sourcesMap[url].categories.add(item.category);
+                    
+                    // Update last seen if this report is more recent
+                    const reportDate = new Date(report.reportDate || report.createdAt);
+                    const lastSeenDate = new Date(sourcesMap[url].lastSeen);
+                    if (reportDate > lastSeenDate) {
+                      sourcesMap[url].lastSeen = report.reportDate || report.createdAt;
+                    }
                   }
-                  sourcesMap[url].frequency++;
-                  sourcesMap[url].reports.push(report._id);
-                  sourcesMap[url].platforms.add(resp.src);
-                  sourcesMap[url].categories.add(item.category);
-                  
-                  // Update last seen if this report is more recent
-                  const reportDate = new Date(report.reportDate || report.createdAt);
-                  const lastSeenDate = new Date(sourcesMap[url].lastSeen);
-                  if (reportDate > lastSeenDate) {
-                    sourcesMap[url].lastSeen = report.reportDate || report.createdAt;
-                  }
-                }
-              });
+                });
+              }
             });
           }
         });

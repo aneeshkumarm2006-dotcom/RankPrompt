@@ -301,10 +301,12 @@ const PerformanceSummary = ({ brandData, reports }) => {
     const categoryScores = {};
     reportData.forEach(item => {
       if (!categoryScores[item.category]) categoryScores[item.category] = { found: 0, total: 0 };
-      item.response?.forEach(resp => {
-        categoryScores[item.category].total++;
-        if (resp.found) categoryScores[item.category].found++;
-      });
+      if (Array.isArray(item.response)) {
+        item.response.forEach(resp => {
+          categoryScores[item.category].total++;
+          if (resp.found) categoryScores[item.category].found++;
+        });
+      }
     });
 
     const categoryData = Object.keys(categoryScores).map(cat => ({
@@ -315,11 +317,13 @@ const PerformanceSummary = ({ brandData, reports }) => {
     // Platform scores
     const platformScores = {};
     reportData.forEach(item => {
-      item.response?.forEach(resp => {
-        if (!platformScores[resp.src]) platformScores[resp.src] = { found: 0, total: 0 };
-        platformScores[resp.src].total++;
-        if (resp.found) platformScores[resp.src].found++;
-      });
+      if (Array.isArray(item.response)) {
+        item.response.forEach(resp => {
+          if (!platformScores[resp.src]) platformScores[resp.src] = { found: 0, total: 0 };
+          platformScores[resp.src].total++;
+          if (resp.found) platformScores[resp.src].found++;
+        });
+      }
     });
 
     const platformData = Object.keys(platformScores).map(platform => ({
@@ -332,7 +336,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
     const missedPrompts = [];
     
     reportData.forEach((item, idx) => {
-      const responses = item.response || [];
+      const responses = Array.isArray(item.response) ? item.response : [];
       const foundCount = responses.filter(r => r.found).length;
       const platforms = responses.filter(r => r.found).map(r => r.src);
       const sources = responses.filter(r => r.details?.website || r.details?.matchedUrl);
@@ -371,22 +375,24 @@ const PerformanceSummary = ({ brandData, reports }) => {
     // Sources with full prompt details
     const sourcesMap = {};
     reportData.forEach((item, idx) => {
-      item.response?.forEach(resp => {
-        const url = resp.details?.website || resp.details?.matchedUrl;
-        if (url) {
-          if (!sourcesMap[url]) sourcesMap[url] = { count: 0, prompts: [] };
-          sourcesMap[url].count++;
-          // Store full prompt details including response data
-          sourcesMap[url].prompts.push({
-            index: idx + 1,
-            text: item.prompt,
-            found: resp.found,
-            platform: resp.src,
-            aianswer: resp.aianswer,
-            category: item.category
-          });
-        }
-      });
+      if (Array.isArray(item.response)) {
+        item.response.forEach(resp => {
+          const url = resp.details?.website || resp.details?.matchedUrl;
+          if (url) {
+            if (!sourcesMap[url]) sourcesMap[url] = { count: 0, prompts: [] };
+            sourcesMap[url].count++;
+            // Store full prompt details including response data
+            sourcesMap[url].prompts.push({
+              index: idx + 1,
+              text: item.prompt,
+              found: resp.found,
+              platform: resp.src,
+              aianswer: resp.aianswer,
+              category: item.category
+            });
+          }
+        });
+      }
     });
 
     const topSources = Object.entries(sourcesMap)

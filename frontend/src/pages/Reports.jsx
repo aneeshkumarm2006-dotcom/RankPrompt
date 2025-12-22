@@ -25,7 +25,7 @@ const Reports = () => {
     language: 'English',
     platforms: {
       perplexity: false,
-      chatgpt: true,
+      chatgpt: false,
       googleAiOverviews: false
     },
     brandFavicon: null
