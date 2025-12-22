@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import axios from 'axios';
 import dotenv from 'dotenv';
 
 // Load environment variables explicitly
@@ -15,7 +16,7 @@ const openai = new OpenAI({
  */
 export const analyzeBrand = async (req, res) => {
   try {
-    const { brandName, websiteUrl, industry } = req.body;
+    const { brandName, websiteUrl } = req.body;
 
     if (!brandName || !websiteUrl) {
       return res.status(400).json({
@@ -24,108 +25,24 @@ export const analyzeBrand = async (req, res) => {
       });
     }
 
-    // Generate brand summary using OpenAI with web search for consistency
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-5-chat-latest',
-      tools: [
-        {
-          type: "function",
-          function: {
-            name: "web_search",
-            description: "Search the web for current information about a brand or company",
-            parameters: {
-              type: "object",
-              properties: {
-                query: {
-                  type: "string",
-                  description: "Search query to find information about the brand", 
-                },
-                num_results: {
-                  type: "integer",
-                  description: "Number of search results to return",
-                },
-              },
-              required: ["query"],
-            },
-          },
-        },
-      ],
-      tool_choice: "auto",
-      messages: [
-        {
-          role: 'system',
-          content: 'You are an SEO and brand analysis expert. When you use web search, you MUST process the search results and write a professional, well-structured brand summary in proper English. Do NOT return the raw search results or JSON. Instead, analyze the information and create a coherent, fluent paragraph that reads like a professional business analysis.',
-        },
-        {
-          role: 'user',
-          content: `I need you to analyze the brand "${brandName}" with website ${websiteUrl}. 
+    // Forward request to n8n webhook instead of OpenAI
+    const webhookUrl = process.env.N8N_OPENAI;
 
-Step 1: Use web search to find current information about this brand.
-Step 2: Process all search results and combine with the provided information.
-Step 3: Write a professional brand summary based on your research.
-
-CRITICAL: Do NOT output web search results or JSON. Write a flowing, professional paragraph in proper English.
-
-The summary should cover:
-1. What the company does and its main business model
-2. Target customers and market segment  
-3. Key products or services
-4. Industry position and competitive advantages
-5. Geographic presence and scale of operations
-
-Requirements:
-- Write in proper, professional English
-- Keep the summary between 150-200 words
-- Format as a single, well-structured paragraph
-- Be factual and accurate based on your research
-- Ensure the summary flows naturally and is grammatically correct
-
-Please provide the complete brand summary as a proper paragraph:`,
-        },
-      ],
-      temperature: 0.3, // Lower temperature for more consistent results
-      max_tokens: 500,
+    const webhookResponse = await axios.post(webhookUrl, {
+      brandname: brandName,
+      brandurl: websiteUrl,
     });
-
-    const summary = completion.choices[0].message.content;
-
-    // Clean up any JSON artifacts or web search results that might appear in the response
-    let cleanedSummary = summary;
-    
-    // Remove any JSON-like structures that might have been included
-    cleanedSummary = cleanedSummary.replace(/\{[^}]*\}/g, '');
-    cleanedSummary = cleanedSummary.replace(/\[[^\]]*\]/g, '');
-    
-    // Remove any "query" or "search results" text that might appear
-    cleanedSummary = cleanedSummary.replace(/"query":\s*"[^"]*"/g, '');
-    cleanedSummary = cleanedSummary.replace(/"num_results":\s*\d+/g, '');
-    cleanedSummary = cleanedSummary.replace(/"results":\s*\[[^\]]*\]/g, '');
-    
-    // Clean up extra whitespace and ensure proper formatting
-    cleanedSummary = cleanedSummary.replace(/\s+/g, ' ').trim();
-    
-    // Ensure it starts with a capital letter and ends with proper punctuation
-    if (cleanedSummary.length > 0) {
-      cleanedSummary = cleanedSummary.charAt(0).toUpperCase() + cleanedSummary.slice(1);
-      if (!cleanedSummary.match(/[.!?]$/)) {
-        cleanedSummary += '.';
-      }
-    }
 
     res.status(200).json({
       success: true,
-      data: {
-        summary: cleanedSummary,
-        brandName,
-        websiteUrl,
-      },
+      data: webhookResponse.data,
     });
   } catch (error) {
     console.error('Analyze brand error:', error);
     res.status(500).json({
       success: false,
       message: 'Failed to analyze brand',
-      error: error.message,
+      error: error.response?.data || error.message,
     });
   }
 };
@@ -206,7 +123,7 @@ Please provide the 10 categories based on your research:`,
         },
       ],
       temperature: 0.3, // Lower temperature for more consistent results
-      max_tokens: 1000,
+      // max_tokens: 1000,
       response_format: { type: "json_object" },
     });
 
@@ -333,7 +250,7 @@ export const generatePrompts = async (req, res) => {
       }
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-4o-mini',
+        model: 'gpt-5-chat-latest',
         messages: [
           {
             role: 'system',
@@ -368,7 +285,7 @@ IMPORTANT: Generate exactly ${promptCount} prompts, no markdown, no code blocks,
           },
         ],
         temperature: 0.9,
-        max_tokens: 1500,
+        // max_tokens: 1500,
         response_format: { type: "json_object" },
       });
 

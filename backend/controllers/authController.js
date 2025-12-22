@@ -46,7 +46,7 @@ export const register = async (req, res) => {
     });
 
     // Seed free tier benefits + log
-    user.allowedModels = ['chatgpt'];
+    user.allowedModels = ['chatgpt', 'perplexity', 'google_ai_overview'];
     user.currentPlan = 'free';
     user.subscriptionTier = 'free';
     await user.save();
@@ -213,7 +213,7 @@ export const googleAuth = async (req, res) => {
       });
 
       // Seed free tier benefits for new Google users + log
-      user.allowedModels = ['chatgpt'];
+      user.allowedModels = ['chatgpt', 'perplexity', 'google_ai_overview'];
       user.currentPlan = 'free';
       user.subscriptionTier = 'free';
       await user.save();

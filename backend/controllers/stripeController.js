@@ -256,7 +256,7 @@ async function handleSubscriptionDeleted(subscription) {
     subscriptionStatus: 'canceled',
     currentPlan: 'free',
     subscriptionTier: 'free',
-    allowedModels: ['chatgpt'],
+    allowedModels: ['chatgpt', 'perplexity', 'google_ai_overview'],
     stripeSubscriptionId: null,
     credits: 0,
     creditsUsed: 0,

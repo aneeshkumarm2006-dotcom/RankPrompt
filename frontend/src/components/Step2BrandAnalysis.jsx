@@ -20,32 +20,18 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   // Prevent double API calls in React StrictMode
   const hasCalledAPI = useRef(false);
 
-  // Prompt options based on subscription tier
-  const isFreeTier = (user?.subscriptionTier || user?.currentPlan || 'free') === 'free';
+  // Prompt options (unrestricted now)
+  const promptOptions = [
+    { value: 1, label: '1' },
+    { value: 10, label: '10' },
+    { value: 25, label: '25' },
+    { value: 50, label: '50' },
+    { value: 100, label: '100' },
+    { value: 150, label: '150' },
+  ];
 
-  const promptOptions = isFreeTier
-    ? [
-        { value: 1, label: '1' },
-        { value: 10, label: '10' },
-        { value: 25, label: '25' },
-        { value: 50, label: '50' },
-      ]
-    : [
-        { value: 1, label: '1' },
-        { value: 10, label: '10' },
-        { value: 25, label: '25' },
-        { value: 50, label: '50' },
-        { value: 100, label: '100' },
-        { value: 150, label: '150' },
-      ];
-
-  // Calculate max categories based on subscription tier
-  // Free tier: 3 categories, Paid tiers: 10 categories
-  const maxCategories = isFreeTier ? 3 : 10;
-  
-  // Debug log to check subscription tier
-  useEffect(() => {
-  }, [user?.subscriptionTier, maxCategories]);
+  // Max categories now unrestricted to 10 for all users
+  const maxCategories = 10;
 
   useEffect(() => {
     if (!hasCalledAPI.current) {
