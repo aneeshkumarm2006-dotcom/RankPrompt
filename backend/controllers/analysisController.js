@@ -82,10 +82,32 @@ export const updateScheduledPrompt = async (req, res) => {
 
     await scheduledPrompt.save();
 
+    // Notify n8n webhook about the change (send mail)
+    const n8nSendMailWebhook = process.env.N8N_WEBHOOK_SEND_MAIL;
+    let webhookResult = { success: false, error: null };
+
+    if (!n8nSendMailWebhook) {
+      webhookResult.error = 'n8n_webhook_send_mail not configured';
+      console.error(webhookResult.error);
+    } else {
+      try {
+        const changedPrompts = cleanedPrompts.map((p) => p.prompt);
+        await axios.post(n8nSendMailWebhook, {
+          user_id: req.user?._id,
+          changed_prompt: changedPrompts,
+        });
+        webhookResult.success = true;
+      } catch (webhookError) {
+        webhookResult.error = webhookError.message;
+        console.error('Failed to notify n8n send mail webhook:', webhookError.message);
+      }
+    }
+
     return res.status(200).json({
       success: true,
       message: 'Scheduled prompts updated successfully',
       data: scheduledPrompt,
+      webhook: webhookResult,
     });
   } catch (error) {
     console.error('Update scheduled prompt error:', error);
@@ -184,6 +206,20 @@ export const storePromptsForScheduling = async (req, res) => {
       nextRun,
       isActive: true,
     });
+
+    const n8nScheduleWebhook = process.env.N8N_NEW_SCHEDULE_MAIL;
+    if (!n8nScheduleWebhook) {
+      console.error('N8N_NEW_SCHEDULE_MAIL not configured');
+    } else {
+      try {
+        await axios.post(n8nScheduleWebhook, {
+          user_id: req.user?._id,
+          scheduledPrompts_id: scheduledPrompt._id,
+        });
+      } catch (webhookError) {
+        console.error('Failed to notify n8n new schedule webhook:', webhookError.message);
+      }
+    }
 
     res.status(201).json({
       success: true,
@@ -703,6 +739,20 @@ export const scheduleFromReport = async (req, res) => {
       nextRun,
       lastUpdated: new Date(),
     });
+
+    const n8nScheduleWebhook = process.env.N8N_NEW_SCHEDULE_MAIL;
+    if (!n8nScheduleWebhook) {
+      console.error('N8N_NEW_SCHEDULE_MAIL not configured');
+    } else {
+      try {
+        await axios.post(n8nScheduleWebhook, {
+          user_id: req.user?._id,
+          scheduledPrompts_id: scheduledPrompt._id,
+        });
+      } catch (webhookError) {
+        console.error('Failed to notify n8n new schedule webhook:', webhookError.message);
+      }
+    }
 
     return res.status(201).json({ success: true, data: scheduledPrompt });
   } catch (error) {

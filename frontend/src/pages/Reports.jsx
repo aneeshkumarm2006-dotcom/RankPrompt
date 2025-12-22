@@ -25,7 +25,7 @@ const Reports = () => {
     language: 'English',
     platforms: {
       perplexity: false,
-      chatgpt: false,
+      chatgpt: true,
       googleAiOverviews: false
     },
     brandFavicon: null
@@ -43,22 +43,6 @@ const Reports = () => {
   const [savedBrandId, setSavedBrandId] = useState(null);
   const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
   const [creditsInfo, setCreditsInfo] = useState({ needed: 0, available: 0 });
-  const isFreeTier = (user?.subscriptionTier || user?.currentPlan || 'free') === 'free';
-
-  // Enforce free-tier platform limits in UI
-  useEffect(() => {
-    if (isFreeTier) {
-      setFormData((prev) => ({
-        ...prev,
-        platforms: {
-          ...prev.platforms,
-          chatgpt: true,
-          perplexity: false,
-          googleAiOverviews: false,
-        },
-      }));
-    }
-  }, [isFreeTier]);
 
   // Load in-progress report if continuing
   useEffect(() => {
@@ -782,21 +766,18 @@ const Reports = () => {
                   AI Platforms
                 </label>
                 <div className="space-y-3">
-                  <label className={`flex items-center space-x-3 ${isFreeTier ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} group`}>
+                  <label className="flex items-center space-x-3 cursor-pointer group">
                     <div className="relative">
                       <input
                         type="checkbox"
                         checked={formData.platforms.perplexity}
                         onChange={() => handlePlatformChange('perplexity')}
-                        disabled={isFreeTier}
                         className="sr-only"
                       />
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                         formData.platforms.perplexity
                           ? 'bg-action-600 border-action-600'
-                          : isFreeTier
-                          ? 'border-gray-200 dark:border-dark-600 bg-gray-100 dark:bg-dark-800'
-                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
                       }`}>
                         {formData.platforms.perplexity && (
                           <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -813,7 +794,7 @@ const Reports = () => {
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                       <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${
-                        isFreeTier ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'
+                        formData.platforms.perplexity ? 'text-gray-800 dark:text-white' : 'text-gray-700 dark:text-gray-300'
                       }`}>
                         Perplexity
                       </span>
@@ -853,21 +834,18 @@ const Reports = () => {
                     </div>
                   </label>
 
-                  <label className={`flex items-center space-x-3 ${isFreeTier ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'} group`}>
+                  <label className="flex items-center space-x-3 cursor-pointer group">
                     <div className="relative">
                       <input
                         type="checkbox"
                         checked={formData.platforms.googleAiOverviews}
                         onChange={() => handlePlatformChange('googleAiOverviews')}
-                        disabled={isFreeTier}
                         className="sr-only"
                       />
                       <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
                         formData.platforms.googleAiOverviews
                           ? 'bg-action-600 border-action-600'
-                          : isFreeTier
-                          ? 'border-gray-200 dark:border-dark-600 bg-gray-100 dark:bg-dark-800'
-                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
                       }`}>
                         {formData.platforms.googleAiOverviews && (
                           <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -884,7 +862,7 @@ const Reports = () => {
                         onError={(e) => { e.target.style.display = 'none'; }}
                       />
                       <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${
-                        isFreeTier ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700 dark:text-gray-300'
+                        formData.platforms.googleAiOverviews ? 'text-gray-800 dark:text-white' : 'text-gray-700 dark:text-gray-300'
                       }`}>
                         Google AI Overviews
                       </span>

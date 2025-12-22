@@ -957,7 +957,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                         <input
                           value={comp.name}
                           onChange={(e) => handleCompetitorChange(idx, 'name', e.target.value)}
-                          placeholder="e.g., edX"
+                          placeholder="e.g., rankprompt"
                           className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
                         />
                       </div>
@@ -966,7 +966,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                         <input
                           value={comp.website}
                           onChange={(e) => handleCompetitorChange(idx, 'website', e.target.value)}
-                          placeholder="https://example.com"
+                          placeholder="rankprompt.com"
                           className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
                         />
                       </div>
@@ -974,7 +974,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                         {competitors.length > 1 && (
                           <button
                             onClick={() => removeCompetitorRow(idx)}
-                            className="px-3 py-2 bg-red-100 text-red-600 rounded-lg text-xs flex items-center gap-1 hover:bg-red-200"
+                            className="px-3 py-3 bg-red-100 text-red-600 rounded-lg text-xs flex items-center gap-1 hover:bg-red-200"
                           >
                             <X className="w-4 h-4" /> Remove
                           </button>
@@ -986,7 +986,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                 {competitors.length < 3 && (
                   <button
                     onClick={addCompetitorRow}
-                    className="px-3 py-2 bg-gray-200 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-300 dark:hover:bg-dark-700"
+                    className="px-3 py-3 bg-gray-200 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg text-sm flex items-center gap-2 hover:bg-gray-300 dark:hover:bg-dark-700"
                   >
                     <Plus className="w-4 h-4" />
                     Add Competitor

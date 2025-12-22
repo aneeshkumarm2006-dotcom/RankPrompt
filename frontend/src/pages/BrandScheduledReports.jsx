@@ -374,7 +374,7 @@ const BrandScheduledReports = () => {
                   </div>
                   <button
                     onClick={() => handleRemovePrompt(idx)}
-                    className="mt-7 px-2 py-1 text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400"
+                    className="mt-7 px-2 py-1 text-xs text-white  hover:text-red-700 dark:hover:text-red-400"
                     disabled={promptInputs.length <= 1}
                   >
                     Remove

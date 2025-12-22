@@ -32,11 +32,11 @@ const userSchema = new mongoose.Schema({
   },
   credits: {
     type: Number,
-    default: 0,
+    default: 25,
   },
   allowedModels: {
     type: [String],
-    default: ['chatgpt'],
+    default: ['chatgpt', 'perplexity', 'google_ai_overview'],
   },
   stripeCustomerId: {
     type: String,
