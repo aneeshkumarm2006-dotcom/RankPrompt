@@ -12,6 +12,10 @@ const BrandScheduledReports = () => {
   const [deleteModal, setDeleteModal] = useState(null);
   const [editModal, setEditModal] = useState(null);
   const [promptInputs, setPromptInputs] = useState([]);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [scheduleFrequency, setScheduleFrequency] = useState('weekly');
+  const [scheduling, setScheduling] = useState(false);
+  const [latestReportId, setLatestReportId] = useState(null);
 
   useEffect(() => {
     fetchData();
@@ -39,6 +43,23 @@ const BrandScheduledReports = () => {
       if (schedulesRes.ok) {
         const { data } = await schedulesRes.json();
         setSchedules(data || []);
+      }
+
+      // Fetch latest report for this brand (needed to schedule)
+      const reportsRes = await fetch(`${API_URL}/reports/brand/${brandId}`, {
+        credentials: 'include',
+      });
+
+      if (reportsRes.ok) {
+        const { data: reportsData } = await reportsRes.json();
+        if (Array.isArray(reportsData) && reportsData.length > 0) {
+          const latest = [...reportsData].sort(
+            (a, b) => new Date(b.createdAt || b.reportDate) - new Date(a.createdAt || a.reportDate)
+          )[0];
+          setLatestReportId(latest?._id || null);
+        } else {
+          setLatestReportId(null);
+        }
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -116,6 +137,38 @@ const BrandScheduledReports = () => {
     setPromptInputs(prev => prev.filter((_, idx) => idx !== index));
   };
 
+  const handleSchedule = async () => {
+    if (!latestReportId) {
+      toast.error('No report available to schedule');
+      return;
+    }
+
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      setScheduling(true);
+      const resp = await fetch(`${API_URL}/analysis/schedule-from-report`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ reportId: latestReportId, frequency: scheduleFrequency }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err.message || 'Failed to schedule report');
+      }
+
+      setShowScheduleModal(false);
+      toast.success('Report scheduled successfully');
+      fetchData();
+    } catch (error) {
+      console.error('Error scheduling report:', error);
+      toast.error(error.message || 'Failed to schedule report');
+    } finally {
+      setScheduling(false);
+    }
+  };
+
   const handleSavePrompts = async () => {
     if (!editModal) return;
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -185,14 +238,26 @@ const BrandScheduledReports = () => {
     <div className="p-4 sm:p-6 lg:p-8 bg-[#F8FAFC] dark:bg-dark-950">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Scheduled Reports</h1>
-          {brandData && (
-            <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
-          )}
-          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2">
-            To create a new scheduled report, go to any report and click "Schedule Report"
-          </p>
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">Scheduled Reports</h1>
+            {brandData && (
+              <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base">{brandData.brandName}</p>
+            )}
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-2">
+              To create a new scheduled report, use the button below.
+            </p>
+          </div>
+          {/* {schedules.length === 0 && (
+            <button
+              onClick={() => setShowScheduleModal(true)}
+              disabled={!latestReportId}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Calendar className="w-4 h-4" />
+              Schedule Report123
+            </button>
+          )} */}
         </div>
 
         {/* Schedules List */}
@@ -307,12 +372,57 @@ const BrandScheduledReports = () => {
               You haven't scheduled any reports for this brand yet.
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              To schedule a report: Go to <span className="text-primary-400">All Reports</span> → 
-              View any report → Click <span className="text-primary-400">"Schedule Report"</span> button
+              You can schedule one now for the latest report.
             </p>
+            <button
+              onClick={() => setShowScheduleModal(true)}
+              disabled={!latestReportId}
+              className="mt-4 inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Calendar className="w-4 h-4" />
+              Schedule Report
+            </button>
           </div>
         )}
       </div>
+
+      {/* Schedule Modal */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 sm:p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Schedule this report</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Frequency</label>
+                <select
+                  value={scheduleFrequency}
+                  onChange={(e) => setScheduleFrequency(e.target.value)}
+                  className="w-full bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </div>
+              <div className="flex justify-end gap-4">
+                <button
+                  onClick={() => setShowScheduleModal(false)}
+                  className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSchedule}
+                  disabled={scheduling}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed"
+                >
+                  {scheduling ? 'Scheduling...' : 'Schedule Now'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {deleteModal && (
