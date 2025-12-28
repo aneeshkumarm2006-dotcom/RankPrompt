@@ -696,20 +696,27 @@ const ReportView = () => {
                             )}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
-                            {platformData.details?.website || platformData.details?.matchedUrl ? (
-                              <a 
-                                href={platformData.details?.website || platformData.details?.matchedUrl} 
-                                target="_blank" 
-                                rel="noopener noreferrer" 
-                                className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs"
-                              >
-                                <ExternalLink className="w-3 h-3" />
-                                Link
-                              </a>
-                            ) : (
-                              <span className="text-gray-500">-</span>
-                            )}
-                          </td>
+  {platformData.details?.website || platformData.details?.matchedUrl ? (
+    <a 
+      href={
+        (() => {
+          const url = platformData.details?.website || platformData.details?.matchedUrl;
+          return url.startsWith('http://') || url.startsWith('https://') 
+            ? url 
+            : `https://${url}`;
+        })()
+      }
+      target="_blank" 
+      rel="noopener noreferrer" 
+      className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs"
+    >
+      <ExternalLink className="w-3 h-3" />
+      Link
+    </a>
+  ) : (
+    <span className="text-gray-500">-</span>
+  )}
+</td>
                         </tr>
                       ))
                     ) : (
