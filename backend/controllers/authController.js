@@ -52,7 +52,7 @@ export const register = async (req, res) => {
     await user.save();
     await addCredits(
       user._id,
-      25,
+      75,
       'earned',
       'trial',
       'Signup bonus (free tier)'
@@ -219,7 +219,7 @@ export const googleAuth = async (req, res) => {
       await user.save();
       await addCredits(
         user._id,
-        25,
+        75,
         'earned',
         'trial',
         'Signup bonus (free tier)'
