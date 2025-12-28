@@ -63,51 +63,27 @@ export const generateCategories = async (req, res) => {
       });
     }
 
-    // Generate 10 SEO categories using OpenAI with web search for consistency
+    // Generate 10 SEO categories using OpenAI based on brand summary
     const completion = await openai.chat.completions.create({
       model: 'gpt-5-chat-latest',
-      tools: [
-        {
-          type: "function",
-          function: {
-            name: "web_search",
-            description: "Search the web for current information about a brand or company",
-            parameters: {
-              type: "object",
-              properties: {
-                query: {
-                  type: "string",
-                  description: "Search query to find information about the brand and its industry", 
-                },
-                num_results: {
-                  type: "integer",
-                  description: "Number of search results to return",
-                },
-              },
-              required: ["query"],
-            },
-          },
-        },
-      ],
-      tool_choice: "auto",
       messages: [
         {
           role: 'system',
-          content: 'You are an SEO expert specializing in categorizing business types and generating relevant search categories. Use web search to verify information about brands, especially small brands. Based on your research and the provided information, generate exactly 10 distinct SEO/business categories in proper English. Categories should be professional, clear, and accurately reflect the business type.',
+          content: 'You are an SEO expert specializing in categorizing business types and generating relevant search categories. Based on the provided brand information, generate exactly 10 distinct SEO/business categories in proper English. Categories should be professional, clear, and accurately reflect the business type.',
         },
         {
           role: 'user',
-          content: `I need you to research and categorize the brand "${brandName}" (${websiteUrl}).
+          content: `I need you to categorize the brand "${brandName}" (${websiteUrl}).
 
-First, use web search to find current information about this brand to understand their actual business model and industry, especially important for small brands.
+${summary ? `Brand Summary: ${summary}` : ''}
 
-Then, based on your verified research, generate EXACTLY 10 distinct SEO/business categories that would be most relevant for this brand's online visibility and search optimization.
+Based on this information, generate EXACTLY 10 distinct SEO/business categories that would be most relevant for this brand's online visibility and search optimization.
 
 Requirements:
 - Generate exactly 10 categories, no more, no less
 - Categories must be in proper, professional English
 - Each category should be clear, specific, and relevant to SEO/content strategy
-- Base categories on actual business information from your research
+- Base categories on the brand information provided
 - Examples: "E-commerce Marketplace", "Consumer Electronics", "Fashion Retail", "Home Essentials", "Online Shopping Platform", etc.
 
 Return a valid JSON object in this EXACT format:
@@ -119,11 +95,10 @@ Return a valid JSON object in this EXACT format:
   ]
 }
 
-Please provide the 10 categories based on your research:`,
+Please provide the 10 categories:`,
         },
       ],
       temperature: 0.3, // Lower temperature for more consistent results
-      // max_tokens: 1000,
       response_format: { type: "json_object" },
     });
 
@@ -157,7 +132,7 @@ Please provide the 10 categories based on your research:`,
     } catch (parseError) {
       console.error('Raw response:', responseContent);
       
-      return res.status(500).json({
+      return res.status(400).json({
         success: false,
         message: 'Failed to parse categories from AI response',
         error: parseError.message,
