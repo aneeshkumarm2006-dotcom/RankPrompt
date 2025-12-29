@@ -52,11 +52,33 @@ const CitationsAndSources = () => {
                 item.response.forEach(resp => {
                   const url = resp.details?.website || resp.details?.matchedUrl;
                   if (url) {
+                    let domain = 'Unknown Domain';
+                    let normalizedUrl = url;
+                    
+                    try {
+                      // Try to parse URL as-is
+                      const urlObj = new URL(url);
+                      domain = urlObj.hostname;
+                    } catch (error) {
+                      // If it fails, try adding https://
+                      try {
+                        const urlObj = new URL(`https://${url}`);
+                        domain = urlObj.hostname;
+                        normalizedUrl = `https://${url}`;
+                      } catch (error2) {
+                        // If both fail, extract domain from string or use the URL itself
+                        const domainMatch = url.match(/^(?:https?:\/\/)?(?:www\.)?([^\/\s]+)/);
+                        domain = domainMatch ? domainMatch[1] : url;  
+                        console.warn('Could not parse URL, using as-is:', url);
+                      }
+                    }
+                    
                     if (!sourcesMap[url]) {
                       sourcesMap[url] = {
-                        url,
+                        url: normalizedUrl,
+                        originalUrl: url,
                         frequency: 0,
-                        domain: new URL(url).hostname,
+                        domain: domain,
                         lastSeen: report.reportDate || report.createdAt,
                         reports: [],
                         platforms: new Set(),
@@ -281,7 +303,7 @@ const CitationsAndSources = () => {
                   paginatedSources.map((source, idx) => {
                     const globalIndex = (currentPage - 1) * itemsPerPage + idx + 1;
                     return (
-                      <tr key={source.url} className="hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
+                      <tr key={source.originalUrl} className="hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                         <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 font-medium">
                           {globalIndex}
                         </td>
@@ -330,7 +352,7 @@ const CitationsAndSources = () => {
               paginatedSources.map((source, idx) => {
                 const globalIndex = (currentPage - 1) * itemsPerPage + idx + 1;
                 return (
-                  <div key={source.url} className="p-4 hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
+                  <div key={source.originalUrl} className="p-4 hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                     {/* Index & Frequency */}
                     <div className="flex items-center justify-between mb-3">
                       <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">#{globalIndex}</span>
