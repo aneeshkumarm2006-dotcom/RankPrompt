@@ -849,6 +849,86 @@ export const deleteScheduledPrompt = async (req, res) => {
 };
 
 /**
+ * Update a scheduled report's next run time based on its frequency
+ * @route POST /api/analysis/updateReportDate
+ * @access Public (protected by API key)
+ * @body { scheduledReportId: string }
+ */
+export const updateReportDate = async (req, res) => {
+  try {
+    // Verify API key for n8n (align with other public endpoints)
+    const apiKey = req.headers['x-api-key'];
+    if (apiKey !== process.env.N8N_API_KEY) {
+      return res.status(401).json({
+        success: false,
+        message: 'Unauthorized - Invalid API key',
+      });
+    }
+
+    const { scheduledReportId } = req.body;
+
+    if (!scheduledReportId) {
+      return res.status(400).json({
+        success: false,
+        message: 'scheduledReportId is required',
+      });
+    }
+
+    const scheduledPrompt = await ScheduledPrompt.findById(scheduledReportId);
+
+    if (!scheduledPrompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Scheduled report not found',
+      });
+    }
+
+    // Determine frequency (support legacy "frequency" if ever present)
+    const frequency = scheduledPrompt.scheduleFrequency || scheduledPrompt.frequency;
+    const nextRun = new Date(scheduledPrompt.nextRun || new Date());
+
+    switch (frequency) {
+      case 'daily':
+        nextRun.setDate(nextRun.getDate() + 1);
+        break;
+      case 'weekly':
+        nextRun.setDate(nextRun.getDate() + 7);
+        break;
+      case 'monthly':
+        nextRun.setMonth(nextRun.getMonth() + 1);
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: `Unsupported frequency value: ${frequency || 'undefined'}`,
+        });
+    }
+
+    scheduledPrompt.nextRun = nextRun;
+    scheduledPrompt.lastUpdated = new Date();
+
+    await scheduledPrompt.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'Next run time updated successfully',
+      data: {
+        scheduledReportId: scheduledPrompt._id,
+        nextRun: scheduledPrompt.nextRun,
+        scheduleFrequency: scheduledPrompt.scheduleFrequency,
+      },
+    });
+  } catch (error) {
+    console.error('Update report date error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update report date',
+      error: error.message,
+    });
+  }
+};
+
+/**
  * N8N Webhook for saving reports with $oid format conversion
  * This endpoint accepts n8n's payload where userId and brandId are in { $oid: "string" } format
  * and converts them to proper MongoDB ObjectId before saving

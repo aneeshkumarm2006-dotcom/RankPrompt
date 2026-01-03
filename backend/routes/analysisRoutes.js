@@ -13,6 +13,7 @@ import {
   deleteScheduledPrompt,
   updateScheduledPrompt,
   n8nSaveReport,
+  updateReportDate,
 } from '../controllers/analysisController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -34,5 +35,6 @@ router.get('/prompts-due', getPromptsDue);
 router.put('/scheduled-prompts/:id/update-run', updateScheduledPromptRun);
 router.post('/webhook/result', receiveN8nResult);
 router.post('/n8n-save-report', n8nSaveReport);
+router.post('/updateReportDate', updateReportDate);
 
 export default router;
