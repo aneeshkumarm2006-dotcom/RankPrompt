@@ -15,7 +15,7 @@ const Reports = () => {
   const { user, refreshUser } = useAuth();
   const [searchParams] = useSearchParams();
   const continueReportId = searchParams.get('continue');
-  
+
   const [formData, setFormData] = useState({
     brandName: '',
     websiteUrl: '',
@@ -36,6 +36,7 @@ const Reports = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showBrandModal, setShowBrandModal] = useState(false);
   const [showSaveBrandModal, setShowSaveBrandModal] = useState(false);
+  const [isSavingBrand, setIsSavingBrand] = useState(false);
   const [existingBrand, setExistingBrand] = useState(null);
   const [step2Data, setStep2Data] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState({ total: 0, completed: 0 });
@@ -60,23 +61,23 @@ const Reports = () => {
 
       if (response.ok) {
         const { data: report } = await response.json();
-        
+
         if (report.status === 'in-progress' && report.progress) {
           // Restore form data
           if (report.progress.formData) {
             setFormData(report.progress.formData);
           }
-          
+
           // Restore step 2 data if exists
           if (report.progress.step2Data) {
             setStep2Data(report.progress.step2Data);
           }
-          
+
           // Restore saved brand ID if exists
           if (report.brandId) {
             setSavedBrandId(report.brandId);
           }
-          
+
           // Set current step
           setCurrentStep(report.progress.currentStep || 1);
           setInProgressReportId(reportId);
@@ -166,8 +167,8 @@ const Reports = () => {
   ];
 
   const languages = [
-    'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese', 
-    'Dutch', 'Russian', 'Chinese', 'Japanese', 'Korean', 'Arabic', 
+    'English', 'Spanish', 'French', 'German', 'Italian', 'Portuguese',
+    'Dutch', 'Russian', 'Chinese', 'Japanese', 'Korean', 'Arabic',
     'Hindi', 'Bengali', 'Turkish', 'Polish', 'Vietnamese', 'Thai'
   ];
 
@@ -192,14 +193,14 @@ const Reports = () => {
   const fetchFavicon = async (url) => {
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      
+
       const response = await fetch(`${API_URL}/brand/favicon?url=${encodeURIComponent(url)}`, {
         method: 'GET',
         credentials: 'include',
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         return data.faviconUrl;
       } else {
@@ -226,7 +227,7 @@ const Reports = () => {
     }
 
     setIsFetchingBrandInfo(true);
-    
+
     // Fetch favicon
     const favicon = await fetchFavicon(formData.websiteUrl);
     setFormData(prev => ({ ...prev, brandFavicon: favicon }));
@@ -238,10 +239,12 @@ const Reports = () => {
 
   const handleSaveBrand = async () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    setIsSavingBrand(true);
+
     try {
       const response = await fetch(`${API_URL}/brand/save`, {
         method: 'POST',
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
@@ -252,22 +255,31 @@ const Reports = () => {
         }),
       });
 
-      if (response.ok) {
-        const { data: savedBrand } = await response.json();
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        const { data: savedBrand } = data;
         setSavedBrandId(savedBrand._id);
-        
+
+        toast.success('Brand saved successfully!');
+
         // Pass brandId directly to saveProgress to avoid state timing issues
         setShowSaveBrandModal(false);
         setCurrentStep(2);
         await saveProgress(2, null, savedBrand._id);
       } else {
-        const error = await response.json();
-        console.error('Failed to save brand:', error.message);
-        setShowSaveBrandModal(false);
+        const errorMessage = data.message || 'Failed to save brand. Please try again.';
+        toast.error(errorMessage);
+        console.error('Failed to save brand:', errorMessage);
+        // Keep modal open on error so user can retry
       }
     } catch (error) {
+      const errorMessage = error.message || 'Network error. Please check your connection and try again.';
+      toast.error(errorMessage);
       console.error('Error saving brand:', error);
-      setShowSaveBrandModal(false);
+      // Keep modal open on error so user can retry
+    } finally {
+      setIsSavingBrand(false);
     }
   };
 
@@ -297,7 +309,7 @@ const Reports = () => {
       }
 
       setIsAnalyzing(true);
-      
+
       // Get selected AI models from platforms
       const selectedAiModels = [];
       if (formData.platforms.chatgpt) selectedAiModels.push('chatgpt');
@@ -327,7 +339,7 @@ const Reports = () => {
 
       const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-      
+
       // Generate authentication token for n8n webhook
       const tokenResponse = await fetch(`${API_URL}/analysis/generate-webhook-token`, {
         method: 'POST',
@@ -376,12 +388,12 @@ const Reports = () => {
       setAnalysisProgress({ total: totalJobs, completed: 0 });
 
       // Send ALL requests in parallel using Promise.all
-      const n8nPromises = finalPrompts.map((prompt, index) => {        
+      const n8nPromises = finalPrompts.map((prompt, index) => {
         const payload = promptsSentPayloads[index];
 
         return fetch(N8N_WEBHOOK_URL, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}`,
           },
@@ -396,34 +408,34 @@ const Reports = () => {
             country: payload.country,
           }),
         })
-        .then(async (response) => {
-          const data = await response.json().catch(() => null);          
-          // Update progress
-          setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
-          
-          return {
-            prompt: payload.prompt,
-            category: payload.category,
-            success: response.ok,
-            status: response.status,
-            response: data,
-            promptIndex: payload.promptIndex,
-          };
-        })
-        .catch((error) => {
-          console.log(`[${index + 1}/${totalJobs}] Error: ${error.message}`);
-          
-          // Update progress even on error
-          setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
-          
-          return {
-            prompt: payload.prompt,
-            category: payload.category,
-            success: false,
-            error: error.message,
-            promptIndex: payload.promptIndex,
-          };
-        });
+          .then(async (response) => {
+            const data = await response.json().catch(() => null);
+            // Update progress
+            setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
+
+            return {
+              prompt: payload.prompt,
+              category: payload.category,
+              success: response.ok,
+              status: response.status,
+              response: data,
+              promptIndex: payload.promptIndex,
+            };
+          })
+          .catch((error) => {
+            console.log(`[${index + 1}/${totalJobs}] Error: ${error.message}`);
+
+            // Update progress even on error
+            setAnalysisProgress(prev => ({ ...prev, completed: prev.completed + 1 }));
+
+            return {
+              prompt: payload.prompt,
+              category: payload.category,
+              success: false,
+              error: error.message,
+              promptIndex: payload.promptIndex,
+            };
+          });
       });
 
 
@@ -444,7 +456,7 @@ const Reports = () => {
 
         const saveResponse = await fetch(`${API_URL}/reports/save`, {
           method: 'POST',
-          headers: { 
+          headers: {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
@@ -470,10 +482,10 @@ const Reports = () => {
 
         if (saveResponse.ok) {
           const { data: savedReport } = await saveResponse.json();
-          
+
           // Refresh user data to update credits in sidebar
           await refreshUser();
-          
+
           // Navigate to report view with saved report ID
           navigate(`/reports/${savedReport._id}`);
         } else {
@@ -510,7 +522,7 @@ const Reports = () => {
           },
         });
       }
-      
+
       setIsAnalyzing(false);
 
     } catch (error) {
@@ -542,7 +554,7 @@ const Reports = () => {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-dark-950">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -565,62 +577,54 @@ const Reports = () => {
             <div className="flex items-center space-x-2 sm:space-x-4 min-w-max">
               {/* Step 1 */}
               <div className="flex items-center">
-                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${
-                  currentStep === 1 
+                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${currentStep === 1
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : currentStep > 1
-                    ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
-                }`}>
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
+                  }`}>
                   {currentStep > 1 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '1'}
                 </div>
-                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
-                  currentStep >= 1 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
-                }`}>
+                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${currentStep >= 1 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
+                  }`}>
                   Brand Details
                 </span>
               </div>
 
               {/* Connector */}
-              <div className={`w-8 sm:w-16 h-0.5 ${
-                currentStep > 1 ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-700'
-              }`}></div>
+              <div className={`w-8 sm:w-16 h-0.5 ${currentStep > 1 ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-700'
+                }`}></div>
 
               {/* Step 2 */}
               <div className="flex items-center">
-                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${
-                  currentStep === 2 
+                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${currentStep === 2
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : currentStep > 2
-                    ? 'bg-green-500 border-green-500 text-white'
-                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
-                }`}>
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
+                  }`}>
                   {currentStep > 2 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '2'}
                 </div>
-                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
-                  currentStep >= 2 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
-                }`}>
+                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${currentStep >= 2 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
+                  }`}>
                   Generate Prompts
                 </span>
               </div>
 
               {/* Connector */}
-              <div className={`w-16 h-0.5 ${
-                currentStep > 2 ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-700'
-              }`}></div>
+              <div className={`w-16 h-0.5 ${currentStep > 2 ? 'bg-green-500' : 'bg-gray-300 dark:bg-dark-700'
+                }`}></div>
 
               {/* Step 3 */}
               <div className="flex items-center">
-                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${
-                  currentStep === 3 
+                <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${currentStep === 3
                     ? 'bg-primary-500 border-primary-500 text-white'
                     : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
-                }`}>
+                  }`}>
                   3
                 </div>
-                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${
-                  currentStep >= 3 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
-                }`}>
+                <span className={`ml-1 sm:ml-2 text-xs sm:text-sm font-medium hidden sm:inline ${currentStep >= 3 ? 'text-gray-800 dark:text-gray-200' : 'text-gray-500 dark:text-gray-400'
+                  }`}>
                   Test Visibility
                 </span>
               </div>
@@ -631,277 +635,270 @@ const Reports = () => {
           {currentStep === 1 && (
             <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
               <div className="space-y-4 sm:space-y-6">
-              {/* Brand Name */}
-              <div>
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-                  Brand Name
-                </label>
-                <input
-                  type="text"
-                  name="brandName"
-                  value={formData.brandName}
-                  onChange={handleInputChange}
-                  placeholder="rocket"
-                  className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
-                />
-              </div>
-
-              {/* Website URL */}
-              <div>
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-                  Website URL
-                </label>
-                <input
-                  type="url"
-                  name="websiteUrl"
-                  value={formData.websiteUrl}
-                  onChange={handleInputChange}
-                  placeholder="www.rocket.com"
-                  className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
-                />
-                <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
-                  Just drop your domain here, we'll fetch try all
-                </p>
-              </div>
-
-              {/* Prompt/Search Scope */}
-              <div>
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-                  Prompt/Search Scope
-                </label>
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <button
-                    onClick={() => setFormData(prev => ({ ...prev, searchScope: 'local' }))}
-                    className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${
-                      formData.searchScope === 'local'
-                        ? 'bg-action-600 text-white'
-                        : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
-                    }`}
-                  >
-                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-sm sm:text-base font-medium">Local Search</span>
-                                      </button>
-                  <button
-                    onClick={() => setFormData(prev => ({ ...prev, searchScope: 'national' }))}
-                    className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${
-                      formData.searchScope === 'national'
-                        ? 'bg-action-600 text-white'
-                        : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
-                    }`}
-                  >
-                    <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="text-sm sm:text-base font-medium">National Search</span>
-                  </button>
-                </div>
-                <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
-                  {formData.searchScope === 'local' 
-                    ? "Target customers in your city or region (e.g., 'Best dentist in Dallas')"
-                    : 'Target customers nationwide. Use this marketing approach'}
-                </p>
-              </div>
-
-              {/* Local Search - City Input */}
-              {formData.searchScope === 'local' && (
+                {/* Brand Name */}
                 <div>
                   <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-                    City & Country Code
+                    Brand Name
                   </label>
                   <input
                     type="text"
-                    name="localSearchCity"
-                    value={formData.localSearchCity}
+                    name="brandName"
+                    value={formData.brandName}
                     onChange={handleInputChange}
-                    placeholder="e.g., Toronto, CA or New York, US"
+                    placeholder="rocket"
+                    className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
+                  />
+                </div>
+
+                {/* Website URL */}
+                <div>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
+                    Website URL
+                  </label>
+                  <input
+                    type="url"
+                    name="websiteUrl"
+                    value={formData.websiteUrl}
+                    onChange={handleInputChange}
+                    placeholder="www.rocket.com"
                     className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                   />
                   <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
                     Just drop your domain here, we'll fetch try all
                   </p>
                 </div>
-              )}
 
-              {/* National Search - Country Dropdown */}
-              {formData.searchScope === 'national' && (
+                {/* Prompt/Search Scope */}
                 <div>
                   <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-                    Target Country
+                    Prompt/Search Scope
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+                    <button
+                      onClick={() => setFormData(prev => ({ ...prev, searchScope: 'local' }))}
+                      className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${formData.searchScope === 'local'
+                          ? 'bg-action-600 text-white'
+                          : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
+                        }`}
+                    >
+                      <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="text-sm sm:text-base font-medium">Local Search</span>
+                    </button>
+                    <button
+                      onClick={() => setFormData(prev => ({ ...prev, searchScope: 'national' }))}
+                      className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${formData.searchScope === 'national'
+                          ? 'bg-action-600 text-white'
+                          : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
+                        }`}
+                    >
+                      <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="text-sm sm:text-base font-medium">National Search</span>
+                    </button>
+                  </div>
+                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
+                    {formData.searchScope === 'local'
+                      ? "Target customers in your city or region (e.g., 'Best dentist in Dallas')"
+                      : 'Target customers nationwide. Use this marketing approach'}
+                  </p>
+                </div>
+
+                {/* Local Search - City Input */}
+                {formData.searchScope === 'local' && (
+                  <div>
+                    <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
+                      City & Country Code
+                    </label>
+                    <input
+                      type="text"
+                      name="localSearchCity"
+                      value={formData.localSearchCity}
+                      onChange={handleInputChange}
+                      placeholder="e.g., Toronto, CA or New York, US"
+                      className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
+                    />
+                    <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
+                      Just drop your domain here, we'll fetch try all
+                    </p>
+                  </div>
+                )}
+
+                {/* National Search - Country Dropdown */}
+                {formData.searchScope === 'national' && (
+                  <div>
+                    <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
+                      Target Country
+                    </label>
+                    <select
+                      name="targetCountry"
+                      value={formData.targetCountry}
+                      onChange={handleInputChange}
+                      className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all appearance-none cursor-pointer"
+                    >
+                      {countries.map((country) => (
+                        <option key={country.code} value={country.code} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
+                          {country.name}, {country.code}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+
+                {/* Language */}
+                <div>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
+                    Language
                   </label>
                   <select
-                    name="targetCountry"
-                    value={formData.targetCountry}
+                    name="language"
+                    value={formData.language}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 transition-all appearance-none cursor-pointer"
                   >
-                    {countries.map((country) => (
-                      <option key={country.code} value={country.code} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
-                        {country.name}, {country.code}
+                    {languages.map((lang) => (
+                      <option key={lang} value={lang} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
+                        {lang}
                       </option>
                     ))}
                   </select>
                 </div>
-              )}
 
-              {/* Language */}
-              <div>
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-                  Language
-                </label>
-                <select
-                  name="language"
-                  value={formData.language}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 rounded-xl text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 transition-all appearance-none cursor-pointer"
+                {/* AI Platforms */}
+                <div>
+                  <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-3">
+                    AI Platforms
+                  </label>
+                  <div className="space-y-3">
+                    <label className="flex items-center space-x-3 cursor-pointer group">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={formData.platforms.perplexity}
+                          onChange={() => handlePlatformChange('perplexity')}
+                          className="sr-only"
+                        />
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.platforms.perplexity
+                            ? 'bg-action-600 border-action-600'
+                            : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
+                          }`}>
+                          {formData.platforms.perplexity && (
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src="https://www.google.com/s2/favicons?domain=perplexity.ai&sz=32"
+                          alt="Perplexity"
+                          className="w-4 h-4"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                        <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${formData.platforms.perplexity ? 'text-gray-800 dark:text-white' : 'text-gray-700 dark:text-gray-300'
+                          }`}>
+                          Perplexity
+                        </span>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center space-x-3 cursor-pointer group">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={formData.platforms.chatgpt}
+                          onChange={() => handlePlatformChange('chatgpt')}
+                          className="sr-only"
+                        />
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.platforms.chatgpt
+                            ? 'bg-action-600 border-action-600'
+                            : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
+                          }`}>
+                          {formData.platforms.chatgpt && (
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg"
+                          alt="ChatGPT"
+                          className="w-4 h-4"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                        <span className={`text-gray-700 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white transition-colors`}>
+                          ChatGPT
+                        </span>
+                      </div>
+                    </label>
+
+                    <label className="flex items-center space-x-3 cursor-pointer group">
+                      <div className="relative">
+                        <input
+                          type="checkbox"
+                          checked={formData.platforms.googleAiOverviews}
+                          onChange={() => handlePlatformChange('googleAiOverviews')}
+                          className="sr-only"
+                        />
+                        <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.platforms.googleAiOverviews
+                            ? 'bg-action-600 border-action-600'
+                            : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
+                          }`}>
+                          {formData.platforms.googleAiOverviews && (
+                            <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                            </svg>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <img
+                          src="https://www.google.com/s2/favicons?domain=google.com&sz=32"
+                          alt="Google AI Overviews"
+                          className="w-4 h-4"
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                        <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${formData.platforms.googleAiOverviews ? 'text-gray-800 dark:text-white' : 'text-gray-700 dark:text-gray-300'
+                          }`}>
+                          Google AI Overviews
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-500/10 rounded-lg">
+                    <p className="text-purple-600 dark:text-purple-400 text-xs">
+                      <span className="font-semibold">💎 Google AI Overview</span>
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
+                      Use it to evaluate & optimize against Google AI Overviews or get ranked.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Favicon Preview - Hidden from clients */}
+                {formData.brandFavicon && (
+                  <div className="hidden">
+                    <img
+                      src={formData.brandFavicon}
+                      alt="Brand Favicon"
+                      className="w-8 h-8 rounded"
+                    />
+                  </div>
+                )}
+
+                {/* Analyze Button */}
+                <button
+                  onClick={handleAnalyzeBrand}
+                  disabled={isFetchingBrandInfo}
+                  className="w-full bg-action-600 text-white font-bold py-4 px-6 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center space-x-2 hover:bg-action-700"
                 >
-                  {languages.map((lang) => (
-                    <option key={lang} value={lang} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
-                      {lang}
-                    </option>
-                  ))}
-                </select>
+                  <Search className="w-5 h-5" />
+                  <span>{isFetchingBrandInfo ? 'Analyzing Brand...' : 'Analyze Brand'}</span>
+                </button>
               </div>
-
-              {/* AI Platforms */}
-              <div>
-                <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-3">
-                  AI Platforms
-                </label>
-                <div className="space-y-3">
-                  <label className="flex items-center space-x-3 cursor-pointer group">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={formData.platforms.perplexity}
-                        onChange={() => handlePlatformChange('perplexity')}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                        formData.platforms.perplexity
-                          ? 'bg-action-600 border-action-600'
-                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
-                      }`}>
-                        {formData.platforms.perplexity && (
-                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <img 
-                        src="https://www.google.com/s2/favicons?domain=perplexity.ai&sz=32" 
-                        alt="Perplexity" 
-                        className="w-4 h-4"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
-                      <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${
-                        formData.platforms.perplexity ? 'text-gray-800 dark:text-white' : 'text-gray-700 dark:text-gray-300'
-                      }`}>
-                        Perplexity
-                      </span>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center space-x-3 cursor-pointer group">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={formData.platforms.chatgpt}
-                        onChange={() => handlePlatformChange('chatgpt')}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                        formData.platforms.chatgpt
-                          ? 'bg-action-600 border-action-600'
-                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
-                      }`}>
-                        {formData.platforms.chatgpt && (
-                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <img 
-                        src="https://cdn.oaistatic.com/assets/favicon-o20kmmos.svg" 
-                        alt="ChatGPT" 
-                        className="w-4 h-4"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
-                      <span className={`text-gray-700 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white transition-colors`}>
-                        ChatGPT
-                      </span>
-                    </div>
-                  </label>
-
-                  <label className="flex items-center space-x-3 cursor-pointer group">
-                    <div className="relative">
-                      <input
-                        type="checkbox"
-                        checked={formData.platforms.googleAiOverviews}
-                        onChange={() => handlePlatformChange('googleAiOverviews')}
-                        className="sr-only"
-                      />
-                      <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${
-                        formData.platforms.googleAiOverviews
-                          ? 'bg-action-600 border-action-600'
-                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
-                      }`}>
-                        {formData.platforms.googleAiOverviews && (
-                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <img 
-                        src="https://www.google.com/s2/favicons?domain=google.com&sz=32" 
-                        alt="Google AI Overviews" 
-                        className="w-4 h-4"
-                        onError={(e) => { e.target.style.display = 'none'; }}
-                      />
-                      <span className={`group-hover:text-gray-800 dark:group-hover:text-white transition-colors ${
-                        formData.platforms.googleAiOverviews ? 'text-gray-800 dark:text-white' : 'text-gray-700 dark:text-gray-300'
-                      }`}>
-                        Google AI Overviews
-                      </span>
-                    </div>
-                  </label>
-                </div>
-                
-                <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-500/10 rounded-lg">
-                  <p className="text-purple-600 dark:text-purple-400 text-xs">
-                    <span className="font-semibold">💎 Google AI Overview</span>
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
-                    Use it to evaluate & optimize against Google AI Overviews or get ranked.
-                  </p>
-                </div>
-              </div>
-
-              {/* Favicon Preview - Hidden from clients */}
-              {formData.brandFavicon && (
-                <div className="hidden">
-                  <img 
-                    src={formData.brandFavicon} 
-                    alt="Brand Favicon" 
-                    className="w-8 h-8 rounded"
-                  />
-                </div>
-              )}
-
-              {/* Analyze Button */}
-              <button
-                onClick={handleAnalyzeBrand}
-                disabled={isFetchingBrandInfo}
-                className="w-full bg-action-600 text-white font-bold py-4 px-6 rounded-xl transition-all disabled:opacity-50 flex items-center justify-center space-x-2 hover:bg-action-700"
-              >
-                <Search className="w-5 h-5" />
-                <span>{isFetchingBrandInfo ? 'Analyzing Brand...' : 'Analyze Brand'}</span>
-              </button>
             </div>
-          </div>
           )}
 
           {/* Step 2: Brand Analysis */}
@@ -945,8 +942,8 @@ const Reports = () => {
             <div className="flex flex-col items-center text-center mb-6">
               <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
                 {existingBrand.favicon ? (
-                  <img 
-                    src={existingBrand.favicon} 
+                  <img
+                    src={existingBrand.favicon}
                     alt={existingBrand.name}
                     className="w-12 h-12 rounded-lg"
                   />
@@ -954,16 +951,16 @@ const Reports = () => {
                   <span className="text-3xl">📦</span>
                 )}
               </div>
-              
+
               <p className="text-gray-800 dark:text-gray-200 mb-2">
                 We notice you already have a saved brand named{' '}
                 <span className="text-gray-900 dark:text-white font-semibold">{existingBrand.name}</span>
               </p>
-              
+
               <p className="text-gray-600 dark:text-gray-400 text-sm mb-1">
                 Website: <span className="text-gray-900 dark:text-white">{existingBrand.website}</span>
               </p>
-              
+
               <p className="text-gray-800 dark:text-gray-200 mt-4">
                 Do you want to add this report to this brand?
               </p>
@@ -981,7 +978,7 @@ const Reports = () => {
               >
                 <span>Yes, add to this brand</span>
               </button>
-              
+
               <button
                 onClick={() => {
                   // Handle experimenting without saving
@@ -1008,10 +1005,11 @@ const Reports = () => {
         }}
         onSave={handleSaveBrand}
         onSkip={handleSkipSaveBrand}
+        isLoading={isSavingBrand}
       />
 
       {/* Analysis Loading Modal */}
-      <AnalysisLoadingModal 
+      <AnalysisLoadingModal
         isOpen={isAnalyzing}
         totalPrompts={analysisProgress.total}
         completedPrompts={analysisProgress.completed}
