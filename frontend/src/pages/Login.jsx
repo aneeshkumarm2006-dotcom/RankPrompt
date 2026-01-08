@@ -76,7 +76,7 @@ const Login = () => {
               <Zap className="w-6 h-6 text-white" />
             </div>
           </div>
-          <span className="text-2xl font-bold gradient-text">RankPrompt</span>
+          <span className="text-2xl font-bold gradient-text">PromptVerse</span>
         </Link>
 
         {/* Login Card */}

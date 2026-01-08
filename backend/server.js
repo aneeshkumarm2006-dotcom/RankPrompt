@@ -82,7 +82,7 @@ app.get('/api/health', (req, res) => {
 // Root route
 app.get('/', (req, res) => {
   res.json({
-    message: 'RankPrompt API',
+    message: 'PromptVerse API',
     version: '1.0.0',
     endpoints: {
       auth: '/api/auth',

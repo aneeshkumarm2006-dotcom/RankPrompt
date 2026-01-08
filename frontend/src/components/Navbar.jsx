@@ -20,7 +20,7 @@ const Navbar = () => {
               </div>
             </div>
             <span className="text-2xl font-bold gradient-text">
-              RankPrompt
+              PromptVerse
             </span>
           </Link>
 

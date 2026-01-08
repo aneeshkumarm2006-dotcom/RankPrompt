@@ -64,7 +64,7 @@ const Register = () => {
     const result = await register(dataToSend);
 
     if (result.success) {
-      toast.success('Account created successfully! Welcome to RankPrompt!');
+      toast.success('Account created successfully! Welcome to PromptVerse!');
       navigate('/reports/new');
     } else {
       setError(result.error);
@@ -80,7 +80,7 @@ const Register = () => {
     const result = await googleLogin(credentialResponse.credential, referralCode);
 
     if (result.success) {
-      toast.success('Account created successfully! Welcome to RankPrompt!');
+      toast.success('Account created successfully! Welcome to PromptVerse!');
       navigate('/reports/new');
     } else {
       setError(result.error || 'Google sign up failed');
@@ -109,7 +109,7 @@ const Register = () => {
               <Zap className="w-6 h-6 text-white" />
             </div>
           </div>
-          <span className="text-2xl font-bold gradient-text">RankPrompt</span>
+          <span className="text-2xl font-bold gradient-text">PromptVerse</span>
         </Link>
 
         {/* Register Card */}

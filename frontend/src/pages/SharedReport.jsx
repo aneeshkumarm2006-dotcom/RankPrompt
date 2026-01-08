@@ -212,7 +212,7 @@ const SharedReport = () => {
             onClick={() => navigate('/')}
             className="px-6 py-3 rounded-xl bg-[#4F46E5] text-white font-medium hover:bg-purple-700 transition-colors"
           >
-            Go to RankPrompt
+            Go to PromptVerse
           </button>
         </div>
       </div>
@@ -597,7 +597,7 @@ const SharedReport = () => {
               onClick={() => navigate('/register')}
               className="text-primary-500 hover:text-primary-600 dark:text-primary-400 dark:hover:text-primary-300 font-medium"
             >
-              Create a free RankPrompt account
+              Create a free PromptVerse account
             </button>
           </p>
         </div>

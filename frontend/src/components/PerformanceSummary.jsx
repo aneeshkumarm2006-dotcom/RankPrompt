@@ -963,7 +963,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                         <input
                           value={comp.name}
                           onChange={(e) => handleCompetitorChange(idx, 'name', e.target.value)}
-                          placeholder="e.g., rankprompt"
+                          placeholder="e.g., PromptVerse"
                           className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
                         />
                       </div>
@@ -972,7 +972,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                         <input
                           value={comp.website}
                           onChange={(e) => handleCompetitorChange(idx, 'website', e.target.value)}
-                          placeholder="rankprompt.com"
+                          placeholder="promptverse.com"
                           className="w-full px-3 py-2 bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none text-sm"
                         />
                       </div>

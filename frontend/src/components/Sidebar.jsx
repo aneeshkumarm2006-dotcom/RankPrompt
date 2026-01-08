@@ -101,7 +101,7 @@ const Sidebar = () => {
                 <Zap className="w-5 h-5 text-white" />
               </div>
             </div>
-            <span className="text-xl font-bold gradient-text">RankPrompt</span>
+            <span className="text-xl font-bold gradient-text">PromptVerse</span>
           </div>
           <ThemeToggle />
         </div>

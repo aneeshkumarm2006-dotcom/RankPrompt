@@ -18,7 +18,7 @@ const SurveyModal = ({ onClose, onComplete }) => {
   const questions = [
     {
       id: 1,
-      question: 'How are you currently using RankPrompt?',
+      question: 'How are you currently using PromptVerse?',
       type: 'single',
       options: [
         'To see if my brand shows up in AI tools (ChatGPT, Perplexity, etc.)',
@@ -70,7 +70,7 @@ const SurveyModal = ({ onClose, onComplete }) => {
     },
     {
       id: 5,
-      question: 'How likely are you to recommend RankPrompt to a friend or colleague?',
+      question: 'How likely are you to recommend PromptVerse to a friend or colleague?',
       type: 'scale',
       min: 0,
       max: 10,

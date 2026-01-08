@@ -15,7 +15,7 @@ const Footer = () => {
                 </div>
               </div>
               <span className="text-xl sm:text-2xl font-bold gradient-text">
-                RankPrompt
+                PromptVerse
               </span>
             </div>
             <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
@@ -107,7 +107,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-200 dark:border-dark-700 pt-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
           <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center space-x-2">
-            <span>© 2025 RankPrompt. Made with</span>
+            <span>© 2025 PromptVerse. Made with</span>
             <Heart className="w-4 h-4 text-accent-500 fill-accent-500 animate-pulse-slow" />
             <span>for better AI search visibility</span>
           </p>

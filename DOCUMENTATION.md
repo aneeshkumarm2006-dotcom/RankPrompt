@@ -1,12 +1,12 @@
-# RankPrompt - Product Documentation
+# PromptVerse - Product Documentation
 
 ## Overview
 
-**RankPrompt** is an AI-powered brand visibility monitoring and optimization platform that helps businesses track, analyze, and improve their presence across AI search engines and assistants. As AI-generated search results become increasingly important, RankPrompt enables brands to understand how they appear in responses from platforms like ChatGPT, Perplexity, Google AI Overviews, and more.
+**PromptVerse** is an AI-powered brand visibility monitoring and optimization platform that helps businesses track, analyze, and improve their presence across AI search engines and assistants. As AI-generated search results become increasingly important, PromptVerse enables brands to understand how they appear in responses from platforms like ChatGPT, Perplexity, Google AI Overviews, and more.
 
 ### Core Purpose
 
-The tool addresses a critical need in modern digital marketing: understanding and optimizing how AI assistants mention and recommend brands when users ask questions. Unlike traditional SEO tools that focus on search engine rankings, RankPrompt specializes in **AI Search Optimization (AISO)**.
+The tool addresses a critical need in modern digital marketing: understanding and optimizing how AI assistants mention and recommend brands when users ask questions. Unlike traditional SEO tools that focus on search engine rankings, PromptVerse specializes in **AI Search Optimization (AISO)**.
 
 ### Key Value Propositions
 
@@ -201,7 +201,7 @@ The tool addresses a critical need in modern digital marketing: understanding an
 
 ## Summary
 
-RankPrompt is a fully-functional SaaS application with a complete authentication system, credit-based usage model, Stripe payment integration, and multi-platform AI analysis capabilities. The core workflow of creating brands, generating analysis reports, and tracking brand visibility across AI platforms is fully operational. The scheduled reporting feature enables automated monitoring, and the sharing functionality allows users to distribute their insights.
+PromptVerse is a fully-functional SaaS application with a complete authentication system, credit-based usage model, Stripe payment integration, and multi-platform AI analysis capabilities. The core workflow of creating brands, generating analysis reports, and tracking brand visibility across AI platforms is fully operational. The scheduled reporting feature enables automated monitoring, and the sharing functionality allows users to distribute their insights.
 
 ---
 

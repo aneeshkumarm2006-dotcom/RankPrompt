@@ -94,7 +94,7 @@ const EarnCredits = () => {
                   <h3 className="text-lg font-bold text-gray-800 dark:text-white">Quick Survey (2 minutes)</h3>
                 </div>
                 <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mb-4">
-                  Help us improve RankPrompt by sharing your feedback. You'll get{' '}
+                  Help us improve PromptVerse by sharing your feedback. You'll get{' '}
                   <span className="text-primary-400 font-semibold">50 free credits</span> instantly!
                 </p>
                 {!surveyStatus?.completed ? (

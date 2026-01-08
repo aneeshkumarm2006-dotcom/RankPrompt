@@ -645,7 +645,7 @@ const Reports = () => {
                     name="brandName"
                     value={formData.brandName}
                     onChange={handleInputChange}
-                    placeholder="rocket"
+                    placeholder="PromptVerse"
                     className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                   />
                 </div>
@@ -660,7 +660,7 @@ const Reports = () => {
                     name="websiteUrl"
                     value={formData.websiteUrl}
                     onChange={handleInputChange}
-                    placeholder="www.rocket.com"
+                    placeholder="www.promptverse.com"
                     className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                   />
                   <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
