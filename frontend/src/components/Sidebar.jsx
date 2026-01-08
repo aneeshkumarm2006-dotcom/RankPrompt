@@ -88,11 +88,11 @@ const Sidebar = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`h-screen w-64 bg-gray-100 dark:bg-dark-900 border-r border-gray-200 dark:border-dark-700 flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out ${
+      <div className={`h-screen max-h-screen w-64 bg-gray-100 dark:bg-dark-900 border-r border-gray-200 dark:border-dark-700 flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out ${
         isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
       }`}>
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200 dark:border-dark-700">
+      <div className="p-6 border-b border-gray-200 dark:border-dark-700 flex-shrink-0">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="relative">
@@ -108,7 +108,7 @@ const Sidebar = () => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+      <nav className="flex-1 p-4 space-y-2 overflow-y-auto min-h-0">
         {menuItems.map((item) => (
           <div key={item.name}>
             {item.border ? (
@@ -155,7 +155,7 @@ const Sidebar = () => {
       </nav>
 
       {/* User Section */}
-      <div className="p-4 border-t border-gray-200 dark:border-dark-700">
+      <div className="p-4 border-t border-gray-200 dark:border-dark-700 flex-shrink-0">
         <div className="bg-white dark:bg-dark-800 rounded-xl p-4">
           <div className="flex items-center space-x-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-gradient-to-r from-primary-500 to-accent-500 flex items-center justify-center">
