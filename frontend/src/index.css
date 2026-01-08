@@ -4,6 +4,12 @@
 @tailwind utilities;
 
 @layer base {
+
+  /* Support for mobile browsers with address bar */
+  :root {
+    --vh: 1vh;
+  }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
@@ -19,31 +25,44 @@
   }
 }
 
+/* Fallback for browsers that don't support dvh */
+@supports not (height: 100dvh) {
+  .h-dvh {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+
+  .max-h-dvh {
+    max-height: 100vh;
+    max-height: -webkit-fill-available;
+  }
+}
+
 @layer components {
   .gradient-bg {
     background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   }
-  
+
   .dark .gradient-bg {
     background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
   }
-  
+
   .gradient-text {
     @apply bg-gradient-to-r from-primary-400 via-primary-500 to-accent-500 bg-clip-text text-transparent;
   }
-  
+
   .glass-effect {
     @apply bg-white/50 backdrop-blur-xl border border-gray-200/50 dark:bg-dark-800/50 dark:border-dark-700/50;
   }
-  
+
   .glass-light {
     @apply bg-white/5 backdrop-blur-md border border-white/10 dark:bg-dark-900/5 dark:border-dark-800/10;
   }
-  
+
   .glow-border {
-    @apply border border-primary-500/50 shadow-[0_0_15px_rgba(249,115,22,0.3)];
+    @apply border border-primary-500/50 shadow-[0_0_15px_rgba(249, 115, 22, 0.3)];
   }
-  
+
   .card-hover {
     @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary-500/20;
   }
@@ -54,7 +73,7 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
-  
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

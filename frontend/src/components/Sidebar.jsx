@@ -88,7 +88,7 @@ const Sidebar = () => {
       )}
 
       {/* Sidebar */}
-      <div className={`h-screen max-h-screen w-64 bg-gray-100 dark:bg-dark-900 border-r border-gray-200 dark:border-dark-700 flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      <div className={`h-dvh max-h-dvh w-64 bg-gray-100 dark:bg-dark-900 border-r border-gray-200 dark:border-dark-700 flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}>
         {/* Logo */}
         <div className="p-6 border-b border-gray-200 dark:border-dark-700 flex-shrink-0">
