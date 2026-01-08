@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { getAuthHeaders } from '../services/api';
 import Sidebar from '../components/Sidebar';
 import { Search, Globe, X, Check } from 'lucide-react';
 import Step2BrandAnalysis from '../components/Step2BrandAnalysis';
@@ -56,6 +57,7 @@ const Reports = () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       const response = await fetch(`${API_URL}/reports/${reportId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -93,7 +95,7 @@ const Reports = () => {
     try {
       const response = await fetch(`${API_URL}/reports/save-progress`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({
           reportId: inProgressReportId,
@@ -196,6 +198,7 @@ const Reports = () => {
 
       const response = await fetch(`${API_URL}/brand/favicon?url=${encodeURIComponent(url)}`, {
         method: 'GET',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -244,9 +247,7 @@ const Reports = () => {
     try {
       const response = await fetch(`${API_URL}/brand/save`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({
           brandName: formData.brandName,
@@ -343,7 +344,7 @@ const Reports = () => {
       // Generate authentication token for n8n webhook
       const tokenResponse = await fetch(`${API_URL}/analysis/generate-webhook-token`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -456,9 +457,7 @@ const Reports = () => {
 
         const saveResponse = await fetch(`${API_URL}/reports/save`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: getAuthHeaders(),
           credentials: 'include',
           body: JSON.stringify({
             inProgressReportId: inProgressReportId, // Pass the in-progress report ID if it exists
@@ -578,10 +577,10 @@ const Reports = () => {
               {/* Step 1 */}
               <div className="flex items-center">
                 <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${currentStep === 1
-                    ? 'bg-primary-500 border-primary-500 text-white'
-                    : currentStep > 1
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
+                  ? 'bg-primary-500 border-primary-500 text-white'
+                  : currentStep > 1
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
                   }`}>
                   {currentStep > 1 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '1'}
                 </div>
@@ -598,10 +597,10 @@ const Reports = () => {
               {/* Step 2 */}
               <div className="flex items-center">
                 <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${currentStep === 2
-                    ? 'bg-primary-500 border-primary-500 text-white'
-                    : currentStep > 2
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
+                  ? 'bg-primary-500 border-primary-500 text-white'
+                  : currentStep > 2
+                    ? 'bg-green-500 border-green-500 text-white'
+                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
                   }`}>
                   {currentStep > 2 ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : '2'}
                 </div>
@@ -618,8 +617,8 @@ const Reports = () => {
               {/* Step 3 */}
               <div className="flex items-center">
                 <div className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full border-2 transition-all ${currentStep === 3
-                    ? 'bg-primary-500 border-primary-500 text-white'
-                    : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
+                  ? 'bg-primary-500 border-primary-500 text-white'
+                  : 'border-gray-300 dark:border-dark-600 text-gray-500 dark:text-gray-400'
                   }`}>
                   3
                 </div>
@@ -677,8 +676,8 @@ const Reports = () => {
                     <button
                       onClick={() => setFormData(prev => ({ ...prev, searchScope: 'local' }))}
                       className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${formData.searchScope === 'local'
-                          ? 'bg-action-600 text-white'
-                          : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
+                        ? 'bg-action-600 text-white'
+                        : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
                         }`}
                     >
                       <Search className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -687,8 +686,8 @@ const Reports = () => {
                     <button
                       onClick={() => setFormData(prev => ({ ...prev, searchScope: 'national' }))}
                       className={`flex-1 flex items-center justify-center space-x-2 px-4 py-3 rounded-xl transition-all ${formData.searchScope === 'national'
-                          ? 'bg-action-600 text-white'
-                          : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
+                        ? 'bg-action-600 text-white'
+                        : 'bg-gray-100 dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-dark-700'
                         }`}
                     >
                       <Globe className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -777,8 +776,8 @@ const Reports = () => {
                           className="sr-only"
                         />
                         <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.platforms.perplexity
-                            ? 'bg-action-600 border-action-600'
-                            : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
+                          ? 'bg-action-600 border-action-600'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
                           }`}>
                           {formData.platforms.perplexity && (
                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -810,8 +809,8 @@ const Reports = () => {
                           className="sr-only"
                         />
                         <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.platforms.chatgpt
-                            ? 'bg-action-600 border-action-600'
-                            : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
+                          ? 'bg-action-600 border-action-600'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500'
                           }`}>
                           {formData.platforms.chatgpt && (
                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -842,8 +841,8 @@ const Reports = () => {
                           className="sr-only"
                         />
                         <div className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-all ${formData.platforms.googleAiOverviews
-                            ? 'bg-action-600 border-action-600'
-                            : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
+                          ? 'bg-action-600 border-action-600'
+                          : 'border-gray-300 dark:border-dark-600 group-hover:border-gray-400 dark:group-hover:border-dark-500 bg-white dark:bg-dark-800'
                           }`}>
                           {formData.platforms.googleAiOverviews && (
                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">

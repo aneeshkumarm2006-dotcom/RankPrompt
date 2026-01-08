@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { getAuthHeaders } from '../services/api';
 import Sidebar from '../components/Sidebar';
 import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar } from 'lucide-react';
 import { generateReportPDF } from '../utils/pdfGenerator';
@@ -39,11 +40,12 @@ const ReportView = () => {
       setBrandData(null);
       setHasScheduledReport(false); // Reset scheduled report state
       prevReportIdRef.current = reportId;
-      
+
       const fetchReport = async () => {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         try {
           const response = await fetch(`${API_URL}/reports/${reportId}`, {
+            headers: getAuthHeaders(),
             credentials: 'include',
           });
 
@@ -67,12 +69,12 @@ const ReportView = () => {
               try {
                 const scheduledResponse = await fetch(
                   `${API_URL}/analysis/scheduled-prompts?brandId=${currentBrandId}&isActive=true`,
-                  { credentials: 'include' }
+                  { headers: getAuthHeaders(), credentials: 'include' }
                 );
                 if (scheduledResponse.ok) {
                   const scheduledData = await scheduledResponse.json();
                   // Verify that we found a scheduled prompt for THIS brandId
-                  const hasScheduled = scheduledData.data && scheduledData.data.length > 0 && 
+                  const hasScheduled = scheduledData.data && scheduledData.data.length > 0 &&
                     scheduledData.data.some(sp => sp.brandId === currentBrandId || String(sp.brandId) === String(currentBrandId));
                   setHasScheduledReport(hasScheduled);
                 }
@@ -103,6 +105,7 @@ const ReportView = () => {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         try {
           const response = await fetch(`${API_URL}/reports/${reportId}`, {
+            headers: getAuthHeaders(),
             credentials: 'include',
           });
 
@@ -126,12 +129,12 @@ const ReportView = () => {
               try {
                 const scheduledResponse = await fetch(
                   `${API_URL}/analysis/scheduled-prompts?brandId=${currentBrandId}&isActive=true`,
-                  { credentials: 'include' }
+                  { headers: getAuthHeaders(), credentials: 'include' }
                 );
                 if (scheduledResponse.ok) {
                   const scheduledData = await scheduledResponse.json();
                   // Verify that we found a scheduled prompt for THIS brandId
-                  const hasScheduled = scheduledData.data && scheduledData.data.length > 0 && 
+                  const hasScheduled = scheduledData.data && scheduledData.data.length > 0 &&
                     scheduledData.data.some(sp => sp.brandId === currentBrandId || String(sp.brandId) === String(currentBrandId));
                   setHasScheduledReport(hasScheduled);
                 }
@@ -197,7 +200,7 @@ const ReportView = () => {
   // Calculate statistics
   const totalPrompts = reportData.length;
   const platforms = ['chatgpt', 'perplexity', 'google_ai_overviews'];
-  
+
   const stats = {
     totalPrompts: reportData.length,
     websiteFound: 0,
@@ -272,13 +275,13 @@ const ReportView = () => {
     // Split long category names into multiple lines (max 18 chars per line)
     const maxLength = 18;
     let lines = [];
-    
+
     if (name.length <= maxLength) {
       lines = [name];
     } else {
       const words = name.split(' ');
       let currentLine = '';
-      
+
       words.forEach(word => {
         if ((currentLine + word).length <= maxLength) {
           currentLine += (currentLine ? ' ' : '') + word;
@@ -289,7 +292,7 @@ const ReportView = () => {
       });
       if (currentLine) lines.push(currentLine);
     }
-    
+
     return (
       <g transform={`translate(${x},${y})`}>
         <text x={0} y={0} dy={16} textAnchor="middle" fill="#9CA3AF" fontSize={11}>
@@ -307,12 +310,12 @@ const ReportView = () => {
   const filteredData = reportData.filter(item => {
     const matchesCategory = selectedCategory === 'All Categories' || item.category === selectedCategory;
     const matchesSearch = item.prompt.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     let matchesPlatform = true;
     if (selectedPlatform !== 'All Platforms') {
       matchesPlatform = item.response?.some(r => r.src === selectedPlatform);
     }
-    
+
     return matchesCategory && matchesSearch && matchesPlatform;
   });
 
@@ -344,6 +347,7 @@ const ReportView = () => {
     try {
       const response = await fetch(`${API_URL}/reports/${reportId}/share`, {
         method: 'POST',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -371,7 +375,7 @@ const ReportView = () => {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
       const resp = await fetch(`${API_URL}/analysis/schedule-from-report`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({ reportId, frequency: scheduleFrequency }),
       });
@@ -389,10 +393,10 @@ const ReportView = () => {
     }
   };
 
-    return (
+  return (
     <div className="flex h-screen bg-gray-50 dark:bg-dark-950">
       <Sidebar />
-      
+
       <div className="flex-1 overflow-auto lg:ml-64">
         <div className="max-w-7xl mx-auto p-4 sm:p-6" id="report-content">
           {/* Header */}
@@ -475,7 +479,7 @@ const ReportView = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="name" stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
                       labelStyle={{ color: '#F9FAFB' }}
                     />
@@ -500,16 +504,16 @@ const ReportView = () => {
                 <ResponsiveContainer width="100%" height={450}>
                   <BarChart data={categoryChartData} margin={{ top: 5, right: 10, left: 0, bottom: 70 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="#6B7280" 
+                    <XAxis
+                      dataKey="name"
+                      stroke="#6B7280"
                       angle={0}
                       textAnchor="middle"
                       height={70}
                       tick={<CustomCategoryTick />}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151', borderRadius: '8px' }}
                       labelStyle={{ color: '#F9FAFB' }}
                     />
@@ -696,27 +700,27 @@ const ReportView = () => {
                             )}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
-  {platformData.details?.website || platformData.details?.matchedUrl ? (
-    <a 
-      href={
-        (() => {
-          const url = platformData.details?.website || platformData.details?.matchedUrl;
-          return url.startsWith('http://') || url.startsWith('https://') 
-            ? url 
-            : `https://${url}`;
-        })()
-      }
-      target="_blank" 
-      rel="noopener noreferrer" 
-      className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs"
-    >
-      <ExternalLink className="w-3 h-3" />
-      Link
-    </a>
-  ) : (
-    <span className="text-gray-500">-</span>
-  )}
-</td>
+                            {platformData.details?.website || platformData.details?.matchedUrl ? (
+                              <a
+                                href={
+                                  (() => {
+                                    const url = platformData.details?.website || platformData.details?.matchedUrl;
+                                    return url.startsWith('http://') || url.startsWith('https://')
+                                      ? url
+                                      : `https://${url}`;
+                                  })()
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs"
+                              >
+                                <ExternalLink className="w-3 h-3" />
+                                Link
+                              </a>
+                            ) : (
+                              <span className="text-gray-500">-</span>
+                            )}
+                          </td>
                         </tr>
                       ))
                     ) : (

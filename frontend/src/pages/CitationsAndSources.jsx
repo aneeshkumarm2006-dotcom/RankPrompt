@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, ExternalLink, Link as LinkIcon } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 
 const CitationsAndSources = () => {
@@ -28,6 +29,7 @@ const CitationsAndSources = () => {
 
       // Fetch brand data
       const brandRes = await fetch(`${API_URL}/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
       if (brandRes.ok) {
@@ -37,12 +39,13 @@ const CitationsAndSources = () => {
 
       // Fetch all reports for the brand
       const reportsRes = await fetch(`${API_URL}/reports/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
       if (reportsRes.ok) {
         const { data: reports } = await reportsRes.json();
-        
+
         // Extract all sources from all reports
         const sourcesMap = {};
         reports.forEach(report => {
@@ -54,7 +57,7 @@ const CitationsAndSources = () => {
                   if (url) {
                     let domain = 'Unknown Domain';
                     let normalizedUrl = url;
-                    
+
                     try {
                       // Try to parse URL as-is
                       const urlObj = new URL(url);
@@ -68,11 +71,11 @@ const CitationsAndSources = () => {
                       } catch (error2) {
                         // If both fail, extract domain from string or use the URL itself
                         const domainMatch = url.match(/^(?:https?:\/\/)?(?:www\.)?([^\/\s]+)/);
-                        domain = domainMatch ? domainMatch[1] : url;  
+                        domain = domainMatch ? domainMatch[1] : url;
                         console.warn('Could not parse URL, using as-is:', url);
                       }
                     }
-                    
+
                     if (!sourcesMap[url]) {
                       sourcesMap[url] = {
                         url: normalizedUrl,
@@ -89,7 +92,7 @@ const CitationsAndSources = () => {
                     sourcesMap[url].reports.push(report._id);
                     sourcesMap[url].platforms.add(resp.src);
                     sourcesMap[url].categories.add(item.category);
-                    
+
                     // Update last seen if this report is more recent
                     const reportDate = new Date(report.reportDate || report.createdAt);
                     const lastSeenDate = new Date(sourcesMap[url].lastSeen);
@@ -126,14 +129,14 @@ const CitationsAndSources = () => {
 
   // Filter sources
   const filteredSources = sources.filter(source => {
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       source.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
       source.domain.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All Categories' || 
+    const matchesCategory = selectedCategory === 'All Categories' ||
       source.categories.includes(selectedCategory);
-    const matchesPlatform = selectedPlatform === 'All Platforms' || 
+    const matchesPlatform = selectedPlatform === 'All Platforms' ||
       source.platforms.includes(selectedPlatform);
-    
+
     return matchesSearch && matchesCategory && matchesPlatform;
   });
 
@@ -360,10 +363,10 @@ const CitationsAndSources = () => {
                         {source.frequency} {source.frequency === 1 ? 'mention' : 'mentions'}
                       </span>
                     </div>
-                    
+
                     {/* Domain */}
                     <p className="text-sm text-gray-800 dark:text-white font-medium mb-2">{source.domain}</p>
-                    
+
                     {/* URL */}
                     <a
                       href={source.url}
@@ -373,7 +376,7 @@ const CitationsAndSources = () => {
                     >
                       {source.url}
                     </a>
-                    
+
                     {/* Details Grid */}
                     <div className="grid grid-cols-2 gap-3">
                       <div>
@@ -406,7 +409,7 @@ const CitationsAndSources = () => {
             >
               ←
             </button>
-            
+
             {[...Array(Math.min(totalPages, 5))].map((_, idx) => {
               let pageNum;
               if (totalPages <= 5) {
@@ -423,11 +426,10 @@ const CitationsAndSources = () => {
                 <button
                   key={pageNum}
                   onClick={() => setCurrentPage(pageNum)}
-                  className={`px-3 py-1 rounded text-sm ${
-                    currentPage === pageNum
+                  className={`px-3 py-1 rounded text-sm ${currentPage === pageNum
                       ? 'bg-primary-500 text-white'
                       : 'bg-white dark:bg-dark-800 border border-gray-300 dark:border-dark-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-700'
-                  }`}
+                    }`}
                 >
                   {pageNum}
                 </button>

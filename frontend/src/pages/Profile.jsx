@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
+import { getAuthHeaders } from '../services/api';
 import Sidebar from '../components/Sidebar';
-import { 
-  CreditCard, 
-  Zap, 
-  Calendar, 
-  RefreshCw, 
+import {
+  CreditCard,
+  Zap,
+  Calendar,
+  RefreshCw,
   TrendingUp,
   Crown,
   ExternalLink,
@@ -38,6 +39,7 @@ const Profile = () => {
 
       const response = await fetch(`${API_URL}/credits/activity`, {
         method: 'GET',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -130,7 +132,7 @@ const Profile = () => {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-dark-950">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 p-3 sm:p-6 md:p-8 mt-16 lg:mt-0">
         <div className="max-w-4xl mx-auto">
           {/* Page Header - Mobile Optimized */}
@@ -171,18 +173,17 @@ const Profile = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all whitespace-nowrap flex-shrink-0 ${
-                    activeTab === tab.id
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all whitespace-nowrap flex-shrink-0 ${activeTab === tab.id
                       ? 'bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-white'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-dark-800'
-                  }`}
+                    }`}
                 >
                   <tab.icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   <span className="text-xs sm:text-sm font-medium hidden sm:inline">{tab.label}</span>
                   <span className="text-xs font-medium sm:hidden">
-                    {tab.id === 'overview' ? 'Home' : 
-                     tab.id === 'credit-log' ? 'Credits' :
-                     tab.id === 'topup-transactions' ? 'Top-ups' : 'Invoices'}
+                    {tab.id === 'overview' ? 'Home' :
+                      tab.id === 'credit-log' ? 'Credits' :
+                        tab.id === 'topup-transactions' ? 'Top-ups' : 'Invoices'}
                   </span>
                 </button>
               ))}
@@ -237,11 +238,10 @@ const Profile = () => {
                     <button
                       onClick={handleUpgradeToPro}
                       disabled={user?.currentPlan?.toLowerCase() === 'agency'}
-                      className={`w-full font-bold py-2.5 rounded-lg transition-all text-sm ${
-                        user?.currentPlan?.toLowerCase() === 'agency'
+                      className={`w-full font-bold py-2.5 rounded-lg transition-all text-sm ${user?.currentPlan?.toLowerCase() === 'agency'
                           ? 'bg-gray-300 dark:bg-dark-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
                           : 'bg-[#4F46E5] text-white hover:bg-[#4338CA] dark:bg-action-600 dark:hover:bg-action-700'
-                      }`}
+                        }`}
                     >
                       {getUpgradeButtonText()}
                     </button>
@@ -283,9 +283,8 @@ const Profile = () => {
                             </p>
                           </div>
                           <div className="text-right flex-shrink-0">
-                            <p className={`font-bold text-base sm:text-lg ${
-                              log.amount > 0 ? 'text-green-500' : 'text-red-500'
-                            }`}>
+                            <p className={`font-bold text-base sm:text-lg ${log.amount > 0 ? 'text-green-500' : 'text-red-500'
+                              }`}>
                               {log.amount > 0 ? '+' : ''}{log.amount}
                             </p>
                             <p className="text-gray-600 dark:text-gray-400 text-xs">
@@ -294,11 +293,10 @@ const Profile = () => {
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className={`text-xs px-2 py-0.5 rounded ${
-                            log.type === 'earned' ? 'bg-green-500/20 text-green-400' :
-                            log.type === 'spent' ? 'bg-red-500/20 text-red-400' :
-                            'bg-blue-500/20 text-blue-400'
-                          }`}>
+                          <span className={`text-xs px-2 py-0.5 rounded ${log.type === 'earned' ? 'bg-green-500/20 text-green-400' :
+                              log.type === 'spent' ? 'bg-red-500/20 text-red-400' :
+                                'bg-blue-500/20 text-blue-400'
+                            }`}>
                             {log.type}
                           </span>
                           <span className="text-xs px-2 py-0.5 rounded bg-gray-200 dark:bg-dark-700 text-gray-600 dark:text-gray-300">

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 import { useAuth } from '../context/AuthContext';
+import { getAuthHeaders } from '../services/api';
 import { Gift, Users, Copy, Check, Sparkles, X } from 'lucide-react';
 import SurveyModal from '../components/SurveyModal';
 
@@ -23,6 +24,7 @@ const EarnCredits = () => {
 
       const response = await fetch(`${API_URL}/credits/referrals`, {
         method: 'GET',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -41,6 +43,7 @@ const EarnCredits = () => {
 
       const response = await fetch(`${API_URL}/credits/survey/status`, {
         method: 'GET',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -74,7 +77,7 @@ const EarnCredits = () => {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:gradient-bg">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 p-4 sm:p-6 md:p-8 mt-16 lg:mt-0">
         <div className="max-w-4xl mx-auto">
           {/* Page Header */}

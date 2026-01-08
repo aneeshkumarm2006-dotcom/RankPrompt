@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Trash2, Play, Pause, Globe, Pencil, Plus } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 
 const BrandScheduledReports = () => {
@@ -28,6 +29,7 @@ const BrandScheduledReports = () => {
 
       // Fetch brand data
       const brandRes = await fetch(`${API_URL}/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
       if (brandRes.ok) {
@@ -37,6 +39,7 @@ const BrandScheduledReports = () => {
 
       // Fetch scheduled reports for this brand
       const schedulesRes = await fetch(`${API_URL}/analysis/scheduled-prompts?brandId=${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -47,6 +50,7 @@ const BrandScheduledReports = () => {
 
       // Fetch latest report for this brand (needed to schedule)
       const reportsRes = await fetch(`${API_URL}/reports/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -74,6 +78,7 @@ const BrandScheduledReports = () => {
     try {
       const response = await fetch(`${API_URL}/analysis/scheduled-prompts/${scheduleId}/toggle`, {
         method: 'PUT',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -91,11 +96,12 @@ const BrandScheduledReports = () => {
 
   const handleDeleteSchedule = async () => {
     if (!deleteModal) return;
-    
+
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       const response = await fetch(`${API_URL}/analysis/scheduled-prompts/${deleteModal._id}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -148,7 +154,7 @@ const BrandScheduledReports = () => {
       setScheduling(true);
       const resp = await fetch(`${API_URL}/analysis/schedule-from-report`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({ reportId: latestReportId, frequency: scheduleFrequency }),
       });
@@ -182,7 +188,7 @@ const BrandScheduledReports = () => {
     try {
       const response = await fetch(`${API_URL}/analysis/scheduled-prompts/${editModal._id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({ prompts: cleaned }),
       });
@@ -338,11 +344,10 @@ const BrandScheduledReports = () => {
                   </button>
                   <button
                     onClick={() => handleToggleSchedule(schedule._id, schedule.isActive)}
-                    className={`flex-1 px-3 py-2 rounded transition-colors text-sm font-medium ${
-                      schedule.isActive
+                    className={`flex-1 px-3 py-2 rounded transition-colors text-sm font-medium ${schedule.isActive
                         ? 'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/30'
                         : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'
-                    }`}
+                      }`}
                   >
                     {schedule.isActive ? (
                       <>

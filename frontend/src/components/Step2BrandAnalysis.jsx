@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { ChevronDown, ChevronUp, Plus, Check, Loader, ExternalLink } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 
@@ -16,7 +17,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
   const [showMore, setShowMore] = useState(false);
   const [customPrompts, setCustomPrompts] = useState(['']);
   const [error, setError] = useState(null);
-  
+
   // Prevent double API calls in React StrictMode
   const hasCalledAPI = useRef(false);
 
@@ -49,7 +50,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
       // Step 1: Analyze brand
       const analysisResponse = await fetch(`${API_URL}/openai/analyze-brand`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({
           brandName: brandData.brandName,
@@ -67,7 +68,7 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
       // Step 2: Generate categories
       const categoriesResponse = await fetch(`${API_URL}/openai/generate-categories`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({
           brandName: brandData.brandName,
@@ -246,11 +247,10 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
         <div className="flex flex-col sm:flex-row space-y-0 sm:space-x-2 mb-4 sm:mb-6 border-b border-gray-200 dark:border-dark-700">
           <button
             onClick={() => setActiveTab('generate')}
-            className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${
-              activeTab === 'generate'
+            className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${activeTab === 'generate'
                 ? 'text-purple-600 dark:text-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
-            }`}
+              }`}
           >
             Generate Prompts by Category
             {activeTab === 'generate' && (
@@ -259,11 +259,10 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
           </button>
           <button
             onClick={() => setActiveTab('custom')}
-            className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${
-              activeTab === 'custom'
+            className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${activeTab === 'custom'
                 ? 'text-purple-600 dark:text-primary-400'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
-            }`}
+              }`}
           >
             Write Your Own Prompts
             {activeTab === 'custom' && (
@@ -292,11 +291,10 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                     <div
                       key={index}
                       onClick={() => toggleCategory(category)}
-                      className={`p-4 rounded-xl cursor-pointer transition-all ${
-                        isSelected
+                      className={`p-4 rounded-xl cursor-pointer transition-all ${isSelected
                           ? 'bg-purple-100 dark:bg-purple-500/10 border-2 border-purple-600 dark:border-primary-500'
                           : 'bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700 border-2 border-transparent'
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="flex-1">
@@ -363,13 +361,12 @@ const Step2BrandAnalysis = ({ brandData, onComplete, onBack }) => {
                     key={`${option.value}-${option.disabled ? 'disabled' : 'enabled'}`}
                     onClick={() => !option.disabled && setNumberOfPrompts(option.value)}
                     disabled={option.disabled}
-                    className={`px-6 py-3 rounded-xl font-semibold transition-all ${
-                      numberOfPrompts === option.value && !option.disabled
+                    className={`px-6 py-3 rounded-xl font-semibold transition-all ${numberOfPrompts === option.value && !option.disabled
                         ? 'bg-primary-500 text-white'
                         : option.disabled
-                        ? 'bg-gray-100 dark:bg-dark-800 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50'
-                        : 'bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white'
-                    }`}
+                          ? 'bg-gray-100 dark:bg-dark-800 text-gray-400 dark:text-gray-500 cursor-not-allowed opacity-50'
+                          : 'bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-dark-700 hover:text-gray-900 dark:hover:text-white'
+                      }`}
                   >
                     {option.label}
                     {option.pro && (

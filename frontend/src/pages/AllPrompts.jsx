@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Search, Filter, Eye } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 
 const AllPrompts = () => {
@@ -28,6 +29,7 @@ const AllPrompts = () => {
 
       // Fetch brand data
       const brandRes = await fetch(`${API_URL}/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
       if (brandRes.ok) {
@@ -37,19 +39,20 @@ const AllPrompts = () => {
 
       // Fetch all reports for the brand
       const reportsRes = await fetch(`${API_URL}/reports/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
       if (reportsRes.ok) {
         const { data: reports } = await reportsRes.json();
-        
+
         if (reports && reports.length > 0) {
           // The oldest report is the static/first report (last in descending order)
-          const sortedReports = [...reports].sort((a, b) => 
+          const sortedReports = [...reports].sort((a, b) =>
             new Date(a.createdAt) - new Date(b.createdAt)
           );
           setStaticReport(sortedReports[0]);
-          
+
           // All others are scheduled reports
           if (sortedReports.length > 1) {
             setScheduledReports(sortedReports.slice(1));
@@ -66,7 +69,7 @@ const AllPrompts = () => {
 
   const getAllPrompts = () => {
     let allPrompts = [];
-    
+
     if (staticReport && staticReport.reportData) {
       staticReport.reportData.forEach((item, index) => {
         allPrompts.push({
@@ -146,7 +149,7 @@ const AllPrompts = () => {
   };
 
   const prompts = getCurrentPrompts();
-  
+
   // Get unique categories and AI platforms from responses
   const categories = ['All Categories', ...new Set(prompts.map(p => p.category))];
   const allAiPlatforms = new Set();
@@ -157,16 +160,16 @@ const AllPrompts = () => {
 
   // Filter prompts
   const filteredPrompts = prompts.filter(p => {
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       p.prompt.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = selectedCategory === 'All Categories' || 
+    const matchesCategory = selectedCategory === 'All Categories' ||
       p.category === selectedCategory;
-    const matchesPlatform = selectedPlatform === 'All Platforms' || 
+    const matchesPlatform = selectedPlatform === 'All Platforms' ||
       p.responses?.some(r => r.src === selectedPlatform);
-    const matchesStatus = selectedStatus === 'All' || 
+    const matchesStatus = selectedStatus === 'All' ||
       (selectedStatus === 'Ranked' && p.responses?.some(r => r.found)) ||
       (selectedStatus === 'Not Ranked' && p.responses?.every(r => !r.found));
-    
+
     return matchesSearch && matchesCategory && matchesPlatform && matchesStatus;
   });
 
@@ -198,31 +201,28 @@ const AllPrompts = () => {
             <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('all')}
-                className={`${
-                  activeTab === 'all'
+                className={`${activeTab === 'all'
                     ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500 dark:border-primary-400'
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
-                } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
+                  } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 All Prompts ({getAllPrompts().length})
               </button>
               <button
                 onClick={() => setActiveTab('scheduled')}
-                className={`${
-                  activeTab === 'scheduled'
+                className={`${activeTab === 'scheduled'
                     ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500 dark:border-primary-400'
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
-                } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
+                  } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 Scheduled Prompt Results ({getScheduledPrompts().length})
               </button>
               <button
                 onClick={() => setActiveTab('static')}
-                className={`${
-                  activeTab === 'static'
+                className={`${activeTab === 'static'
                     ? 'text-primary-500 dark:text-primary-400 border-b-2 border-primary-500 dark:border-primary-400'
                     : 'text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white'
-                } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
+                  } font-semibold pb-2 transition-colors whitespace-nowrap text-sm sm:text-base`}
               >
                 Static Prompt Results ({getStaticPrompts().length})
               </button>
@@ -337,14 +337,14 @@ const AllPrompts = () => {
                     const foundCount = prompt.responses?.filter(r => r.found).length || 0;
                     const totalResponses = prompt.responses?.length || 0;
                     const aiModels = [...new Set(prompt.responses?.map(r => r.src) || [])];
-                    
+
                     return (
                       <tr key={idx} className="hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                         <td className="px-3 py-3 text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                          {new Date(prompt.reportDate).toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric' 
+                          {new Date(prompt.reportDate).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
                           })}
                         </td>
                         <td className="px-3 py-3">
@@ -357,11 +357,10 @@ const AllPrompts = () => {
                           </div>
                         </td>
                         <td className="px-3 py-3 text-sm">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            prompt.reportType === 'Scheduled' 
-                              ? 'bg-blue-500/20 text-blue-400' 
+                          <span className={`px-2 py-1 rounded text-xs ${prompt.reportType === 'Scheduled'
+                              ? 'bg-blue-500/20 text-blue-400'
                               : 'bg-purple-500/20 text-purple-400'
-                          }`}>
+                            }`}>
                             {prompt.reportType}
                           </span>
                         </td>
@@ -426,28 +425,27 @@ const AllPrompts = () => {
                   const foundCount = prompt.responses?.filter(r => r.found).length || 0;
                   const totalResponses = prompt.responses?.length || 0;
                   const aiModels = [...new Set(prompt.responses?.map(r => r.src) || [])];
-                  
+
                   return (
                     <div key={idx} className="p-4 hover:bg-gray-100 dark:hover:bg-dark-800 transition-colors">
                       {/* Date & Status */}
                       <div className="flex items-center justify-between mb-3">
                         <span className="text-xs text-gray-500 dark:text-gray-400">
-                          {new Date(prompt.reportDate).toLocaleDateString('en-US', { 
-                            month: 'short', day: 'numeric', year: 'numeric' 
+                          {new Date(prompt.reportDate).toLocaleDateString('en-US', {
+                            month: 'short', day: 'numeric', year: 'numeric'
                           })}
                         </span>
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          prompt.reportType === 'Scheduled' 
-                            ? 'bg-blue-500/20 text-blue-400' 
+                        <span className={`px-2 py-1 rounded text-xs ${prompt.reportType === 'Scheduled'
+                            ? 'bg-blue-500/20 text-blue-400'
                             : 'bg-purple-500/20 text-purple-400'
-                        }`}>
+                          }`}>
                           {prompt.reportType}
                         </span>
                       </div>
-                      
+
                       {/* Prompt Text */}
                       <p className="text-sm text-gray-800 dark:text-gray-200 font-medium mb-2 line-clamp-2">{prompt.prompt}</p>
-                      
+
                       {/* Category & AI Models */}
                       <div className="flex flex-wrap gap-2 mb-3">
                         <span className="px-2 py-1 bg-gray-200 dark:bg-dark-700 rounded-full text-xs text-gray-700 dark:text-gray-300">
@@ -459,7 +457,7 @@ const AllPrompts = () => {
                           </span>
                         ))}
                       </div>
-                      
+
                       {/* Mentions & Action */}
                       <div className="flex items-center justify-between">
                         {foundCount > 0 ? (

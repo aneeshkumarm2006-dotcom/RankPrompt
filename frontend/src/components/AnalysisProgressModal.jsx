@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Loader, CheckCircle, XCircle, Clock, TrendingUp } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 
 const AnalysisProgressModal = ({ isOpen, batchId, onComplete, onClose }) => {
   const [status, setStatus] = useState(null);
@@ -13,6 +14,7 @@ const AnalysisProgressModal = ({ isOpen, batchId, onComplete, onClose }) => {
       try {
         const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
         const response = await fetch(`${API_URL}/analysis/status/${batchId}`, {
+          headers: getAuthHeaders(),
           credentials: 'include',
         });
 
@@ -66,14 +68,14 @@ const AnalysisProgressModal = ({ isOpen, batchId, onComplete, onClose }) => {
 
   const getEstimatedTime = () => {
     if (!status) return 'Calculating...';
-    
+
     if (status.status === 'completed') return 'Completed!';
-    
+
     const now = new Date();
     const estimated = new Date(status.estimatedCompletionTime);
     const diff = Math.max(0, estimated - now);
     const seconds = Math.ceil(diff / 1000);
-    
+
     if (seconds < 60) return `${seconds}s remaining`;
     const minutes = Math.ceil(seconds / 60);
     return `${minutes}m remaining`;
@@ -111,8 +113,8 @@ const AnalysisProgressModal = ({ isOpen, batchId, onComplete, onClose }) => {
                 {status.status === 'completed'
                   ? 'Analysis Complete!'
                   : status.status === 'partial_completed'
-                  ? 'Analysis Partially Complete'
-                  : 'Analyzing Brand Visibility'}
+                    ? 'Analysis Partially Complete'
+                    : 'Analyzing Brand Visibility'}
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
                 {status.status === 'completed' || status.status === 'partial_completed'

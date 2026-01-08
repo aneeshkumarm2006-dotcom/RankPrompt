@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Eye, Calendar, Globe, MapPin } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 
 const BrandReports = () => {
@@ -23,6 +24,7 @@ const BrandReports = () => {
 
       // Fetch brand data
       const brandRes = await fetch(`${API_URL}/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
       if (brandRes.ok) {
@@ -32,6 +34,7 @@ const BrandReports = () => {
 
       // Fetch all reports for the brand
       const reportsRes = await fetch(`${API_URL}/reports/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -66,31 +69,31 @@ const BrandReports = () => {
       const reportDate = new Date(report.reportDate || report.createdAt);
       const now = new Date();
       const daysDiff = Math.floor((now - reportDate) / (1000 * 60 * 60 * 24));
-      
+
       if (dateFilter === 'Last 7 days' && daysDiff > 7) return false;
       if (dateFilter === 'Last 30 days' && daysDiff > 30) return false;
       if (dateFilter === 'Last 90 days' && daysDiff > 90) return false;
     }
-    
+
     // Category filter
     if (selectedFilter !== 'All Categories') {
       if (!report.reportData) return false;
       const hasCategory = report.reportData.some(item => item.category === selectedFilter);
       if (!hasCategory) return false;
     }
-    
+
     return true;
   });
 
   // Determine if a report is static (first/oldest) or scheduled
   const getReportType = (reportDate) => {
     if (reports.length === 0) return 'Static';
-    const sortedReports = [...reports].sort((a, b) => 
+    const sortedReports = [...reports].sort((a, b) =>
       new Date(a.createdAt) - new Date(b.createdAt)
     );
     const firstReport = sortedReports[0];
-    return new Date(firstReport.createdAt).getTime() === new Date(reportDate).getTime() 
-      ? 'Static' 
+    return new Date(firstReport.createdAt).getTime() === new Date(reportDate).getTime()
+      ? 'Static'
       : 'Scheduled';
   };
 
@@ -191,8 +194,8 @@ const BrandReports = () => {
                 {filteredReports.length > 0 ? (
                   filteredReports.map((report) => {
                     const reportType = getReportType(report.createdAt);
-                    const categoriesCount = report.reportData 
-                      ? [...new Set(report.reportData.map(item => item.category))].length 
+                    const categoriesCount = report.reportData
+                      ? [...new Set(report.reportData.map(item => item.category))].length
                       : 0;
                     const promptsCount = report.reportData ? report.reportData.length : 0;
 
@@ -206,18 +209,17 @@ const BrandReports = () => {
                           })}
                         </td>
                         <td className="px-4 py-3 text-sm">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${
-                            report.status === 'completed'
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${report.status === 'completed'
                               ? 'bg-green-500/20 text-green-400'
                               : 'bg-yellow-500/20 text-yellow-400'
-                          }`}>
+                            }`}>
                             {report.status}
                           </span>
                         </td>
                         <td className="px-4 py-3 text-sm text-gray-800 dark:text-gray-200 max-w-xs truncate">
-                          <a 
-                            href={report.brandUrl} 
-                            target="_blank" 
+                          <a
+                            href={report.brandUrl}
+                            target="_blank"
                             rel="noopener noreferrer"
                             className="text-primary-400 hover:text-primary-300 dark:text-primary-500 dark:hover:text-primary-400"
                           >
@@ -269,8 +271,8 @@ const BrandReports = () => {
             {filteredReports.length > 0 ? (
               filteredReports.map((report) => {
                 const reportType = getReportType(report.createdAt);
-                const categoriesCount = report.reportData 
-                  ? [...new Set(report.reportData.map(item => item.category))].length 
+                const categoriesCount = report.reportData
+                  ? [...new Set(report.reportData.map(item => item.category))].length
                   : 0;
                 const promptsCount = report.reportData ? report.reportData.length : 0;
 
@@ -285,25 +287,24 @@ const BrandReports = () => {
                           year: 'numeric'
                         })}
                       </span>
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${
-                        report.status === 'completed'
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${report.status === 'completed'
                           ? 'bg-green-500/20 text-green-400'
                           : 'bg-yellow-500/20 text-yellow-400'
-                      }`}>
+                        }`}>
                         {report.status}
                       </span>
                     </div>
-                    
+
                     {/* Website URL */}
-                    <a 
-                      href={report.brandUrl} 
-                      target="_blank" 
+                    <a
+                      href={report.brandUrl}
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-primary-400 hover:text-primary-300 dark:text-primary-500 dark:hover:text-primary-400 mb-3 block truncate"
                     >
                       {report.brandUrl}
                     </a>
-                    
+
                     {/* Details Grid */}
                     <div className="grid grid-cols-2 gap-3 mb-3">
                       <div>
@@ -323,14 +324,14 @@ const BrandReports = () => {
                         <p className="text-sm text-gray-800 dark:text-gray-200">{promptsCount}</p>
                       </div>
                     </div>
-                    
+
                     {/* Search Type Badge */}
                     <div className="mb-3">
                       <span className="px-2 py-1 bg-gray-200 dark:bg-dark-700 rounded text-xs capitalize text-gray-700 dark:text-gray-300">
                         {report.searchScope || 'global'} search
                       </span>
                     </div>
-                    
+
                     {/* View Button */}
                     <button
                       onClick={() => navigate(`/reports/${report._id}`)}

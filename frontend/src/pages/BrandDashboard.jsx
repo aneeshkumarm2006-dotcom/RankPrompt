@@ -6,6 +6,7 @@ import AllPrompts from './AllPrompts';
 import BrandReports from './BrandReports';
 import BrandScheduledReports from './BrandScheduledReports';
 import CitationsAndSources from './CitationsAndSources';
+import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 
 const BrandDashboard = () => {
@@ -23,6 +24,7 @@ const BrandDashboard = () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       const response = await fetch(`${API_URL}/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -40,6 +42,7 @@ const BrandDashboard = () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       const response = await fetch(`${API_URL}/reports/brand/${brandId}`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 

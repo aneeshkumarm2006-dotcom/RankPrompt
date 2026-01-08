@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, Edit2, ExternalLink, Loader, ChevronDown } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 
 const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartOver }) => {
   const [prompts, setPrompts] = useState([]);
@@ -10,7 +11,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
   const [showAllPrompts, setShowAllPrompts] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
   const [editedText, setEditedText] = useState('');
-  
+
   // Prevent double API calls in React StrictMode
   const hasCalledAPI = useRef(false);
 
@@ -40,7 +41,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
 
       const response = await fetch(`${API_URL}/openai/generate-prompts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({
           brandName: brandData.brandName,
@@ -196,11 +197,10 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
           <div className="flex flex-wrap gap-2 mb-4 sm:mb-6">
             <button
               onClick={() => setSelectedCategory('All Categories')}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                selectedCategory === 'All Categories'
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === 'All Categories'
                   ? 'bg-gray-800 dark:bg-dark-700 text-white'
                   : 'bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-dark-700'
-              }`}
+                }`}
             >
               All
             </button>
@@ -208,11 +208,10 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
               <button
                 key={index}
                 onClick={() => setSelectedCategory(cat.name)}
-                className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${
-                  selectedCategory === cat.name
+                className={`pb-2 sm:pb-3 px-3 sm:px-4 text-sm sm:text-base font-medium transition-colors relative ${selectedCategory === cat.name
                     ? 'bg-primary-500 text-white'
                     : 'bg-gray-100 dark:bg-dark-800 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-dark-700'
-                }`}
+                  }`}
               >
                 {cat.name}
               </button>

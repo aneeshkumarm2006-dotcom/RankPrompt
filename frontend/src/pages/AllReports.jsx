@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
+import { getAuthHeaders } from '../services/api';
 import { Eye, Share2, Calendar, TrendingUp, PlayCircle, Clock } from 'lucide-react';
 
 const AllReports = () => {
@@ -21,17 +22,18 @@ const AllReports = () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       const response = await fetch(`${API_URL}/reports/list?page=${currentPage}&limit=20`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
       if (response.ok) {
         const { data, totalPages: total } = await response.json();
         setReports(data);
-        
+
         // Separate in-progress and completed reports
         const inProgress = data.filter(r => r.status === 'in-progress');
         const completed = data.filter(r => r.status === 'completed');
-        
+
         setInProgressReports(inProgress);
         setCompletedReports(completed);
         setTotalPages(total);
@@ -52,6 +54,7 @@ const AllReports = () => {
     try {
       const response = await fetch(`${API_URL}/reports/${reportId}/share`, {
         method: 'POST',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -87,7 +90,7 @@ const AllReports = () => {
   return (
     <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-dark-950">
       <Sidebar />
-      
+
       <div className="flex-1 lg:ml-64 overflow-auto">
         <div className="max-w-7xl mx-auto p-4 sm:p-6 mt-16 lg:mt-0">
           {/* Header */}
@@ -147,7 +150,7 @@ const AllReports = () => {
                                 </span>
                               </div>
                               <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-3 break-all">{report.brandUrl}</p>
-                              
+
                               {/* Meta */}
                               <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                                 <Calendar className="w-4 h-4" />
@@ -186,85 +189,85 @@ const AllReports = () => {
                   </div>
                   <div className="grid grid-cols-1 gap-4">
                     {completedReports.map((report) => (
-                  <div
-                    key={report._id}
-                    className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-dark-700 hover:border-gray-300 dark:hover:border-dark-600 transition-colors"
-                  >
-                    <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
-                      {/* Left: Brand Info */}
-                      <div className="flex items-start gap-3 sm:gap-4 flex-1">
-                        {report.favicon && (
-                          <img
-                            src={report.favicon}
-                            alt={report.brandName}
-                            className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex-shrink-0"
-                            onError={(e) => {
-                              e.target.style.display = 'none';
-                            }}
-                          />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-1 break-words">
-                            {report.brandName}
-                          </h3>
-                          <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-3 break-all">{report.brandUrl}</p>
-                          
-                          {/* Stats */}
-                          <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mb-3">
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">Prompts:</span>
-                              <span className="text-gray-800 dark:text-white font-semibold">{report.stats?.totalPrompts || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500 dark:text-gray-400 text-sm">Website Found:</span>
-                              <span className="text-green-400 font-semibold">{report.stats?.websiteFound || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500 dark:text-gray-400 text-sm">Brand Mentioned:</span>
-                              <span className="text-blue-400 font-semibold">{report.stats?.brandMentioned || 0}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-gray-500 dark:text-gray-400 text-sm">Success Rate:</span>
-                              <span className="text-purple-400 font-semibold">{report.stats?.successRate || 0}%</span>
+                      <div
+                        key={report._id}
+                        className="bg-white dark:bg-dark-900 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-dark-700 hover:border-gray-300 dark:hover:border-dark-600 transition-colors"
+                      >
+                        <div className="flex flex-col lg:flex-row items-start justify-between gap-4">
+                          {/* Left: Brand Info */}
+                          <div className="flex items-start gap-3 sm:gap-4 flex-1">
+                            {report.favicon && (
+                              <img
+                                src={report.favicon}
+                                alt={report.brandName}
+                                className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex-shrink-0"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white mb-1 break-words">
+                                {report.brandName}
+                              </h3>
+                              <p className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm mb-3 break-all">{report.brandUrl}</p>
+
+                              {/* Stats */}
+                              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 mb-3">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">Prompts:</span>
+                                  <span className="text-gray-800 dark:text-white font-semibold">{report.stats?.totalPrompts || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-500 dark:text-gray-400 text-sm">Website Found:</span>
+                                  <span className="text-green-400 font-semibold">{report.stats?.websiteFound || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-500 dark:text-gray-400 text-sm">Brand Mentioned:</span>
+                                  <span className="text-blue-400 font-semibold">{report.stats?.brandMentioned || 0}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-gray-500 dark:text-gray-400 text-sm">Success Rate:</span>
+                                  <span className="text-purple-400 font-semibold">{report.stats?.successRate || 0}%</span>
+                                </div>
+                              </div>
+
+                              {/* Meta */}
+                              <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+                                <Calendar className="w-4 h-4" />
+                                <span>{new Date(report.reportDate || report.createdAt).toLocaleDateString()}</span>
+                                <span className="mx-2">•</span>
+                                <span className="capitalize">{report.searchScope} Search</span>
+                                {report.location && (
+                                  <>
+                                    <span className="mx-2">•</span>
+                                    <span>{report.location}, {report.country}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
 
-                          {/* Meta */}
-                          <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                            <Calendar className="w-4 h-4" />
-                            <span>{new Date(report.reportDate || report.createdAt).toLocaleDateString()}</span>
-                            <span className="mx-2">•</span>
-                            <span className="capitalize">{report.searchScope} Search</span>
-                            {report.location && (
-                              <>
-                                <span className="mx-2">•</span>
-                                <span>{report.location}, {report.country}</span>
-                              </>
-                            )}
+                          {/* Right: Actions */}
+                          <div className="flex items-center gap-2 w-full lg:w-auto lg:ml-4">
+                            <button
+                              onClick={() => navigate(`/reports/${report._id}`)}
+                              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-action-500 text-white rounded-lg hover:bg-action-600 transition-colors text-sm flex-1 lg:flex-initial"
+                              title="View Report"
+                            >
+                              <Eye className="w-4 h-4" />
+                              <span className="hidden sm:inline">View</span>
+                            </button>
+                            <button
+                              onClick={() => handleShareReport(report._id)}
+                              className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
+                              title="Share Report"
+                            >
+                              <Share2 className="w-4 h-4" />
+                            </button>
                           </div>
                         </div>
                       </div>
-
-                      {/* Right: Actions */}
-                      <div className="flex items-center gap-2 w-full lg:w-auto lg:ml-4">
-                        <button
-                          onClick={() => navigate(`/reports/${report._id}`)}
-                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-action-500 text-white rounded-lg hover:bg-action-600 transition-colors text-sm flex-1 lg:flex-initial"
-                          title="View Report"
-                        >
-                          <Eye className="w-4 h-4" />
-                          <span className="hidden sm:inline">View</span>
-                        </button>
-                        <button
-                          onClick={() => handleShareReport(report._id)}
-                          className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-colors"
-                          title="Share Report"
-                        >
-                          <Share2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
                     ))}
                   </div>
                 </div>

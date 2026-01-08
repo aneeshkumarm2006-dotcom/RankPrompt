@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 
 const SurveyModal = ({ onClose, onComplete }) => {
@@ -140,9 +141,7 @@ const SurveyModal = ({ onClose, onComplete }) => {
 
       const response = await fetch(`${API_URL}/credits/survey`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify({ responses }),
       });
@@ -210,11 +209,10 @@ const SurveyModal = ({ onClose, onComplete }) => {
                   <button
                     key={option}
                     onClick={() => handleOptionSelect(questionKey, option)}
-                    className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
-                      isSelected
+                    className={`w-full text-left px-4 py-3 rounded-xl transition-all ${isSelected
                         ? 'bg-purple-100 dark:bg-purple-500/10 border-2 border-primary-500 text-gray-800 dark:text-white'
                         : 'bg-white dark:bg-dark-800 border-2 border-gray-200 dark:border-dark-700 text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:hover:border-dark-600'
-                    }`}
+                      }`}
                   >
                     {option}
                   </button>
@@ -234,11 +232,10 @@ const SurveyModal = ({ onClose, onComplete }) => {
                   <button
                     key={i}
                     onClick={() => setResponses({ ...responses, question5: i })}
-                    className={`w-10 h-10 rounded-lg font-bold transition-all ${
-                      responses.question5 === i
+                    className={`w-10 h-10 rounded-lg font-bold transition-all ${responses.question5 === i
                         ? 'bg-primary-500 text-white scale-110'
                         : 'bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-dark-700'
-                    }`}
+                      }`}
                   >
                     {i}
                   </button>
@@ -268,11 +265,10 @@ const SurveyModal = ({ onClose, onComplete }) => {
           <button
             onClick={handleBack}
             disabled={currentQuestion === 1}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-              currentQuestion === 1
+            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${currentQuestion === 1
                 ? 'opacity-0 cursor-not-allowed'
                 : 'bg-gray-200 dark:bg-dark-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-dark-600'
-            }`}
+              }`}
           >
             <ChevronLeft className="w-4 h-4" />
             <span>Back</span>
@@ -281,11 +277,10 @@ const SurveyModal = ({ onClose, onComplete }) => {
           <button
             onClick={handleNext}
             disabled={!isCurrentQuestionAnswered()}
-            className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-bold transition-all ${
-              isCurrentQuestionAnswered()
+            className={`flex items-center space-x-2 px-6 py-3 rounded-xl font-bold transition-all ${isCurrentQuestionAnswered()
                 ? 'bg-primary-500 text-white'
                 : 'bg-gray-200 dark:bg-dark-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
-            }`}
+              }`}
           >
             <span>{currentQuestion === totalQuestions ? 'Submit' : 'Next'}</span>
             {currentQuestion < totalQuestions && <ChevronRight className="w-4 h-4" />}

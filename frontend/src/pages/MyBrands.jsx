@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Trash2, Edit, ExternalLink, Calendar, Building2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
+import { getAuthHeaders } from '../services/api';
 
 const MyBrands = () => {
   const navigate = useNavigate();
@@ -21,6 +22,7 @@ const MyBrands = () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     try {
       const response = await fetch(`${API_URL}/brand/list`, {
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -41,6 +43,7 @@ const MyBrands = () => {
     try {
       const response = await fetch(`${API_URL}/brand/${brandId}`, {
         method: 'DELETE',
+        headers: getAuthHeaders(),
         credentials: 'include',
       });
 
@@ -62,7 +65,7 @@ const MyBrands = () => {
     try {
       const response = await fetch(`${API_URL}/brand/${brandId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         credentials: 'include',
         body: JSON.stringify(newData),
       });

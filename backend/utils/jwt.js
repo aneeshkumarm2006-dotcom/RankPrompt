@@ -20,13 +20,18 @@ export const sendTokenResponse = (user, statusCode, res) => {
   const token = generateToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
 
+  // For cross-origin cookies (different domains for frontend/backend),
+  // we need sameSite: 'none' and secure: true
+  // This is required for iOS Safari and other browsers with strict cookie policies
+  const isProduction = process.env.NODE_ENV === 'production';
+
   const options = {
     expires: new Date(
       Date.now() + (process.env.JWT_COOKIE_EXPIRE || 7) * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-    sameSite: 'strict',
+    secure: isProduction, // Must be true when sameSite is 'none'
+    sameSite: isProduction ? 'none' : 'lax', // 'none' for cross-origin in production
   };
 
   res

@@ -1,3 +1,5 @@
+import { getAuthHeaders } from './api';
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 /**
@@ -10,9 +12,7 @@ export const createCheckoutSession = async (planKey) => {
   try {
     const response = await fetch(`${API_URL}/stripe/create-checkout-session`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify({
         planKey,
@@ -20,12 +20,12 @@ export const createCheckoutSession = async (planKey) => {
     });
 
     const data = await response.json();
-    
+
     if (data.success) {
       // Redirect to Stripe Checkout
       window.location.href = data.url;
     }
-    
+
     return data;
   } catch (error) {
     console.error('Error creating checkout session:', error);
@@ -43,9 +43,7 @@ export const createTopUpSession = async (topupKey) => {
   try {
     const response = await fetch(`${API_URL}/stripe/create-topup-session`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify({
         topupKey,
@@ -53,12 +51,12 @@ export const createTopUpSession = async (topupKey) => {
     });
 
     const data = await response.json();
-    
+
     if (data.success) {
       // Redirect to Stripe Checkout
       window.location.href = data.url;
     }
-    
+
     return data;
   } catch (error) {
     console.error('Error creating topup session:', error);
@@ -75,21 +73,19 @@ export const createBillingPortalSession = async () => {
   try {
     const response = await fetch(`${API_URL}/stripe/create-billing-portal-session`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       credentials: 'include',
     });
 
     const data = await response.json();
-    
+
     if (data.success) {
       // Open billing portal in new tab
       window.open(data.url, '_blank');
     } else {
       throw new Error(data.message || 'Failed to create billing portal session');
     }
-    
+
     return data;
   } catch (error) {
     console.error('Error creating billing portal session:', error);
@@ -105,6 +101,7 @@ export const getSubscriptionInfo = async () => {
   try {
     const response = await fetch(`${API_URL}/stripe/subscription-info`, {
       method: 'GET',
+      headers: getAuthHeaders(),
       credentials: 'include',
     });
 
@@ -125,9 +122,7 @@ export const syncSubscriptionStatus = async () => {
   try {
     const response = await fetch(`${API_URL}/stripe/sync-subscription`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: getAuthHeaders(),
       credentials: 'include',
     });
 
