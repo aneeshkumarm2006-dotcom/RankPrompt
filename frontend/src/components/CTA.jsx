@@ -1,6 +1,18 @@
 import { ArrowRight, Sparkles, Zap, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const CTA = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleStartTrial = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-purple-50 to-indigo-100 dark:from-dark-800 dark:to-dark-950 relative overflow-hidden">
       {/* Background Elements */}
@@ -39,19 +51,21 @@ const CTA = () => {
 
             {/* Description */}
             <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
-              Join 10,000+ brands already tracking and optimizing their AI search presence. 
+              Join 10,000+ brands already tracking and optimizing their AI search presence.
               Start free, no credit card required.
             </p>
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-4 sm:pt-6">
-              <button className="bg-[#4F46E5] text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-purple-700 transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3">
+              <button
+                onClick={handleStartTrial}
+                className="bg-[#4F46E5] text-white px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-purple-700 transition-all duration-300 flex items-center justify-center space-x-2 sm:space-x-3">
                 <span>Start Free Trial</span>
                 <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6 group-hover:translate-x-2 transition-transform" />
               </button>
-              <button className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-all duration-300 border border-gray-300 dark:border-dark-600">
+              {/* <button className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200 px-6 sm:px-8 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl sm:rounded-2xl font-bold text-base sm:text-lg hover:bg-gray-100 dark:hover:bg-dark-700 transition-all duration-300 border border-gray-300 dark:border-dark-600">
                 Schedule Demo
-              </button>
+              </button> */}
             </div>
 
             {/* Social Proof */}

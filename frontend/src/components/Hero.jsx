@@ -1,6 +1,18 @@
 import { ArrowRight, Sparkles, Star, TrendingUp, Zap, Play } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const handleStartAnalysis = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/login');
+    }
+  };
   return (
     <div className="relative pt-24 sm:pt-28 md:pt-32 pb-12 sm:pb-16 md:pb-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-dark-950 min-h-screen flex items-center overflow-hidden">
       {/* Animated Background Elements */}
@@ -20,7 +32,7 @@ const Hero = () => {
               <span className="text-gray-800 dark:text-purple-300">AI-Powered Brand Visibility</span>
               <Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />
             </div>
-            
+
             {/* Heading */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight">
               <span className="text-gray-800 dark:text-white">Dominate</span>
@@ -29,25 +41,27 @@ const Hero = () => {
               <br />
               <span className="text-gray-600 dark:text-gray-400">Rankings</span>
             </h1>
-            
+
             {/* Description */}
             <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-400 leading-relaxed max-w-xl">
-              Monitor your brand across ChatGPT, Gemini, Perplexity & more. Get real-time insights 
+              Monitor your brand across ChatGPT, Gemini, Perplexity & more. Get real-time insights
               and climb the AI rankings with data-driven optimization.
             </p>
-            
+
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button className="bg-primary-500 text-white px-8 py-4 rounded-2xl font-bold hover:bg-primary-600 transition-all duration-300 flex items-center justify-center space-x-2">
+              <button
+                onClick={handleStartAnalysis}
+                className="bg-primary-500 text-white px-8 py-4 rounded-2xl font-bold hover:bg-primary-600 transition-all duration-300 flex items-center justify-center space-x-2">
                 <span>Start Free Analysis</span>
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
               </button>
-              <button className="bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 px-8 py-4 rounded-2xl font-semibold hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 flex items-center justify-center space-x-2 group">
+              {/* <button className="bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 px-8 py-4 rounded-2xl font-semibold hover:bg-gray-200 dark:hover:bg-dark-700 transition-all duration-300 flex items-center justify-center space-x-2 group">
                 <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
                 <span>Watch Demo</span>
-              </button>
+              </button> */}
             </div>
-            
+
             {/* Stats */}
             <div className="grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 pt-8 sm:pt-10 md:pt-12">
               <div className="space-y-1 sm:space-y-2">
@@ -64,12 +78,12 @@ const Hero = () => {
               </div>
             </div>
           </div>
-          
+
           {/* Right Content - Dashboard Visual */}
           <div className="relative animate-slide-left hidden lg:block">
             {/* Glow Effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-primary-500/30 to-accent-500/30 rounded-3xl blur-3xl"></div>
-            
+
             {/* Main Card */}
             <div className="relative z-10 bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-2xl sm:rounded-3xl p-4 sm:p-6 space-y-3 sm:space-y-4 shadow-lg">
               {/* Header */}
@@ -171,7 +185,7 @@ const Hero = () => {
                 </div>
               </div>
             </div>
-            
+
             {/* Floating Accent Elements */}
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary-500/30 rounded-full blur-3xl animate-pulse-slow" />
             <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-accent-500/30 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
