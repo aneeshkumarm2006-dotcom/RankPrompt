@@ -21,7 +21,8 @@ const Reports = () => {
     brandName: '',
     websiteUrl: '',
     searchScope: 'local', // 'local' or 'national'
-    localSearchCity: 'Toronto, CA',
+    localCity: 'Toronto',
+    localCountry: 'CA',
     targetCountry: 'CA',
     language: 'English',
     platforms: {
@@ -105,8 +106,8 @@ const Reports = () => {
             websiteUrl: formData.websiteUrl,
             favicon: formData.brandFavicon,
             searchScope: formData.searchScope,
-            location: formData.searchScope === 'local' ? formData.localSearchCity.split(',')[0].trim() : null,
-            country: formData.searchScope === 'local' ? formData.localSearchCity.split(',')[1]?.trim() || formData.targetCountry : formData.targetCountry,
+            location: formData.searchScope === 'local' ? formData.localCity : null,
+            country: formData.searchScope === 'local' ? formData.localCountry : formData.targetCountry,
             language: formData.language,
             platforms: formData.platforms,
           },
@@ -362,12 +363,11 @@ const Reports = () => {
       let country = null;
 
       if (formData.searchScope === 'local') {
-        const parts = formData.localSearchCity.split(',').map(p => p.trim());
-        location = parts[0]; // City name
-        country = parts[1] || formData.targetCountry; // Country code (2 letters)
+        location = formData.localCity;
+        country = formData.localCountry;
       } else {
         location = null;
-        country = formData.targetCountry; // 2-letter country code
+        country = formData.targetCountry;
       }
 
       const promptsSentPayloads = finalPrompts.map((prompt, index) => ({
@@ -537,7 +537,8 @@ const Reports = () => {
       brandName: '',
       websiteUrl: '',
       searchScope: 'local',
-      localSearchCity: 'Toronto, CA',
+      localCity: 'Toronto',
+      localCountry: 'CA',
       targetCountry: 'CA',
       language: 'English',
       platforms: {
@@ -701,23 +702,39 @@ const Reports = () => {
                   </p>
                 </div>
 
-                {/* Local Search - City Input */}
+                {/* Local Search - City Input and Country Dropdown */}
                 {formData.searchScope === 'local' && (
-                  <div>
-                    <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
-                      City & Country Code
-                    </label>
-                    <input
-                      type="text"
-                      name="localSearchCity"
-                      value={formData.localSearchCity}
-                      onChange={handleInputChange}
-                      placeholder="e.g., Toronto, CA or New York, US"
-                      className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
-                    />
-                    <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
-                      Just drop your domain here, we'll fetch try all
-                    </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
+                        City / Location
+                      </label>
+                      <input
+                        type="text"
+                        name="localCity"
+                        value={formData.localCity}
+                        onChange={handleInputChange}
+                        placeholder="e.g., Toronto, New York, London"
+                        className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-2">
+                        Country
+                      </label>
+                      <select
+                        name="localCountry"
+                        value={formData.localCountry}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all appearance-none cursor-pointer"
+                      >
+                        {countries.map((country) => (
+                          <option key={country.code} value={country.code} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
+                            {country.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 )}
 
@@ -735,7 +752,7 @@ const Reports = () => {
                     >
                       {countries.map((country) => (
                         <option key={country.code} value={country.code} className="bg-white dark:bg-dark-800 text-gray-800 dark:text-gray-200">
-                          {country.name}, {country.code}
+                          {country.name}
                         </option>
                       ))}
                     </select>
