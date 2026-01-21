@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Trash2, Edit, ExternalLink, Calendar, Building2 } from 'lucide-react';
+import { Search, Plus, Trash2, Edit, ExternalLink, Calendar, Building2, FileText } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { getAuthHeaders } from '../services/api';
@@ -13,6 +13,9 @@ const MyBrands = () => {
   const [sortBy, setSortBy] = useState('newest');
   const [editingBrand, setEditingBrand] = useState(null);
   const [deletingBrand, setDeletingBrand] = useState(null);
+  const [editingPrompts, setEditingPrompts] = useState(null);
+  const [promptInputs, setPromptInputs] = useState([]);
+  const [loadingPrompts, setLoadingPrompts] = useState(false);
 
   useEffect(() => {
     fetchBrands();
@@ -80,6 +83,89 @@ const MyBrands = () => {
     } catch (error) {
       console.error('Error updating brand:', error);
       toast.error('Error updating brand');
+    }
+  };
+
+  const fetchBrandPrompts = async (brand) => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      setLoadingPrompts(true);
+      // Fetch scheduled prompts for this brand
+      const response = await fetch(`${API_URL}/analysis/scheduled-prompts?brandId=${brand._id}`, {
+        headers: getAuthHeaders(),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const { data } = await response.json();
+        if (data && data.length > 0) {
+          // Get the first (active) scheduled prompt
+          const schedule = data[0];
+          setEditingPrompts({ ...brand, scheduleId: schedule._id, schedule });
+          setPromptInputs(
+            schedule.prompts?.length
+              ? schedule.prompts.map(p => p.prompt || '')
+              : ['']
+          );
+        } else {
+          toast.error('No scheduled prompts found for this brand. Schedule a report first.');
+        }
+      } else {
+        toast.error('Failed to fetch prompts');
+      }
+    } catch (error) {
+      console.error('Error fetching prompts:', error);
+      toast.error('Error fetching prompts');
+    } finally {
+      setLoadingPrompts(false);
+    }
+  };
+
+  const handlePromptChange = (index, value) => {
+    setPromptInputs(prev => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
+  };
+
+  const handleAddPrompt = () => {
+    setPromptInputs(prev => [...prev, '']);
+  };
+
+  const handleRemovePrompt = (index) => {
+    setPromptInputs(prev => prev.filter((_, idx) => idx !== index));
+  };
+
+  const handleSavePrompts = async () => {
+    if (!editingPrompts?.scheduleId) return;
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+    const cleaned = promptInputs.map(p => p.trim()).filter(Boolean);
+    if (!cleaned.length) {
+      toast.error('Please add at least one prompt');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/analysis/scheduled-prompts/${editingPrompts.scheduleId}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+        body: JSON.stringify({ prompts: cleaned }),
+      });
+
+      if (response.ok) {
+        toast.success('Prompts updated successfully');
+        setEditingPrompts(null);
+        setPromptInputs([]);
+      } else {
+        const err = await response.json().catch(() => ({}));
+        toast.error(err.message || 'Failed to update prompts');
+      }
+    } catch (error) {
+      console.error('Error updating prompts:', error);
+      toast.error('Failed to update prompts');
     }
   };
 
@@ -224,6 +310,14 @@ const MyBrands = () => {
                       View Details
                     </button>
                     <button
+                      onClick={() => fetchBrandPrompts(brand)}
+                      className="px-3 py-2 bg-blue-500/20 text-blue-500 dark:text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors"
+                      title="Edit Prompts"
+                      disabled={loadingPrompts}
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
+                    <button
                       onClick={() => setEditingBrand(brand)}
                       className="px-3 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600"
                       title="Edit Brand"
@@ -329,6 +423,80 @@ const MyBrands = () => {
                 className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
               >
                 Delete Brand
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Prompts Modal */}
+      {editingPrompts && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto">
+            <div className="flex items-start justify-between gap-3 mb-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-800 dark:text-white">Edit Prompts</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  Update the prompts for <strong>{editingPrompts.brandName}</strong>
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingPrompts(null);
+                  setPromptInputs([]);
+                }}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {promptInputs.map((prompt, idx) => (
+                <div key={idx} className="flex items-start gap-3">
+                  <div className="flex-1">
+                    <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Prompt {idx + 1}</label>
+                    <textarea
+                      value={prompt}
+                      onChange={(e) => handlePromptChange(idx, e.target.value)}
+                      rows={2}
+                      className="w-full bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
+                      placeholder="Enter prompt text"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleRemovePrompt(idx)}
+                    className="mt-7 px-2 py-1 text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400"
+                    disabled={promptInputs.length <= 1}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+
+              <button
+                onClick={handleAddPrompt}
+                className="flex items-center gap-2 text-sm text-primary-500 hover:text-primary-400 dark:text-primary-400 dark:hover:text-primary-300"
+              >
+                <Plus className="w-4 h-4" /> Add prompt
+              </button>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                onClick={() => {
+                  setEditingPrompts(null);
+                  setPromptInputs([]);
+                }}
+                className="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-dark-600 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSavePrompts}
+                className="px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+              >
+                Save Changes
               </button>
             </div>
           </div>

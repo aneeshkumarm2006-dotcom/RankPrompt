@@ -397,18 +397,9 @@ const BrandScheduledReports = () => {
           <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-lg p-4 sm:p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Schedule this report</h3>
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Frequency</label>
-                <select
-                  value={scheduleFrequency}
-                  onChange={(e) => setScheduleFrequency(e.target.value)}
-                  className="w-full bg-gray-100 dark:bg-dark-800 text-gray-800 dark:text-gray-200 rounded-lg px-3 py-2 border border-gray-300 dark:border-dark-600 focus:border-primary-500 focus:outline-none"
-                >
-                  <option value="daily">Daily</option>
-                  <option value="weekly">Weekly</option>
-                  <option value="monthly">Monthly</option>
-                </select>
-              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                This report will be scheduled to run <span className="font-semibold text-primary-500">weekly</span>.
+              </p>
               <div className="flex justify-end gap-4">
                 <button
                   onClick={() => setShowScheduleModal(false)}

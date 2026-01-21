@@ -8,7 +8,7 @@ const connectDB = async () => {
 
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (error) {
-    console.error(`MongoDB Failed: ${error.message}`);
+    console.error(`MongoDB Failed: ${error}`);
     console.warn('Server will start WITHOUT MongoDB');
     console.warn('OpenAI and n8n calls will work, data just won\'t be saved');
   }
