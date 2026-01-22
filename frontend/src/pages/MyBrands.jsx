@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Trash2, Edit, ExternalLink, Calendar, Building2, FileText } from 'lucide-react';
+import { Search, Plus, Trash2, Edit, ExternalLink, Calendar, Building2, FileText, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { getAuthHeaders } from '../services/api';
@@ -447,7 +447,7 @@ const MyBrands = () => {
                 }}
                 className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 

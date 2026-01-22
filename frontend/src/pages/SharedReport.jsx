@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Download, Search, ExternalLink } from 'lucide-react';
+import { Download, Search, ExternalLink, CheckCircle2, XCircle } from 'lucide-react';
 import { generateReportPDF } from '../utils/pdfGenerator';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -450,12 +450,14 @@ const SharedReport = () => {
                         </td>
                         <td className="px-3 py-3 text-sm whitespace-nowrap">
                           {platformData.found ? (
-                            <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-medium">
-                              ✓ Yes
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-medium">
+                              <CheckCircle2 className="w-3 h-3" />
+                              Yes
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-medium">
-                              ✗ No
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-medium">
+                              <XCircle className="w-3 h-3" />
+                              No
                             </span>
                           )}
                         </td>
@@ -467,7 +469,10 @@ const SharedReport = () => {
                             platformData.details?.website ? (
                               <a href={platformData.details.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline text-xs">View Source</a>
                             ) : (
-                              <span className="text-green-500">✓ Yes</span>
+                              <span className="inline-flex items-center gap-1 text-green-500">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Yes
+                              </span>
                             )
                           ) : (
                             <span className="text-gray-500">-</span>
@@ -475,7 +480,10 @@ const SharedReport = () => {
                         </td>
                         <td className="px-3 py-3 text-sm whitespace-nowrap">
                           {platformData.details?.brandMentionFound ? (
-                            <span className="text-blue-500">✓ Yes</span>
+                            <span className="inline-flex items-center gap-1 text-blue-500">
+                              <CheckCircle2 className="w-3 h-3" />
+                              Yes
+                            </span>
                           ) : (
                             <span className="text-gray-500">-</span>
                           )}

@@ -241,7 +241,10 @@ const Register = () => {
               </div>
               {referralCode && (
                 <p className="mt-2 text-xs text-action-500 dark:text-action-400">
-                  🎁 You'll earn bonus credits when you sign up with this referral code!
+                  <span className="inline-flex items-center gap-1">
+                    <Gift className="w-3 h-3" />
+                    You'll earn bonus credits when you sign up with this referral code!
+                  </span>
                 </p>
               )}
             </div>

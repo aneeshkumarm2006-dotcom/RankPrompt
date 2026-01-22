@@ -13,7 +13,8 @@ import {
   Settings,
   ChevronDown,
   Menu,
-  X
+  X,
+  Lock
 } from 'lucide-react';
 
 const BrandSidebar = ({ brandData }) => {
@@ -32,7 +33,7 @@ const BrandSidebar = ({ brandData }) => {
         { name: 'Performance Summary', path: `/brands/${brandId}/dashboard`, icon: BarChart3 },
         { name: 'All Prompts', path: `/brands/${brandId}/prompts`, icon: FileText },
         { name: 'All Reports', path: `/brands/${brandId}/reports`, icon: FileText },
-        { name: 'All Scheduled Reports', path: `/brands/${brandId}/scheduled`, icon: Calendar },
+        { name: 'Scheduled Reports', path: `/brands/${brandId}/scheduled`, icon: Calendar },
       ]
     },
     { name: 'Citations & Sources', path: `/brands/${brandId}/citations`, icon: Share2 },
@@ -136,7 +137,9 @@ const BrandSidebar = ({ brandData }) => {
                               <span>{subItem.name}</span>
                             </div>
                             {subItem.badge === 'lock' && (
-                              <span className="text-xs bg-gray-700 dark:bg-dark-600 px-2 py-0.5 rounded">🔒</span>
+                              <span className="text-xs bg-gray-700 dark:bg-dark-600 px-2 py-0.5 rounded inline-flex items-center">
+                                <Lock className="w-3 h-3" />
+                              </span>
                             )}
                           </Link>
                         ))}

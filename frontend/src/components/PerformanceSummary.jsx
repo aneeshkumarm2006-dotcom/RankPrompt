@@ -1,6 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, TrendingUp, Eye, ExternalLink, CalendarIcon, RefreshCw, Plus, X } from 'lucide-react';
+import {
+  Calendar,
+  TrendingUp,
+  Eye,
+  ExternalLink,
+  CalendarIcon,
+  RefreshCw,
+  Plus,
+  X,
+  CheckCircle2,
+  XCircle,
+  BarChart3,
+  Link2,
+  Folder,
+  CalendarDays,
+} from 'lucide-react';
 import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -38,6 +53,13 @@ const PerformanceSummary = ({ brandData, reports }) => {
     fontSize: '12px',
   };
   const tooltipTextStyle = { color: '#e2e8f0', fontSize: 12 };
+  const normalizeUrl = (url) => {
+    if (!url) return '';
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
 
   // Check for scheduled reports
   useEffect(() => {
@@ -732,7 +754,8 @@ const PerformanceSummary = ({ brandData, reports }) => {
                 {/* Ranked */}
                 <div>
                   <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                    <span className="text-green-500">✓</span> Ranked Prompts ({data.rankedPrompts.length})
+                    <CheckCircle2 className="w-4 h-4 text-green-500" />
+                    Ranked Prompts ({data.rankedPrompts.length})
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[1000px]">
@@ -790,7 +813,8 @@ const PerformanceSummary = ({ brandData, reports }) => {
                 {/* Missed */}
                 <div>
                   <h3 className="text-lg font-bold text-gray-800 dark:text-white mb-4 flex items-center gap-2">
-                    <span className="text-red-500">✗</span> Missed Prompts ({data.missedPrompts.length})
+                    <XCircle className="w-4 h-4 text-red-500" />
+                    Missed Prompts ({data.missedPrompts.length})
                   </h3>
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[1000px]">
@@ -902,28 +926,46 @@ const PerformanceSummary = ({ brandData, reports }) => {
                 <h3 className="text-lg font-bold text-gray-800 mb-6">Brand Overview</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
                   <div className="bg-gray-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2"><span className="text-green-500">✓</span><span className="text-gray-600 text-sm">Found In</span></div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                      <span className="text-gray-600 text-sm">Found In</span>
+                    </div>
                     <span className="text-2xl font-bold text-gray-800">{data.foundInPrompts}</span><span className="text-gray-600 text-sm ml-1">prompts</span>
                   </div>
                   <div className="bg-gray-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2"><span className="text-red-500">✗</span><span className="text-gray-600 text-sm">Missing From</span></div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <XCircle className="w-4 h-4 text-red-500" />
+                      <span className="text-gray-600 text-sm">Missing From</span>
+                    </div>
                     <span className="text-2xl font-bold text-gray-800">{data.missingFromPrompts}</span><span className="text-gray-600 text-sm ml-1">prompts</span>
                   </div>
                   <div className="bg-gray-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2"><span className="text-blue-500">📊</span><span className="text-gray-600 text-sm">Total Reports</span></div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <BarChart3 className="w-4 h-4 text-blue-500" />
+                      <span className="text-gray-600 text-sm">Total Reports</span>
+                    </div>
                     <span className="text-2xl font-bold text-gray-800">{reports.length}</span><span className="text-gray-600 text-sm ml-1">reports</span>
                   </div>
                   <div className="bg-gray-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2"><span className="text-purple-500">🔗</span><span className="text-gray-600 text-sm">Total Sources</span></div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Link2 className="w-4 h-4 text-purple-500" />
+                      <span className="text-gray-600 text-sm">Total Sources</span>
+                    </div>
                     <span className="text-2xl font-bold text-gray-800">{data.totalSources}</span><span className="text-gray-600 text-sm ml-1">sources</span>
                   </div>
                   <div className="bg-gray-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2"><span className="text-yellow-500">📁</span><span className="text-gray-600 text-sm">Categories</span></div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <Folder className="w-4 h-4 text-yellow-500" />
+                      <span className="text-gray-600 text-sm">Categories</span>
+                    </div>
                     <span className="text-2xl font-bold text-gray-800">{data.categories}</span><span className="text-gray-600 text-sm ml-1">categories</span>
                   </div>
-                  <div className="bg-gray-750 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-2"><span className="text-orange-400">📅</span><span className="text-gray-400 text-sm">Scheduled Reports</span></div>
-                    <span className="text-2xl font-bold text-white">1</span><span className="text-gray-400 text-sm ml-1">active</span>
+                  <div className="bg-gray-100 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <CalendarDays className="w-4 h-4 text-orange-500" />
+                      <span className="text-gray-600 text-sm">Scheduled Reports</span>
+                    </div>
+                    <span className="text-2xl font-bold text-gray-800">1</span><span className="text-gray-600 text-sm ml-1">active</span>
                   </div>
                 </div>
               </div>
@@ -1098,7 +1140,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                       {competitorSnapshot.competitors.map((c, idx) => (
                         <div key={`${c.name}-${idx}`} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 border-b border-gray-100 dark:border-dark-800 pb-2 last:border-none last:pb-0">
                           <span className="font-medium">{c.name}</span>
-                          <a href={c.website} target="_blank" rel="noreferrer" className="text-primary-500 hover:text-primary-400 break-words flex items-center gap-1">
+                          <a href={normalizeUrl(c.website)} target="_blank" rel="noreferrer" className="text-primary-500 hover:text-primary-400 break-words flex items-center gap-1">
                             {c.website}
                             <ExternalLink className="w-3 h-3" />
                           </a>
@@ -1152,7 +1194,7 @@ const PerformanceSummary = ({ brandData, reports }) => {
                   </a>
                 </div>
                 <button onClick={() => setSourcePromptsModal(null)} className="text-gray-400 hover:text-white">
-                  ✕
+                  <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="space-y-4 max-h-[60vh] overflow-y-auto">
@@ -1163,9 +1205,15 @@ const PerformanceSummary = ({ brandData, reports }) => {
                         <div className="flex items-center gap-2 mb-1">
                           <span className="text-xs font-medium text-gray-400">Prompt #{prompt.index}</span>
                           {prompt.found ? (
-                            <span className="px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-xs">✓ Found</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-500/20 text-green-400 rounded text-xs">
+                              <CheckCircle2 className="w-3 h-3" />
+                              Found
+                            </span>
                           ) : (
-                            <span className="px-2 py-0.5 bg-red-500/20 text-red-400 rounded text-xs">✗ Not Found</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-500/20 text-red-400 rounded text-xs">
+                              <XCircle className="w-3 h-3" />
+                              Not Found
+                            </span>
                           )}
                           <span className="px-2 py-0.5 bg-gray-700 text-gray-300 rounded text-xs capitalize">
                             {prompt.platform === 'chatgpt' ? 'GPT' : prompt.platform === 'perplexity' ? 'PPX' : prompt.platform === 'google_ai_overviews' ? 'AIO' : prompt.platform}

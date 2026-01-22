@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getAuthHeaders } from '../services/api';
 import Sidebar from '../components/Sidebar';
-import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar } from 'lucide-react';
+import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 import { generateReportPDF } from '../utils/pdfGenerator';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -635,12 +635,14 @@ const ReportView = () => {
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.found ? (
-                              <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-medium">
-                                ✓ Yes
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs font-medium">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Yes
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-medium">
-                                ✗ No
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-600 rounded-full text-xs font-medium">
+                                <XCircle className="w-3 h-3" />
+                                No
                               </span>
                             )}
                           </td>
@@ -655,17 +657,29 @@ const ReportView = () => {
                                   View Source
                                 </a>
                               ) : (
-                                <span className="text-green-600">✓ Yes</span>
+                                <span className="inline-flex items-center gap-1 text-green-600">
+                                  <CheckCircle2 className="w-3 h-3" />
+                                  Yes
+                                </span>
                               )
                             ) : (
-                              <span className="text-red-600">✗ No</span>
+                              <span className="inline-flex items-center gap-1 text-red-600">
+                                <XCircle className="w-3 h-3" />
+                                No
+                              </span>
                             )}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">
                             {platformData.details?.brandMentionFound ? (
-                              <span className="text-green-600">✓ Yes</span>
+                              <span className="inline-flex items-center gap-1 text-green-600">
+                                <CheckCircle2 className="w-3 h-3" />
+                                Yes
+                              </span>
                             ) : (
-                              <span className="text-red-600">✗ No</span>
+                              <span className="inline-flex items-center gap-1 text-red-600">
+                                <XCircle className="w-3 h-3" />
+                                No
+                              </span>
                             )}
                           </td>
                           <td className="px-3 py-3 text-sm whitespace-nowrap">

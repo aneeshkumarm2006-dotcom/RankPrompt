@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Search, Edit2, ExternalLink, Loader, ChevronDown } from 'lucide-react';
+import { Search, Edit2, ExternalLink, Loader, ChevronDown, Check, X } from 'lucide-react';
 import { getAuthHeaders } from '../services/api';
 
 const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartOver }) => {
@@ -276,7 +276,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
                           className="p-3 bg-gray-100 dark:bg-dark-800 hover:bg-red-100 dark:hover:bg-red-500/20 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-colors"
                           title="Save"
                         >
-                          ✓
+                          <Check className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => {
@@ -286,7 +286,7 @@ const Step3ReadyToAnalyze = ({ brandData, step2Data, onAnalyze, onBack, onStartO
                           className="p-3 bg-gray-100 dark:bg-dark-800 hover:bg-red-100 dark:hover:bg-red-500/20 hover:text-red-600 dark:hover:text-red-400 rounded-xl transition-colors"
                           title="Cancel"
                         >
-                          ✕
+                          <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (

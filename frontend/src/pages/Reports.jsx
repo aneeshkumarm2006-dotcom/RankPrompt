@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getAuthHeaders } from '../services/api';
 import Sidebar from '../components/Sidebar';
-import { Search, Globe, X, Check } from 'lucide-react';
+import { Search, Globe, X, Check, Gem, Package, Microscope } from 'lucide-react';
 import Step2BrandAnalysis from '../components/Step2BrandAnalysis';
 import Step3ReadyToAnalyze from '../components/Step3ReadyToAnalyze';
 import AnalysisLoadingModal from '../components/AnalysisLoadingModal';
@@ -885,7 +885,10 @@ const Reports = () => {
 
                   <div className="mt-4 p-3 bg-purple-50 dark:bg-purple-500/10 rounded-lg">
                     <p className="text-purple-600 dark:text-purple-400 text-xs">
-                      <span className="font-semibold">💎 Google AI Overview</span>
+                      <span className="font-semibold inline-flex items-center gap-1">
+                        <Gem className="w-3 h-3" />
+                        Google AI Overview
+                      </span>
                     </p>
                     <p className="text-gray-600 dark:text-gray-400 text-xs mt-1">
                       Use it to evaluate & optimize against Google AI Overviews or get ranked.
@@ -964,7 +967,7 @@ const Reports = () => {
                     className="w-12 h-12 rounded-lg"
                   />
                 ) : (
-                  <span className="text-3xl">📦</span>
+                  <Package className="w-8 h-8 text-gray-500" />
                 )}
               </div>
 
@@ -1003,7 +1006,8 @@ const Reports = () => {
                 }}
                 className="w-full bg-gray-100 dark:bg-dark-800 hover:bg-gray-200 dark:hover:bg-dark-700 text-gray-800 dark:text-gray-200 hover:text-gray-900 dark:hover:text-white font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center space-x-2"
               >
-                <span>🔬 No, just experimenting</span>
+                <Microscope className="w-4 h-4" />
+                <span>No, just experimenting</span>
               </button>
             </div>
           </div>

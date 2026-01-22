@@ -194,10 +194,10 @@ export const generateReportPDF = async (brandName, reportData, stats, platformCh
         // Found
         if (platformData.found) {
           pdf.setTextColor(16, 185, 129);
-          pdf.text('✓ Yes', margin + 120, yPosition);
+          pdf.text('Yes', margin + 120, yPosition);
         } else {
           pdf.setTextColor(239, 68, 68);
-          pdf.text('✗ No', margin + 120, yPosition);
+          pdf.text('No', margin + 120, yPosition);
         }
         
         // Index

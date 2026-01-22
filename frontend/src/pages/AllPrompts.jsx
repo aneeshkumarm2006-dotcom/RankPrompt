@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Search, Filter, Eye } from 'lucide-react';
+import { ArrowLeft, Search, Filter, Eye, CheckCircle2, XCircle } from 'lucide-react';
 import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
 
@@ -377,12 +377,14 @@ const AllPrompts = () => {
                         </td>
                         <td className="px-3 py-3 text-sm whitespace-nowrap">
                           {foundCount > 0 ? (
-                            <span className="inline-flex items-center px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
-                              ✓ {foundCount}/{totalResponses}
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
+                              <CheckCircle2 className="w-3 h-3" />
+                              {foundCount}/{totalResponses}
                             </span>
                           ) : (
-                            <span className="inline-flex items-center px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
-                              ✗ 0/{totalResponses}
+                            <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
+                              <XCircle className="w-3 h-3" />
+                              0/{totalResponses}
                             </span>
                           )}
                         </td>
@@ -461,12 +463,14 @@ const AllPrompts = () => {
                       {/* Mentions & Action */}
                       <div className="flex items-center justify-between">
                         {foundCount > 0 ? (
-                          <span className="inline-flex items-center px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
-                            ✓ {foundCount}/{totalResponses} Mentions
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-500 bg-opacity-20 text-green-400 rounded-full text-xs font-medium">
+                            <CheckCircle2 className="w-3 h-3" />
+                            {foundCount}/{totalResponses} Mentions
                           </span>
                         ) : (
-                          <span className="inline-flex items-center px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
-                            ✗ Not Found
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-500 bg-opacity-20 text-red-400 rounded-full text-xs font-medium">
+                            <XCircle className="w-3 h-3" />
+                            Not Found
                           </span>
                         )}
                         {prompt.responses && prompt.responses.length > 0 && (

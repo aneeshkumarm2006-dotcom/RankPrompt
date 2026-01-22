@@ -18,7 +18,7 @@ import PromptSent from '../models/PromptSent.js';
 export const updateScheduledPrompt = async (req, res) => {
   try {
     const { id } = req.params;
-    const { prompts } = req.body;
+    const { prompts, scheduleFrequency } = req.body;
 
     const scheduledPrompt = await ScheduledPrompt.findById(id);
 
@@ -80,6 +80,43 @@ export const updateScheduledPrompt = async (req, res) => {
     scheduledPrompt.prompts = cleanedPrompts;
     scheduledPrompt.lastUpdated = new Date();
 
+    // Update schedule frequency if provided
+    if (scheduleFrequency && ['daily', 'weekly', 'monthly'].includes(scheduleFrequency)) {
+      scheduledPrompt.scheduleFrequency = scheduleFrequency;
+      // Recalculate next run based on new frequency from lastRun or now
+      const baseDate = scheduledPrompt.lastRun || new Date();
+      const nextRun = new Date(baseDate);
+      switch (scheduleFrequency) {
+        case 'daily':
+          nextRun.setDate(nextRun.getDate() + 1);
+          break;
+        case 'weekly':
+          nextRun.setDate(nextRun.getDate() + 7);
+          break;
+        case 'monthly':
+          nextRun.setMonth(nextRun.getMonth() + 1);
+          break;
+      }
+      // Ensure nextRun is in the future
+      if (nextRun <= new Date()) {
+        const now = new Date();
+        switch (scheduleFrequency) {
+          case 'daily':
+            now.setDate(now.getDate() + 1);
+            break;
+          case 'weekly':
+            now.setDate(now.getDate() + 7);
+            break;
+          case 'monthly':
+            now.setMonth(now.getMonth() + 1);
+            break;
+        }
+        scheduledPrompt.nextRun = now;
+      } else {
+        scheduledPrompt.nextRun = nextRun;
+      }
+    }
+
     await scheduledPrompt.save();
 
     // Notify n8n webhook about the change (send mail)
@@ -114,6 +151,80 @@ export const updateScheduledPrompt = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Failed to update scheduled prompts',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * Update scheduled prompt's AI models
+ * @route PUT /api/analysis/scheduled-prompts/:id/models
+ * @access Private
+ */
+export const updateScheduledPromptModels = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { aiModels } = req.body;
+
+    const scheduledPrompt = await ScheduledPrompt.findById(id);
+
+    if (!scheduledPrompt) {
+      return res.status(404).json({
+        success: false,
+        message: 'Scheduled report not found',
+      });
+    }
+
+    // Verify ownership
+    if (scheduledPrompt.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: 'You do not have permission to edit this scheduled report',
+      });
+    }
+
+    // Validate AI models
+    if (!Array.isArray(aiModels) || aiModels.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'At least one AI model is required',
+      });
+    }
+
+    const validModels = ['chatgpt', 'perplexity', 'google_ai_overview'];
+    const invalidModels = aiModels.filter(m => !validModels.includes(m));
+    if (invalidModels.length > 0) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid AI models: ${invalidModels.join(', ')}`,
+      });
+    }
+
+    // Enforce plan-based model access
+    const allowedModels = req.user?.allowedModels || ['chatgpt'];
+    const isAllowed = aiModels.every((m) => allowedModels.includes(m));
+    if (!isAllowed) {
+      return res.status(403).json({
+        success: false,
+        message: 'Selected AI models are not available on your plan.',
+      });
+    }
+
+    scheduledPrompt.aiModels = aiModels;
+    scheduledPrompt.lastUpdated = new Date();
+
+    await scheduledPrompt.save();
+
+    return res.status(200).json({
+      success: true,
+      message: 'AI models updated successfully',
+      data: scheduledPrompt,
+    });
+  } catch (error) {
+    console.error('Update scheduled prompt models error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Failed to update AI models',
       error: error.message,
     });
   }

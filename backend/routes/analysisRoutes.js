@@ -12,6 +12,7 @@ import {
   toggleScheduledPrompt,
   deleteScheduledPrompt,
   updateScheduledPrompt,
+  updateScheduledPromptModels,
   n8nSaveReport,
   updateReportDate,
 } from '../controllers/analysisController.js';
@@ -27,6 +28,7 @@ router.get('/scheduled/:brandId', protect, getScheduledPromptsByBrand);
 router.post('/generate-webhook-token', protect, generateWebhookToken);
 router.post('/schedule-from-report', protect, scheduleFromReport);
 router.put('/scheduled-prompts/:id/toggle', protect, toggleScheduledPrompt);
+router.put('/scheduled-prompts/:id/models', protect, updateScheduledPromptModels);
 router.delete('/scheduled-prompts/:id', protect, deleteScheduledPrompt);
 router.put('/scheduled-prompts/:id', protect, updateScheduledPrompt);
 
