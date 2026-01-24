@@ -9,9 +9,9 @@ const plans = [
   {
     key: 'starter',
     name: 'Starter',
-    price: '49',
+    price: '99',
     subtitle: 'For individuals looking to explore AI visibility and scan key prompts.',
-    description: '150 credits included (~$0.32 per credit)',
+    description: '150 credits included (~$0.66 per credit)',
     features: [
       { label: '150 credits/month', available: true },
       { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
@@ -25,9 +25,9 @@ const plans = [
   {
     key: 'pro',
     name: 'Pro',
-    price: '89',
+    price: '149',
     subtitle: 'For companies and teams ready to monitor AI rankings more actively.',
-    description: '500 credits included (~$0.18 per credit • Save 40% vs Starter)',
+    description: '500 credits included (~$0.30 per credit • Save 55% vs Starter)',
     features: [
       { label: '500 credits/month', available: true },
       { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
@@ -41,9 +41,9 @@ const plans = [
   {
     key: 'agency',
     name: 'Agency',
-    price: '149',
+    price: '249',
     subtitle: 'For agencies and enterprises managing multiple clients, campaigns, or brands.',
-    description: '1000 credits included (~$0.15 per credit • Save 55% vs Starter)',
+    description: '1000 credits included (~$0.25 per credit • Save 62% vs Starter)',
     features: [
       { label: '1000 credits/month', available: true },
       { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },

@@ -14,7 +14,7 @@ const BuyCredits = () => {
     {
       key: 'starter',
       name: 'Starter',
-      price: 49,
+      price: 99,
       period: 'per month',
       description: 'For individuals looking to explore AI visibility and scan key prompts.',
       features: [
@@ -30,7 +30,7 @@ const BuyCredits = () => {
     {
       key: 'pro',
       name: 'Pro',
-      price: 89,
+      price: 149,
       period: 'per month',
       description: 'For companies and teams ready to monitor AI rankings more actively.',
       features: [
@@ -47,7 +47,7 @@ const BuyCredits = () => {
     {
       key: 'agency',
       name: 'Agency',
-      price: 149,
+      price: 249,
       period: 'per month',
       description: 'For agencies and enterprises managing multiple clients, campaigns, or brands.',
       features: [
