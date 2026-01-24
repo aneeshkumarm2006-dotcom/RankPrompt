@@ -20,9 +20,7 @@ const BuyCredits = () => {
       features: [
         { label: '150 credits/month', available: true },
         { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-        { label: 'White-label exports', available: false },
-        { label: 'Team collaboration', available: false },
-        { label: 'Priority support', available: false }
+        { label: 'Up to 1 active project', available: true }
       ],
       gradient: 'from-blue-500 to-cyan-500',
       border: 'border-blue-500/30'
@@ -36,9 +34,7 @@ const BuyCredits = () => {
       features: [
         { label: '500 credits/month', available: true },
         { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-        { label: 'White-label exports', available: true },
-        { label: 'Team collaboration', available: false },
-        { label: 'Priority support', available: false }
+        { label: 'Up to 3 active projects', available: true }
       ],
       gradient: 'from-purple-500 to-pink-500',
       border: 'border-purple-500/30',
@@ -53,9 +49,7 @@ const BuyCredits = () => {
       features: [
         { label: '1000 credits/month', available: true },
         { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-        { label: 'White-label exports', available: true },
-        { label: 'Team collaboration', available: true },
-        { label: 'Priority support', available: true }
+        { label: 'Up to 5 active projects', available: true }
       ],
       gradient: 'from-pink-500 to-rose-500',
       border: 'border-pink-500/30'
