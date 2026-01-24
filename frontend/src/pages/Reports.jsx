@@ -9,6 +9,7 @@ import Step2BrandAnalysis from '../components/Step2BrandAnalysis';
 import Step3ReadyToAnalyze from '../components/Step3ReadyToAnalyze';
 import AnalysisLoadingModal from '../components/AnalysisLoadingModal';
 import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
+import LowCreditsModal from '../components/LowCreditsModal';
 
 const Reports = () => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ const Reports = () => {
   const [savedBrandId, setSavedBrandId] = useState(null);
   const [showInsufficientCreditsModal, setShowInsufficientCreditsModal] = useState(false);
   const [creditsInfo, setCreditsInfo] = useState({ needed: 0, available: 0 });
+  const [showLowCreditsModal, setShowLowCreditsModal] = useState(false);
 
   // Load in-progress report if continuing
   useEffect(() => {
@@ -52,6 +54,18 @@ const Reports = () => {
       loadInProgressReport(continueReportId);
     }
   }, [continueReportId]);
+
+  // Check for low credits on page load (after login)
+  useEffect(() => {
+    if (user && user.credits <= 10) {
+      // Check if we've already shown the modal in this session
+      const hasShownModal = sessionStorage.getItem('lowCreditsModalShown');
+      if (!hasShownModal) {
+        setShowLowCreditsModal(true);
+        sessionStorage.setItem('lowCreditsModalShown', 'true');
+      }
+    }
+  }, [user]);
 
   const loadInProgressReport = async (reportId) => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -1095,6 +1109,14 @@ const Reports = () => {
           </div>
         </div>
       )}
+
+      {/* Low Credits Modal */}
+      <LowCreditsModal
+        isOpen={showLowCreditsModal}
+        onClose={() => setShowLowCreditsModal(false)}
+        credits={user?.credits || 0}
+        currentPlan={user?.currentPlan || 'free'}
+      />
     </div>
   );
 };

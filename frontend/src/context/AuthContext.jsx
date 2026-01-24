@@ -51,7 +51,14 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       const data = await authAPI.login(credentials);
       setUser(data.user);
-      return { success: true };
+      // Check for low credits (≤ 10)
+      const lowCredits = data.user?.credits <= 10;
+      return { 
+        success: true, 
+        lowCredits,
+        credits: data.user?.credits,
+        currentPlan: data.user?.currentPlan || 'free'
+      };
     } catch (err) {
       setError(err.message);
       return { success: false, error: err.message };
@@ -76,7 +83,14 @@ export const AuthProvider = ({ children }) => {
       setUser(data.user);
       // Refresh user data to get updated credits
       await refreshUser();
-      return { success: true };
+      // Check for low credits (≤ 10)
+      const lowCredits = data.user?.credits <= 10;
+      return { 
+        success: true, 
+        lowCredits,
+        credits: data.user?.credits,
+        currentPlan: data.user?.currentPlan || 'free'
+      };
     } catch (err) {
       setError(err.message);
       return { success: false, error: err.message };
