@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus, Trash2, Edit, ExternalLink, Calendar, Building2, FileText, X } from 'lucide-react';
+import { Search, Plus, Trash2, Edit, ExternalLink, Calendar, Building2, FileText, X, AlertCircle, Crown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { getAuthHeaders } from '../services/api';
@@ -16,10 +16,29 @@ const MyBrands = () => {
   const [editingPrompts, setEditingPrompts] = useState(null);
   const [promptInputs, setPromptInputs] = useState([]);
   const [loadingPrompts, setLoadingPrompts] = useState(false);
+  const [brandLimitInfo, setBrandLimitInfo] = useState(null);
 
   useEffect(() => {
     fetchBrands();
+    fetchBrandLimitInfo();
   }, []);
+
+  const fetchBrandLimitInfo = async () => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    try {
+      const response = await fetch(`${API_URL}/brand/limit-info`, {
+        headers: getAuthHeaders(),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        const { data } = await response.json();
+        setBrandLimitInfo(data);
+      }
+    } catch (error) {
+      console.error('Error fetching brand limit info:', error);
+    }
+  };
 
   const fetchBrands = async () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -54,6 +73,8 @@ const MyBrands = () => {
         toast.success('Brand and all its reports deleted successfully');
         setBrands(brands.filter(b => b._id !== brandId));
         setDeletingBrand(null);
+        // Refresh brand limit info after deletion
+        fetchBrandLimitInfo();
       } else {
         toast.error('Failed to delete brand');
       }
@@ -204,12 +225,64 @@ const MyBrands = () => {
             </div>
             <button
               onClick={() => navigate('/reports/new')}
-              className="flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+              disabled={brandLimitInfo && !brandLimitInfo.canCreateMore}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                brandLimitInfo && !brandLimitInfo.canCreateMore
+                  ? 'bg-gray-400 dark:bg-gray-600 cursor-not-allowed'
+                  : 'bg-primary-500 hover:bg-primary-600'
+              } text-white`}
             >
               <Plus className="w-5 h-5" />
               New Brand
             </button>
           </div>
+
+          {/* Brand Limit Info Banner */}
+          {brandLimitInfo && (
+            <div className={`mb-6 p-4 rounded-lg border ${
+              brandLimitInfo.canCreateMore 
+                ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800' 
+                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-800'
+            }`}>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div className="flex items-center gap-3">
+                  {brandLimitInfo.canCreateMore ? (
+                    <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  ) : (
+                    <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                  )}
+                  <div>
+                    <p className={`font-medium ${
+                      brandLimitInfo.canCreateMore 
+                        ? 'text-blue-800 dark:text-blue-200' 
+                        : 'text-amber-800 dark:text-amber-200'
+                    }`}>
+                      {brandLimitInfo.currentCount} / {brandLimitInfo.limit} Brands Used
+                      <span className="ml-2 text-sm font-normal capitalize">({brandLimitInfo.tier} Plan)</span>
+                    </p>
+                    <p className={`text-sm ${
+                      brandLimitInfo.canCreateMore 
+                        ? 'text-blue-600 dark:text-blue-400' 
+                        : 'text-amber-600 dark:text-amber-400'
+                    }`}>
+                      {brandLimitInfo.canCreateMore 
+                        ? `${brandLimitInfo.remaining} brand slot${brandLimitInfo.remaining !== 1 ? 's' : ''} remaining`
+                        : 'You have reached your brand limit. Upgrade to add more brands.'}
+                    </p>
+                  </div>
+                </div>
+                {!brandLimitInfo.canCreateMore && (
+                  <button
+                    onClick={() => navigate('/buy-credits')}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-lg hover:from-primary-600 hover:to-primary-700 transition-all shadow-sm"
+                  >
+                    <Crown className="w-4 h-4" />
+                    Upgrade Plan
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Search and Sort */}
           <div className="flex flex-col sm:flex-row gap-4 mb-6">

@@ -4,7 +4,8 @@ import {
   saveBrand, 
   getUserBrands, 
   getBrandById, 
-  deleteBrand 
+  deleteBrand,
+  getBrandLimitInfo 
 } from '../controllers/brandController.js';
 import { protect } from '../middleware/auth.js';
 
@@ -12,6 +13,9 @@ const router = express.Router();
 
 // Get favicon for a website URL
 router.get('/favicon', protect, getFavicon);
+
+// Get brand limit info for current user
+router.get('/limit-info', protect, getBrandLimitInfo);
 
 // Brand CRUD operations
 router.post('/save', protect, saveBrand);

@@ -4,11 +4,10 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getAuthHeaders } from '../services/api';
 import Sidebar from '../components/Sidebar';
-import { Search, Globe, X, Check, Gem, Package, Microscope } from 'lucide-react';
+import { Search, Globe, X, Check, Gem, Package, Microscope, Crown, AlertTriangle } from 'lucide-react';
 import Step2BrandAnalysis from '../components/Step2BrandAnalysis';
 import Step3ReadyToAnalyze from '../components/Step3ReadyToAnalyze';
 import AnalysisLoadingModal from '../components/AnalysisLoadingModal';
-import SaveBrandModal from '../components/SaveBrandModal';
 import InsufficientCreditsModal from '../components/InsufficientCreditsModal';
 
 const Reports = () => {
@@ -37,8 +36,8 @@ const Reports = () => {
   const [isFetchingBrandInfo, setIsFetchingBrandInfo] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showBrandModal, setShowBrandModal] = useState(false);
-  const [showSaveBrandModal, setShowSaveBrandModal] = useState(false);
   const [isSavingBrand, setIsSavingBrand] = useState(false);
+  const [brandLimitError, setBrandLimitError] = useState(null);
   const [existingBrand, setExistingBrand] = useState(null);
   const [step2Data, setStep2Data] = useState(null);
   const [analysisProgress, setAnalysisProgress] = useState({ total: 0, completed: 0 });
@@ -235,13 +234,8 @@ const Reports = () => {
     // Fetch favicon
     const favicon = await fetchFavicon(formData.websiteUrl);
     setFormData(prev => ({ ...prev, brandFavicon: favicon }));
-    setIsFetchingBrandInfo(false);
 
-    // Show save brand modal
-    setShowSaveBrandModal(true);
-  };
-
-  const handleSaveBrand = async () => {
+    // Automatically save the brand
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
     setIsSavingBrand(true);
 
@@ -253,7 +247,7 @@ const Reports = () => {
         body: JSON.stringify({
           brandName: formData.brandName,
           websiteUrl: formData.websiteUrl,
-          favicon: formData.brandFavicon,
+          favicon: favicon,
         }),
       });
 
@@ -266,30 +260,33 @@ const Reports = () => {
         toast.success('Brand saved successfully!');
 
         // Pass brandId directly to saveProgress to avoid state timing issues
-        setShowSaveBrandModal(false);
         setCurrentStep(2);
         await saveProgress(2, null, savedBrand._id);
       } else {
-        const errorMessage = data.message || 'Failed to save brand. Please try again.';
-        toast.error(errorMessage);
-        console.error('Failed to save brand:', errorMessage);
-        // Keep modal open on error so user can retry
+        // Check if this is a brand limit error
+        if (data.code === 'BRAND_LIMIT_REACHED') {
+          setBrandLimitError({
+            currentCount: data.currentCount,
+            limit: data.limit,
+            tier: data.tier,
+          });
+        } else {
+          const errorMessage = data.message || 'Failed to save brand. Please try again.';
+          toast.error(errorMessage);
+          console.error('Failed to save brand:', errorMessage);
+        }
       }
     } catch (error) {
       const errorMessage = error.message || 'Network error. Please check your connection and try again.';
       toast.error(errorMessage);
       console.error('Error saving brand:', error);
-      // Keep modal open on error so user can retry
     } finally {
       setIsSavingBrand(false);
+      setIsFetchingBrandInfo(false);
     }
   };
 
-  const handleSkipSaveBrand = () => {
-    setShowSaveBrandModal(false);
-    setCurrentStep(2);
-    saveProgress(2);
-  };
+
 
   const handleStep2Complete = (data) => {
     setStep2Data(data);
@@ -660,7 +657,7 @@ const Reports = () => {
                     name="websiteUrl"
                     value={formData.websiteUrl}
                     onChange={handleInputChange}
-                    placeholder="www.promptverse.com"
+                    placeholder="promptverse.com"
                     className="w-full px-4 py-3 bg-white dark:bg-dark-800 rounded-xl border border-gray-300 dark:border-dark-600 focus:border-action-500 focus:outline-none focus:ring-2 focus:ring-action-200 dark:focus:ring-action-500/50 text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 transition-all"
                   />
                   <p className="text-gray-600 dark:text-gray-400 text-xs mt-2">
@@ -1014,20 +1011,6 @@ const Reports = () => {
         </div>
       )}
 
-      {/* Save Brand Modal */}
-      <SaveBrandModal
-        isOpen={showSaveBrandModal}
-        onClose={handleSkipSaveBrand}
-        brandData={{
-          brandName: formData.brandName,
-          websiteUrl: formData.websiteUrl,
-          favicon: formData.brandFavicon
-        }}
-        onSave={handleSaveBrand}
-        onSkip={handleSkipSaveBrand}
-        isLoading={isSavingBrand}
-      />
-
       {/* Analysis Loading Modal */}
       <AnalysisLoadingModal
         isOpen={isAnalyzing}
@@ -1042,6 +1025,76 @@ const Reports = () => {
         creditsNeeded={creditsInfo.needed}
         creditsAvailable={creditsInfo.available}
       />
+
+      {/* Brand Limit Reached Modal */}
+      {brandLimitError && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-dark-900 rounded-xl max-w-md w-full border border-gray-200 dark:border-dark-700 shadow-2xl">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200 dark:border-dark-700">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white">Brand Limit Reached</h2>
+              </div>
+              <button
+                onClick={() => {
+                  setBrandLimitError(null);
+                }}
+                className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-4 sm:p-6">
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-4">
+                <p className="text-amber-800 dark:text-amber-200 font-medium mb-2">
+                  You've reached your brand limit!
+                </p>
+                <p className="text-amber-700 dark:text-amber-300 text-sm">
+                  Your <span className="font-semibold capitalize">{brandLimitError.tier}</span> plan allows{' '}
+                  <span className="font-semibold">{brandLimitError.limit}</span> brand{brandLimitError.limit !== 1 ? 's' : ''}.
+                  You currently have <span className="font-semibold">{brandLimitError.currentCount}</span> brand{brandLimitError.currentCount !== 1 ? 's' : ''}.
+                </p>
+              </div>
+
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
+                Upgrade your plan to add more brands to your account.
+              </p>
+
+              {/* Plan comparison */}
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="bg-gray-50 dark:bg-dark-800 rounded-lg p-3 text-center">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Starter</div>
+                  <div className="text-lg font-bold text-gray-800 dark:text-white">1 brand</div>
+                </div>
+                <div className="bg-gray-50 dark:bg-dark-800 rounded-lg p-3 text-center">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Pro</div>
+                  <div className="text-lg font-bold text-gray-800 dark:text-white">3 brands</div>
+                </div>
+                <div className="bg-gray-50 dark:bg-dark-800 rounded-lg p-3 text-center col-span-2">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Agency</div>
+                  <div className="text-lg font-bold text-gray-800 dark:text-white">5 brands</div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button
+                  onClick={() => navigate('/buy-credits')}
+                  className="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition-all flex items-center justify-center gap-2"
+                >
+                  <Crown className="w-4 h-4" />
+                  Upgrade Plan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

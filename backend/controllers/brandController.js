@@ -4,6 +4,23 @@ import Brand from '../models/Brand.js';
 import Report from '../models/Report.js';
 import ScheduledPrompt from '../models/ScheduledPrompt.js';
 
+// Brand limits based on subscription tier
+const BRAND_LIMITS = {
+  free: 1,
+  starter: 1,
+  pro: 3,
+  agency: 5,
+};
+
+/**
+ * Get brand limit for a subscription tier
+ * @param {string} tier - Subscription tier (free, starter, pro, agency)
+ * @returns {number} - Maximum number of brands allowed
+ */
+const getBrandLimit = (tier) => {
+  return BRAND_LIMITS[tier] || BRAND_LIMITS.free;
+};
+
 /**
  * @desc    Get favicon for a website URL
  * @route   GET /api/brand/favicon?url=...
@@ -103,11 +120,27 @@ export const saveBrand = async (req, res) => {
   try {
     const { brandName, websiteUrl, favicon } = req.body;
     const userId = req.user._id;
+    const userTier = req.user.subscriptionTier || req.user.currentPlan || 'free';
 
     if (!brandName || !websiteUrl) {
       return res.status(400).json({
         success: false,
         message: 'Brand name and website URL are required',
+      });
+    }
+
+    // Check brand limit based on subscription tier
+    const currentBrandCount = await Brand.countDocuments({ userId, isActive: true });
+    const brandLimit = getBrandLimit(userTier);
+
+    if (currentBrandCount >= brandLimit) {
+      return res.status(403).json({
+        success: false,
+        message: `You have reached your brand limit (${brandLimit} brand${brandLimit > 1 ? 's' : ''}) for the ${userTier} plan. Please upgrade your subscription to add more brands.`,
+        code: 'BRAND_LIMIT_REACHED',
+        currentCount: currentBrandCount,
+        limit: brandLimit,
+        tier: userTier,
       });
     }
 
@@ -248,6 +281,40 @@ export const deleteBrand = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error deleting brand',
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @desc    Get brand limit info for current user
+ * @route   GET /api/brand/limit-info
+ * @access  Private
+ */
+export const getBrandLimitInfo = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const userTier = req.user.subscriptionTier || req.user.currentPlan || 'free';
+
+    const currentBrandCount = await Brand.countDocuments({ userId, isActive: true });
+    const brandLimit = getBrandLimit(userTier);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        currentCount: currentBrandCount,
+        limit: brandLimit,
+        remaining: Math.max(0, brandLimit - currentBrandCount),
+        tier: userTier,
+        canCreateMore: currentBrandCount < brandLimit,
+        allLimits: BRAND_LIMITS,
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching brand limit info:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching brand limit info',
       error: error.message,
     });
   }

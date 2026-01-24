@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { getAuthHeaders } from '../services/api';
-import { Eye, Share2, Calendar, TrendingUp, PlayCircle, Clock } from 'lucide-react';
+import { Eye, Share2, Calendar, TrendingUp, PlayCircle, Clock, Trash2 } from 'lucide-react';
 
 const AllReports = () => {
   const navigate = useNavigate();
@@ -47,7 +47,32 @@ const AllReports = () => {
     }
   };
 
-  // Delete functionality removed as per user request
+  const handleDeleteInProgressReport = async (reportId) => {
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    
+    if (!confirm('Are you sure you want to delete this in-progress report?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/reports/${reportId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders(),
+        credentials: 'include',
+      });
+
+      if (response.ok) {
+        toast.success('Report deleted successfully');
+        // Refresh the reports list
+        fetchReports();
+      } else {
+        toast.error('Failed to delete report');
+      }
+    } catch (error) {
+      console.error('Error deleting report:', error);
+      toast.error('Error deleting report');
+    }
+  };
 
   const handleShareReport = async (reportId) => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -170,6 +195,13 @@ const AllReports = () => {
                             >
                               <PlayCircle className="w-4 h-4" />
                               <span className="hidden sm:inline">Continue</span>
+                            </button>
+                            <button
+                              onClick={() => handleDeleteInProgressReport(report._id)}
+                              className="flex items-center justify-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors text-sm"
+                              title="Delete Report"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </div>
