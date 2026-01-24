@@ -15,9 +15,7 @@ const plans = [
     features: [
       { label: '150 credits/month', available: true },
       { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-      { label: 'White-label exports', available: false },
-      { label: 'Team collaboration', available: false },
-      { label: 'Priority support', available: false },
+      { label: 'Up to 1 project', available: true }
     ],
     cta: 'Get started',
     popular: false,
@@ -31,9 +29,7 @@ const plans = [
     features: [
       { label: '500 credits/month', available: true },
       { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-      { label: 'White-label exports', available: true },
-      { label: 'Team collaboration', available: false },
-      { label: 'Priority support', available: false },
+      { label: 'Up to 3 active projects', available: true }
     ],
     cta: 'Get started',
     popular: true,
@@ -47,9 +43,7 @@ const plans = [
     features: [
       { label: '1000 credits/month', available: true },
       { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-      { label: 'White-label exports', available: true },
-      { label: 'Team collaboration', available: true },
-      { label: 'Priority support', available: true },
+      { label: 'Up to 5 active projects', available: true }
     ],
     cta: 'Get started',
     popular: false,
