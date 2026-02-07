@@ -9,7 +9,7 @@ const BRAND_LIMITS = {
   free: 1,
   starter: 1,
   pro: 3,
-  agency: 5,
+  agency: 20,
 };
 
 /**

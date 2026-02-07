@@ -43,7 +43,7 @@ const plans = [
     features: [
       { label: '1000 credits/month', available: true },
       { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-      { label: 'Up to 5 active projects', available: true }
+      { label: 'Up to 20 active projects', available: true }
     ],
     cta: 'Get started',
     popular: false,

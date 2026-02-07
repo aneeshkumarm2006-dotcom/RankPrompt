@@ -49,7 +49,7 @@ const BuyCredits = () => {
       features: [
         { label: '1000 credits/month', available: true },
         { label: 'All AI platforms (ChatGPT, Perplexity, AI Overviews)', available: true },
-        { label: 'Up to 5 active projects', available: true }
+        { label: 'Up to 20 active projects', available: true }
       ],
       gradient: 'from-pink-500 to-rose-500',
       border: 'border-pink-500/30'
