@@ -14,6 +14,7 @@ import {
   Zap,
   X,
   Check,
+  Plus,
 } from 'lucide-react';
 import { getAuthHeaders } from '../services/api';
 import toast from 'react-hot-toast';
@@ -60,6 +61,7 @@ const BrandScheduledReports = () => {
   // Modals
   const [deleteModal, setDeleteModal] = useState(false);
   const [editPromptModal, setEditPromptModal] = useState(null);
+  const [addPromptModal, setAddPromptModal] = useState(false);
   const [editModelsModal, setEditModelsModal] = useState(false);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [frequencyDropdown, setFrequencyDropdown] = useState(false);
@@ -67,6 +69,8 @@ const BrandScheduledReports = () => {
   
   // Form states
   const [editPromptValue, setEditPromptValue] = useState('');
+  const [newPromptValue, setNewPromptValue] = useState('');
+  const [newPromptCategory, setNewPromptCategory] = useState('');
   const [selectedModels, setSelectedModels] = useState([]);
   const [actionLoading, setActionLoading] = useState(false);
   const [scheduling, setScheduling] = useState(false);
@@ -371,6 +375,52 @@ const BrandScheduledReports = () => {
     } catch (error) {
       console.error('Error deleting prompt:', error);
       toast.error('Failed to delete prompt');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleAddPrompt = async () => {
+    if (!newPromptValue.trim() || !selectedSchedule) {
+      toast.error('Prompt cannot be empty');
+      return;
+    }
+
+    try {
+      setActionLoading(true);
+      const newPrompt = {
+        prompt: newPromptValue.trim(),
+        category: newPromptCategory.trim() || 'General',
+        brand: selectedSchedule.brandName,
+        brandUrl: selectedSchedule.brandUrl,
+        promptIndex: selectedSchedule.prompts.length,
+      };
+
+      const updatedPrompts = [...selectedSchedule.prompts, newPrompt];
+
+      const response = await fetch(`${API_URL}/analysis/scheduled-prompts/${selectedSchedule._id}`, {
+        method: 'PUT',
+        headers: {
+          ...getAuthHeaders(),
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ prompts: updatedPrompts }),
+      });
+
+      if (response.ok) {
+        toast.success('Prompt added successfully');
+        setAddPromptModal(false);
+        setNewPromptValue('');
+        setNewPromptCategory('');
+        fetchData();
+      } else {
+        const err = await response.json().catch(() => ({}));
+        toast.error(err.message || 'Failed to add prompt');
+      }
+    } catch (error) {
+      console.error('Error adding prompt:', error);
+      toast.error('Failed to add prompt');
     } finally {
       setActionLoading(false);
     }
@@ -786,6 +836,13 @@ const BrandScheduledReports = () => {
                   className="pl-10 pr-4 py-2 bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg text-sm text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 w-64"
                 />
               </div>
+              <button
+                onClick={() => setAddPromptModal(true)}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium text-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Add Prompt
+              </button>
             </div>
           </div>
 
@@ -1015,6 +1072,65 @@ const BrandScheduledReports = () => {
                 className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium disabled:opacity-50"
               >
                 {actionLoading ? 'Saving...' : 'Save Changes'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Prompt Modal */}
+      {addPromptModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-dark-900 border border-gray-200 dark:border-dark-700 rounded-xl p-6 w-full max-w-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-gray-800 dark:text-white">Add New Prompt</h3>
+              <button
+                onClick={() => { setAddPromptModal(false); setNewPromptValue(''); setNewPromptCategory(''); }}
+                className="text-gray-500 hover:text-gray-700 dark:hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Prompt Query
+                </label>
+                <textarea
+                  value={newPromptValue}
+                  onChange={(e) => setNewPromptValue(e.target.value)}
+                  rows={3}
+                  className="w-full bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg px-4 py-2 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="Enter the prompt query..."
+                  autoFocus
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Category <span className="text-gray-400 font-normal">(optional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={newPromptCategory}
+                  onChange={(e) => setNewPromptCategory(e.target.value)}
+                  className="w-full bg-gray-50 dark:bg-dark-800 border border-gray-200 dark:border-dark-600 rounded-lg px-4 py-2 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  placeholder="e.g. Brand Awareness, Competitor Analysis..."
+                />
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => { setAddPromptModal(false); setNewPromptValue(''); setNewPromptCategory(''); }}
+                className="flex-1 px-4 py-2 bg-gray-100 dark:bg-dark-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-200 dark:hover:bg-dark-600 transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAddPrompt}
+                disabled={actionLoading || !newPromptValue.trim()}
+                className="flex-1 px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors font-medium disabled:opacity-50"
+              >
+                {actionLoading ? 'Adding...' : 'Add Prompt'}
               </button>
             </div>
           </div>
