@@ -417,7 +417,9 @@ const AllReports = () => {
 
               <div className="mt-10 flex flex-col gap-3">
                 <a
-                  href="mailto:info@davnoot.com"
+                  href="https://www.davnoot.com/contact"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={handleCloseAuditPromoPopup}
                   className="w-full inline-flex items-center justify-center px-4 py-3.5 rounded-xl font-bold transition-all duration-200"
                   style={{
