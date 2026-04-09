@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Sidebar from '../components/Sidebar';
 import { getAuthHeaders } from '../services/api';
-import { Eye, Share2, Calendar, TrendingUp, PlayCircle, Clock, Trash2 } from 'lucide-react';
+import { Eye, Share2, Calendar, TrendingUp, PlayCircle, Clock, Trash2, X } from 'lucide-react';
 
 const AllReports = () => {
   const navigate = useNavigate();
@@ -13,10 +13,29 @@ const AllReports = () => {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [showAuditPromoPopup, setShowAuditPromoPopup] = useState(false);
 
   useEffect(() => {
     fetchReports();
   }, [currentPage]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const hasShownPopup = sessionStorage.getItem('auditPopupShown');
+    if (hasShownPopup) return;
+
+    const popupTimer = setTimeout(() => {
+      setShowAuditPromoPopup(true);
+      sessionStorage.setItem('auditPopupShown', 'true');
+    }, 1500);
+
+    return () => clearTimeout(popupTimer);
+  }, [loading]);
+
+  const handleCloseAuditPromoPopup = () => {
+    setShowAuditPromoPopup(false);
+  };
 
   const fetchReports = async () => {
     const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -331,6 +350,101 @@ const AllReports = () => {
           )}
         </div>
       </div>
+
+      {showAuditPromoPopup && (
+        <div
+          className="fixed inset-0 flex items-center justify-center z-50 p-4 animate-fade-in"
+          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)' }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleCloseAuditPromoPopup();
+            }
+          }}
+        >
+          <div
+            className="relative rounded-2xl shadow-2xl w-full max-w-[580px] animate-slide-up overflow-hidden"
+            style={{ background: '#ffffff', border: '1px solid #e2e8f0' }}
+          >
+            {/* Close button */}
+            <button
+              onClick={handleCloseAuditPromoPopup}
+              className="absolute top-4 right-4 z-10 transition-colors"
+              style={{ color: '#94a3b8' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#475569'}
+              onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+              aria-label="Close promotional popup"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Card content */}
+            <div className="px-8 pt-10 pb-10 sm:px-10 sm:pt-12 sm:pb-12">
+              {/* Davnoot logo PNG */}
+              <div className="mb-6">
+                <img
+                  src="/davnoot-logo.png"
+                  alt="Davnoot Digital"
+                  style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
+                />
+              </div>
+
+              {/* Headline */}
+              <h2
+                className="leading-tight pr-8"
+                style={{
+                  fontSize: 'clamp(1.25rem, 4vw, 1.6rem)',
+                  fontWeight: 800,
+                  color: '#0f172a',
+                  textTransform: 'uppercase',
+                  fontFamily: 'Inter, sans-serif',
+                  letterSpacing: '-0.01em',
+                  lineHeight: 1.18,
+                }}
+              >
+                Want to improve your visibility across all AI answer engines?
+              </h2>
+
+              {/* Divider */}
+              <div style={{ height: '1px', background: '#e2e8f0', margin: '28px 0' }} />
+
+              {/* Body */}
+              <p
+                className="leading-relaxed"
+                style={{ color: '#475569', fontSize: '1rem' }}
+              >
+                Book a free strategy call with David Cummings at Davnoot Digital he'll walk you through exactly how to rank where AI searches.
+              </p>
+
+              <div className="mt-10 flex flex-col gap-3">
+                <a
+                  href="mailto:info@davnoot.com"
+                  onClick={handleCloseAuditPromoPopup}
+                  className="w-full inline-flex items-center justify-center px-4 py-3.5 rounded-xl font-bold transition-all duration-200"
+                  style={{
+                    background: 'linear-gradient(to right, #3b82f6 0%, #6366f1 100%)',
+                    color: '#ffffff',
+                    boxShadow: '0 4px 18px rgba(59,130,246,0.25)',
+                    fontSize: '1rem',
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.boxShadow = '0 6px 26px rgba(59,130,246,0.45), 0 4px 12px rgba(99,102,241,0.3)'}
+                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 18px rgba(59,130,246,0.25)'}
+                >
+                  Book a Free Call
+                </a>
+                <button
+                  onClick={handleCloseAuditPromoPopup}
+                  className="w-full text-center text-sm transition-colors"
+                  style={{ color: '#94a3b8' }}
+                  onMouseEnter={e => e.currentTarget.style.color = '#475569'}
+                  onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
+                >
+                  Maybe later
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
