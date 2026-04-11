@@ -497,13 +497,14 @@ const Reports = () => {
           await refreshUser();
 
           // Navigate to report view with saved report ID
-          navigate(`/reports/${savedReport._id}`);
+          navigate(`/reports/${savedReport._id}`, { state: { fromCreation: true } });
         } else {
           console.error('Failed to save report');
           // Still navigate to view with in-memory data
           navigate('/reports/view', {
             state: {
               reportData: results,
+              fromCreation: true,
               brandData: {
                 brandName: formData.brandName,
                 websiteUrl: cleanedBrandUrl,
@@ -521,6 +522,7 @@ const Reports = () => {
         navigate('/reports/view', {
           state: {
             reportData: results,
+            fromCreation: true,
             brandData: {
               brandName: formData.brandName,
               websiteUrl: cleanedBrandUrl,
