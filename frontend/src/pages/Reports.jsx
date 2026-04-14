@@ -496,15 +496,18 @@ const Reports = () => {
           // Refresh user data to update credits in sidebar
           await refreshUser();
 
+          // Trigger promo popup globally (15s timer starts in App.jsx)
+          sessionStorage.setItem('auditPopupTrigger', Date.now().toString());
+
           // Navigate to report view with saved report ID
-          navigate(`/reports/${savedReport._id}`, { state: { fromCreation: true } });
+          navigate(`/reports/${savedReport._id}`);
         } else {
           console.error('Failed to save report');
+          sessionStorage.setItem('auditPopupTrigger', Date.now().toString());
           // Still navigate to view with in-memory data
           navigate('/reports/view', {
             state: {
               reportData: results,
-              fromCreation: true,
               brandData: {
                 brandName: formData.brandName,
                 websiteUrl: cleanedBrandUrl,
@@ -518,11 +521,11 @@ const Reports = () => {
         }
       } catch (saveError) {
         console.error('Error saving report:', saveError);
+        sessionStorage.setItem('auditPopupTrigger', Date.now().toString());
         // Still navigate to view with in-memory data
         navigate('/reports/view', {
           state: {
             reportData: results,
-            fromCreation: true,
             brandData: {
               brandName: formData.brandName,
               websiteUrl: cleanedBrandUrl,

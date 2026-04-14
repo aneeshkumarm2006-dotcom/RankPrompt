@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { getAuthHeaders } from '../services/api';
 import Sidebar from '../components/Sidebar';
-import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar, CheckCircle2, XCircle, X } from 'lucide-react';
+import { Download, Share2, ChevronDown, ExternalLink, Search, Calendar, CheckCircle2, XCircle } from 'lucide-react';
 import { generateReportPDF } from '../utils/pdfGenerator';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -12,7 +12,7 @@ const ReportView = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { id: reportId } = useParams();
-  const { reportData: stateReportData, brandData: stateBrandData, fromCreation } = location.state || {};
+  const { reportData: stateReportData, brandData: stateBrandData } = location.state || {};
 
   const [reportData, setReportData] = useState(stateReportData);
   const [brandData, setBrandData] = useState(stateBrandData);
@@ -27,19 +27,6 @@ const ReportView = () => {
   const [scheduleFrequency, setScheduleFrequency] = useState('weekly');
   const [scheduling, setScheduling] = useState(false);
   const [hasScheduledReport, setHasScheduledReport] = useState(false);
-  const [showAuditPromoPopup, setShowAuditPromoPopup] = useState(false);
-
-  // Show promo popup when user just created this report
-  useEffect(() => {
-    if (!fromCreation) return;
-    const hasShownPopup = sessionStorage.getItem('auditPopupShown');
-    if (hasShownPopup) return;
-    const timer = setTimeout(() => {
-      setShowAuditPromoPopup(true);
-      sessionStorage.setItem('auditPopupShown', 'true');
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, [fromCreation]);
 
   // Track previous reportId to detect changes
   const prevReportIdRef = useRef(reportId);
@@ -836,93 +823,6 @@ const ReportView = () => {
         </div>
       </div>
 
-      {showAuditPromoPopup && (
-        <div
-          className="fixed inset-0 flex items-center justify-center z-50 p-4 animate-fade-in"
-          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)' }}
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              setShowAuditPromoPopup(false);
-            }
-          }}
-        >
-          <div
-            className="relative rounded-2xl shadow-2xl w-full max-w-[580px] animate-slide-up overflow-hidden"
-            style={{ background: '#ffffff', border: '1px solid #e2e8f0' }}
-          >
-            <button
-              onClick={() => setShowAuditPromoPopup(false)}
-              className="absolute top-4 right-4 z-10 transition-colors"
-              style={{ color: '#94a3b8' }}
-              onMouseEnter={e => e.currentTarget.style.color = '#475569'}
-              onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-              aria-label="Close promotional popup"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="px-8 pt-10 pb-10 sm:px-10 sm:pt-12 sm:pb-12">
-              <div className="mb-6">
-                <img
-                  src="/davnoot-logo.png"
-                  alt="Davnoot Digital"
-                  style={{ height: '32px', width: 'auto', objectFit: 'contain' }}
-                />
-              </div>
-
-              <h2
-                className="leading-tight pr-8"
-                style={{
-                  fontSize: 'clamp(1.25rem, 4vw, 1.6rem)',
-                  fontWeight: 800,
-                  color: '#0f172a',
-                  textTransform: 'uppercase',
-                  fontFamily: 'Inter, sans-serif',
-                  letterSpacing: '-0.01em',
-                  lineHeight: 1.18,
-                }}
-              >
-                Want to improve your visibility across all AI answer engines?
-              </h2>
-
-              <div style={{ height: '1px', background: '#e2e8f0', margin: '28px 0' }} />
-
-              <p className="leading-relaxed" style={{ color: '#475569', fontSize: '1rem' }}>
-                Book a free strategy call with David Cummings at Davnoot Digital — he'll walk you through exactly how to rank where AI searches.
-              </p>
-
-              <div className="mt-10 flex flex-col gap-3">
-                <a
-                  href="https://www.davnoot.com/contact"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  onClick={() => setShowAuditPromoPopup(false)}
-                  className="w-full inline-flex items-center justify-center px-4 py-3.5 rounded-xl font-bold transition-all duration-200"
-                  style={{
-                    background: 'linear-gradient(to right, #3b82f6 0%, #6366f1 100%)',
-                    color: '#ffffff',
-                    boxShadow: '0 4px 18px rgba(59,130,246,0.25)',
-                    fontSize: '1rem',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.boxShadow = '0 6px 26px rgba(59,130,246,0.45), 0 4px 12px rgba(99,102,241,0.3)'}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 4px 18px rgba(59,130,246,0.25)'}
-                >
-                  Book a Free Call
-                </a>
-                <button
-                  onClick={() => setShowAuditPromoPopup(false)}
-                  className="w-full text-center text-sm transition-colors"
-                  style={{ color: '#94a3b8' }}
-                  onMouseEnter={e => e.currentTarget.style.color = '#475569'}
-                  onMouseLeave={e => e.currentTarget.style.color = '#94a3b8'}
-                >
-                  Maybe later
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

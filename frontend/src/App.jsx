@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider } from './context/AuthContext';
+import PromoPopup from './components/PromoPopup';
 import ProtectedRoute from './components/ProtectedRoute';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
@@ -24,6 +26,38 @@ import CitationsAndSources from './pages/CitationsAndSources';
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 function App() {
+  const [showPromoPopup, setShowPromoPopup] = useState(false);
+
+  useEffect(() => {
+    let timerId = null;
+
+    const checkForTrigger = () => {
+      const trigger = sessionStorage.getItem('auditPopupTrigger');
+      if (!trigger) return;
+      const hasShown = sessionStorage.getItem('auditPopupShown');
+      if (hasShown) return;
+      if (timerId) return; // already scheduled
+
+      const elapsed = Date.now() - parseInt(trigger, 10);
+      const remaining = Math.max(0, 15000 - elapsed);
+
+      timerId = setTimeout(() => {
+        setShowPromoPopup(true);
+        sessionStorage.setItem('auditPopupShown', 'true');
+      }, remaining);
+    };
+
+    checkForTrigger();
+
+    // Poll to catch same-tab sessionStorage writes (storage event only fires cross-tab)
+    const interval = setInterval(checkForTrigger, 1000);
+
+    return () => {
+      if (timerId) clearTimeout(timerId);
+      clearInterval(interval);
+    };
+  }, []);
+
   return (
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <Router>
@@ -137,6 +171,7 @@ function App() {
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          {showPromoPopup && <PromoPopup onClose={() => setShowPromoPopup(false)} />}
         </AuthProvider>
       </Router>
     </GoogleOAuthProvider>
