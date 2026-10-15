@@ -1,0 +1,18 @@
+# v2 (apps/, packages/). backend/ and frontend/ keep their own .gitignore files.
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.playwright-mcp/
+test-results/
+playwright-report/
+# pnpm db:backup output (database dumps)
+backups/

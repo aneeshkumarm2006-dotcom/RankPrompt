@@ -1,0 +1,26 @@
+{
+  "name": "@pv/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PromptVerse v2 analysis engine: platform adapters, cleaning, vendor extraction, matching, cost, plus the CLI.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "cli": "tsx src/cli/main.ts",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "@pv/shared": "workspace:*",
+    "exceljs": "^4.4.0",
+    "openai": "^7.33.0",
+    "tldts": "^7.4.18"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15"
+  }
+}

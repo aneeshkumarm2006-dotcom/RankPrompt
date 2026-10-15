@@ -1,0 +1,12 @@
+# v1 (reference only) and the planning docs are not formatted by the v2 tooling.
+backend/
+frontend/
+new-improvement/
+AUDIT.md
+DOCUMENTATION.md
+CLAUDE.md
+pnpm-lock.yaml
+**/dist/
+**/coverage/
+test-results/
+playwright-report/

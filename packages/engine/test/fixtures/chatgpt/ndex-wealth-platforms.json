@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "platform": "chatgpt",
+    "source": "NDEX Systems luna run 2026-09-28, ChatGPT Rankings/raw-json/01 - NDEX Systems (US).json reportData[0]",
+    "synthetic": "Answer text and citation URLs are real; the Responses envelope, annotation offsets and usage numbers were rebuilt (luna kept only text + citations).",
+    "note": "Competitors named in text and cited inline ([orion.com](…)). Stored extractor output in meta.vendors.",
+    "vendors": [
+      "Advyzon",
+      "Orion",
+      "Envestnet Tamarac",
+      "Altruist",
+      "Addepar",
+      "Wealthbox",
+      "RightCapital",
+      "eMoney",
+      "Holistiplan",
+      "MoneyGuide"
+    ]
+  },
+  "input": {
+    "prompt": "What are the best wealth management software platforms for independent advisors?",
+    "country": "US",
+    "language": "en"
+  },
+  "http": [
+    {
+      "status": 200,
+      "body": {
+        "id": "resp_fixture_0",
+        "object": "response",
+        "created_at": 1790611200,
+        "status": "completed",
+        "model": "gpt-5.6-luna",
+        "output": [
+          {
+            "type": "reasoning",
+            "id": "rs_1",
+            "summary": []
+          },
+          {
+            "type": "web_search_call",
+            "id": "ws_1",
+            "status": "completed",
+            "action": {
+              "type": "search",
+              "query": "What are the best wealth management software platforms for independent advisors?"
+            }
+          },
+          {
+            "type": "web_search_call",
+            "id": "ws_2",
+            "status": "completed",
+            "action": {
+              "type": "search",
+              "query": "What are the best wealth management software platforms for independent advisors? 2026"
+            }
+          },
+          {
+            "type": "message",
+            "id": "msg_1",
+            "role": "assistant",
+            "status": "completed",
+            "content": [
+              {
+                "type": "output_text",
+                "text": "As of **September 28, 2026**, the best choice depends on whether you want an **all-in-one operating platform**, a **portfolio/reporting system**, or a **financial-planning tool**. For most independent RIAs, I’d shortlist these:\n\n| Platform | Best for | Why it stands out | Main caution |\n|---|---|---|---|\n| **Advyzon** | Best all-in-one platform for small and midsize RIAs | Combines portfolio management, trading, billing, reporting, CRM, document management, client portal, and planning-related workflows in one system. It was rated highly by advisors across several categories in the 2025 Kitces AdvisorTech research and ranked first for all-in-one client satisfaction in the 2026 T3 survey. ([advyzon.com](https://www.advyzon.com/?utm_source=openai)) | A broad platform may require more implementation and process standardization than a lightweight stack. |\n| **Orion** | Best for firms that want scale, integrations, and a broad advisor-tech ecosystem | Offers portfolio accounting, reporting, planning, CRM, trading, billing, and client-experience tools, with options for firms managing portfolios internally or outsourcing investment management. ([orion.com](https://orion.com/advisor-tech?utm_source=openai)) | Can be more platform than a small solo practice needs. |\n| **Envestnet Tamarac** | Best for established RIAs with sophisticated trading, rebalancing, tax management, or UMA needs | Provides integrated trading, rebalancing, reporting, billing, CRM, client portal, proposal tools, and unified managed accounts. It is particularly strong for firms managing models and tax-aware portfolios at scale. ([envestnet.com](https://www.envestnet.com/rias/ria-platform?utm_source=openai)) | Often better suited to firms with meaningful operational complexity and implementation resources. |\n| **Altruist** | Best for a newer or lean RIA using Altruist custody | Brings account opening, custody, trading, portfolio management, billing, and reporting together, reducing the number of separate systems a new firm must assemble. It is designed specifically for independent advisors. ([altruist.com](https://altruist.com/?utm_source=openai)) | The platform is most compelling if you are comfortable using Altruist as a central custodian and technology provider. |\n| **Addepar** | Best for high-net-worth, multi-asset, and alternative-investment reporting | Particularly strong for complex portfolios, held-away assets, customized reporting, data aggregation, analytics, and open-architecture integrations. ([addepar.com](https://addepar.com/wealth-management?utm_source=openai)) | Usually excessive for a planning-centric or mass-affluent practice with straightforward portfolios. |\n| **Wealthbox** | Best CRM rather than full wealth-management platform | Advisor-focused CRM with workflows, householding, email synchronization, pipeline management, mobile access, AI meeting notes, and more than 150 integrations. ([wealthbox.com](https://www.wealthbox.com/who-we-serve/financial-advisors/?utm_source=openai)) | You’ll generally pair it with separate portfolio-management, billing, and planning software. |\n\n## My practical recommendations\n\n### 1. New solo or small RIA\nA strong starting stack would be:\n\n- **Altruist** for custody, trading, billing, and basic portfolio operations\n- **Wealthbox** for CRM and workflows\n- **RightCapital** or **eMoney** for financial planning\n- **Holistiplan** for tax analysis, if tax planning is central to your service\n\nThis minimizes implementation burden while leaving room to add specialized tools later. RightCapital focuses on interactive planning and retirement analysis, while eMoney is particularly strong in financial-data aggregation and comprehensive planning workflows. ([rightcapital.com](https://www.rightcapital.com/?utm_source=openai))\n\n### 2. Established investment-management RIA\nLook first at:\n\n- **Advyzon** if you want consolidation and a modern all-in-one experience\n- **Orion** if you want a flexible ecosystem with broad integrations\n- **Tamarac** if trading, tax management, models, and UMAs are central to the business\n\n### 3. Planning-led or advice-only firm\nUse a specialist stack rather than buying a large portfolio platform:\n\n- **Wealthbox** for CRM\n- **RightCapital**, **eMoney**, or **MoneyGuide** for planning\n- **Holistiplan** for tax planning\n- A separate billing/e-signature/client-portal solution as needed\n\n### 4. High-net-worth or alternatives-heavy practice\n**Addepar** is the strongest candidate when clients hold private funds, direct investments, trusts, complex entities, or substantial assets outside the custodian. For a more conventional portfolio business, Orion, Advyzon, or Tamarac will usually be easier to justify.\n\n## Bottom line\n\n- **Best overall for many independent RIAs:** **Advyzon**\n- **Best flexible enterprise platform:** **Orion**\n- **Best for sophisticated portfolio operations:** **Tamarac**\n- **Best for a lean new RIA:** **Altruist**\n- **Best CRM:** **Wealthbox**\n- **Best for complex HNW reporting:** **Addepar**\n- **Best planning complements:** **RightCapital** or **eMoney**\n\nBefore choosing, test five things with your own data: **custodian feeds, billing edge cases, household reporting, rebalancing/tax workflows, and client-portal usability**. Those usually matter more than feature-count comparisons.",
+                "annotations": [
+                  {
+                    "type": "url_citation",
+                    "start_index": 697,
+                    "end_index": 754,
+                    "url": "https://www.advyzon.com/?utm_source=openai",
+                    "title": "Home - Advyzon"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 1155,
+                    "end_index": 1216,
+                    "url": "https://orion.com/advisor-tech?utm_source=openai",
+                    "title": "Orion Advisor Technology | Financial Advisor Software"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 1617,
+                    "end_index": 1695,
+                    "url": "https://www.envestnet.com/rias/ria-platform?utm_source=openai",
+                    "title": "RIA Platform | Envestnet"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 2088,
+                    "end_index": 2143,
+                    "url": "https://altruist.com/?utm_source=openai",
+                    "title": "Welcome | Altruist"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 2510,
+                    "end_index": 2580,
+                    "url": "https://addepar.com/wealth-management?utm_source=openai",
+                    "title": "Wealth Management Software | Portfolio Reporting Solution | RIA | Addepar"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 2919,
+                    "end_index": 3012,
+                    "url": "https://www.wealthbox.com/who-we-serve/financial-advisors/?utm_source=openai",
+                    "title": "CRM for Financial Advisors | Wealthbox"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 3723,
+                    "end_index": 3790,
+                    "url": "https://www.rightcapital.com/?utm_source=openai",
+                    "title": "RightCapital | Financial planning software done right"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "usage": {
+          "input_tokens": 12000,
+          "input_tokens_details": {
+            "cached_tokens": 2000
+          },
+          "output_tokens": 1500,
+          "output_tokens_details": {
+            "reasoning_tokens": 400
+          },
+          "total_tokens": 13500
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+# v2 files are LF everywhere (Prettier checks this in CI). v1 (backend/, frontend/) is left as is.
+apps/** text=auto eol=lf
+packages/** text=auto eol=lf
+scripts/** text=auto eol=lf
+.github/** text=auto eol=lf
+/*.json text eol=lf
+/*.js text eol=lf
+/*.yaml text eol=lf
+/.editorconfig text eol=lf
+/.gitignore text eol=lf
+/.nvmrc text eol=lf
+/.prettierrc.json text eol=lf
+/.prettierignore text eol=lf
+*.png binary

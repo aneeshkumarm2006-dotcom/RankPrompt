@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "platform": "perplexity",
+    "source": "NDEX Systems luna run 2026-09-28, Perplexity Rankings/raw-json/01 - NDEX Systems (US).json reportData[0]",
+    "synthetic": "Answer and the 7 cited sources are real. Positions 1, 2, 6, 10, 11 are placeholders for the sources luna dropped as unused; usage is rebuilt.",
+    "usedMarkers": [3, 4, 5, 7, 8, 9, 12],
+    "vendors": [
+      "Wealthbox",
+      "Redtail",
+      "eMoney",
+      "MoneyGuidePro",
+      "RightCapital",
+      "Orion",
+      "Advyzon",
+      "SS&C Black Diamond",
+      "Addepar",
+      "Tamarac",
+      "AdvisorEngine"
+    ],
+    "note": "Legacy Sonar Chat Completions shape (ended 2026-09-27); still parsed for old raw responses."
+  },
+  "input": {
+    "prompt": "What are the best wealth management software platforms for independent advisors?",
+    "country": "US",
+    "language": "en"
+  },
+  "http": [
+    {
+      "status": 200,
+      "body": {
+        "id": "pplx_fixture",
+        "model": "sonar-pro",
+        "object": "chat.completion",
+        "created": 1790611200,
+        "choices": [
+          {
+            "index": 0,
+            "finish_reason": "stop",
+            "message": {
+              "role": "assistant",
+              "content": "For **independent advisors**, the best wealth management software is usually not one platform but a **stack**: a **CRM**, **financial planning** tool, and **portfolio management/reporting** system. The strongest commonly recommended choices in the results are **Wealthbox or Redtail** for CRM, **eMoney, MoneyGuidePro, or RightCapital** for planning, and **Orion, Advyzon, SS&C Black Diamond, or Addepar** for portfolio management/reporting.[7][8][9][4][5]\n\n- **Best overall CRM for independent advisors:** **Wealthbox** is highlighted as the best fit for most independent RIAs because of modern usability, transparent pricing, and broad adoption among solo and small firms.[7]\n- **Best CRM for reliability and integrations:** **Redtail** is described as a strong choice for independent advisors and small-to-mid RIAs, with 150+ integrations and built-in compliance archiving.[9]\n- **Best financial planning software:** **eMoney** and **MoneyGuidePro** are repeatedly ranked among the top planning platforms, while **RightCapital** is also emphasized as a strong, competitively priced option for small RIAs.[4][8]\n- **Best portfolio management platforms:** **Orion**, **Advyzon**, **SS&C Black Diamond**, and **Addepar** appear among the top advisor platforms in portfolio-management rankings.[5]\n- **Best all-in-one platform for smaller independent firms:** **Advyzon** is described as a comprehensive integrated solution with portfolio management, performance reporting, client portals, and business intelligence tools.[12]\n- **Best for more complex or high-net-worth practices:** **Tamarac** and **AdvisorEngine** are positioned as broader wealth-management platforms with portfolio tools, workflows, billing, and CRM integrations.[3]\n\nA practical way to choose is by firm size and complexity:\n\n| Need | Best-fit platforms |\n|---|---|\n| Simple, modern CRM | Wealthbox |\n| CRM with deep integrations/compliance | Redtail |\n| Core financial planning | eMoney, MoneyGuidePro, RightCapital |\n| Portfolio accounting/reporting | Orion, Advyzon, Black Diamond, Addepar |\n| Unified platform for a small RIA | Advyzon |\n| Enterprise-style customization | Tamarac, AdvisorEngine |\n\nIf you want, I can narrow this to the **best platforms by budget**, **best for solo advisors**, or **best all-in-one stack**."
+            }
+          }
+        ],
+        "citations": [
+          "https://unused-source-1.example.com/article",
+          "https://unused-source-2.example.com/article",
+          "https://smartasset.com/advisor-resources/ria-software-solutions",
+          "https://www.finantrix.com/buyer-guides/financial-planning-software-rias",
+          "https://www.investmentnews.com/transformation/10-best-portfolio-management-software-for-advisors/262100",
+          "https://unused-source-6.example.com/article",
+          "https://www.layer3labs.io/comparisons/best-crm-for-financial-advisors",
+          "https://www.rightcapital.com/blog/wealthtech/",
+          "https://www.quickbase.com/blog/best-crm-financial-advisors-wealth-management",
+          "https://unused-source-10.example.com/article",
+          "https://unused-source-11.example.com/article",
+          "https://www.rightcapital.com/blog/wealth-management-software/"
+        ],
+        "search_results": [
+          {
+            "url": "https://unused-source-1.example.com/article",
+            "title": "Unused source 1",
+            "date": null
+          },
+          {
+            "url": "https://unused-source-2.example.com/article",
+            "title": "Unused source 2",
+            "date": null
+          },
+          {
+            "url": "https://smartasset.com/advisor-resources/ria-software-solutions",
+            "title": "RIA Software Solutions for 2026 - SmartAsset",
+            "date": null
+          },
+          {
+            "url": "https://www.finantrix.com/buyer-guides/financial-planning-software-rias",
+            "title": "Buyer's Guide: Financial Planning Software for RIAs",
+            "date": null
+          },
+          {
+            "url": "https://www.investmentnews.com/transformation/10-best-portfolio-management-software-for-advisors/262100",
+            "title": "10 best portfolio management software for advisors",
+            "date": null
+          },
+          {
+            "url": "https://unused-source-6.example.com/article",
+            "title": "Unused source 6",
+            "date": null
+          },
+          {
+            "url": "https://www.layer3labs.io/comparisons/best-crm-for-financial-advisors",
+            "title": "Best CRM for Financial Advisors (2026) - Layer3Labs",
+            "date": null
+          },
+          {
+            "url": "https://www.rightcapital.com/blog/wealthtech/",
+            "title": "15 Wealthtech Software That Help RIAs Scale and Grow ...",
+            "date": null
+          },
+          {
+            "url": "https://www.quickbase.com/blog/best-crm-financial-advisors-wealth-management",
+            "title": "The Best CRM for Financial Advisors & Wealth Management [2026 ...",
+            "date": null
+          },
+          {
+            "url": "https://unused-source-10.example.com/article",
+            "title": "Unused source 10",
+            "date": null
+          },
+          {
+            "url": "https://unused-source-11.example.com/article",
+            "title": "Unused source 11",
+            "date": null
+          },
+          {
+            "url": "https://www.rightcapital.com/blog/wealth-management-software/",
+            "title": "Wealth Management Software Solutions for Financial Advisors",
+            "date": null
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 18,
+          "completion_tokens": 610,
+          "total_tokens": 628,
+          "search_context_size": "low",
+          "cost": {
+            "input_tokens_cost": 0.00005,
+            "output_tokens_cost": 0.00915,
+            "request_cost": 0.006,
+            "total_cost": 0.0152
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "name": "@pv/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "PromptVerse v2 API, job worker and scheduler (one process).",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/dev.ts",
+    "build": "tsup",
+    "start": "node --enable-source-maps dist/main.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint . --max-warnings 0",
+    "test": "vitest run",
+    "admin": "tsx scripts/admin.ts",
+    "soak": "tsx scripts/soak-schedules.ts",
+    "loadtest": "tsx scripts/load-test.ts",
+    "backup": "tsx scripts/backup.ts"
+  },
+  "dependencies": {
+    "@pv/engine": "workspace:*",
+    "@pv/shared": "workspace:*",
+    "@sentry/node": "^10.76.2",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "exceljs": "^4.4.0",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1",
+    "google-auth-library": "^11.3.0",
+    "helmet": "^8.3.0",
+    "jose": "^6.2.12",
+    "luxon": "3.7.2",
+    "mongoose": "^8.24.5",
+    "pino": "^10.4.0",
+    "pino-http": "^11.0.0",
+    "stripe": "22.6.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/luxon": "3.7.1",
+    "@types/supertest": "^7.2.1",
+    "mongodb-memory-server": "^10.4.3",
+    "pino-pretty": "^13.2.0",
+    "supertest": "^7.3.1",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.15"
+  }
+}

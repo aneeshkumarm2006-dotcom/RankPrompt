@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Support for mobile browsers with address bar */
+  :root {
+    --vh: 1vh;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+
+  :root {
+    --background: 255 255 255;
+    --foreground: 15 23 42;
+  }
+
+  .dark {
+    --background: 15 23 42;
+    --foreground: 248 250 252;
+  }
+}
+
+/* Fallback for browsers that don't support dvh */
+@supports not (height: 100dvh) {
+  .h-dvh {
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+
+  .max-h-dvh {
+    max-height: 100vh;
+    max-height: -webkit-fill-available;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  }
+
+  .dark .gradient-bg {
+    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  }
+
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-400 via-primary-500 to-accent-500 bg-clip-text text-transparent;
+  }
+
+  .glass-effect {
+    @apply bg-white/50 backdrop-blur-xl border border-gray-200/50 dark:bg-dark-800/50 dark:border-dark-700/50;
+  }
+
+  .glass-light {
+    @apply bg-white/5 backdrop-blur-md border border-white/10 dark:bg-dark-900/5 dark:border-dark-800/10;
+  }
+
+  .glow-border {
+    @apply border border-primary-500/50 shadow-[0_0_15px_rgba(249, 115, 22, 0.3)];
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-primary-500/20;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 10px;
+  border: 2px solid #f1f5f9;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+::-webkit-scrollbar-corner {
+  background: #f1f5f9;
+}
+
+/* Dark mode scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #475569;
+  border: 2px solid #1e293b;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark ::-webkit-scrollbar-corner {
+  background: #1e293b;
+}
+
+/* Firefox scrollbar support */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+.dark * {
+  scrollbar-color: #475569 #1e293b;
+}

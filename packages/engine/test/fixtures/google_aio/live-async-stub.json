@@ -1,0 +1,234 @@
+{
+  "meta": {
+    "platform": "google_aio",
+    "source": "Live DataForSEO response via MCP, 2026-10-14",
+    "synthetic": "items[] are from the live response, trimmed (organic links[] sub-arrays, the discussions item and some related searches dropped); the tasks/result envelope is rebuilt (the MCP tool strips it).",
+    "note": "Without load_async_ai_overview the overview is an empty stub with asynchronous_ai_overview: true (Q-002)."
+  },
+  "input": {
+    "prompt": "best wealth management software for independent advisors",
+    "country": "US",
+    "language": "en"
+  },
+  "http": [
+    {
+      "status": 200,
+      "body": {
+        "version": "0.1.20261001",
+        "status_code": 20000,
+        "status_message": "Ok.",
+        "cost": 0.002,
+        "tasks_count": 1,
+        "tasks_error": 0,
+        "tasks": [
+          {
+            "id": "10141451-2375-0139-0000-e46e4be94acb",
+            "status_code": 20000,
+            "status_message": "Ok.",
+            "cost": 0.002,
+            "result_count": 1,
+            "data": {
+              "api": "serp",
+              "function": "live",
+              "se": "google",
+              "se_type": "organic",
+              "keyword": "best wealth management software for independent advisors",
+              "location_code": 2840,
+              "language_code": "en",
+              "device": "desktop"
+            },
+            "result": [
+              {
+                "keyword": "best wealth management software for independent advisors",
+                "type": "organic",
+                "se_domain": "google.com",
+                "location_code": 2840,
+                "language_code": "en",
+                "check_url": "https://www.google.com/search?q=best+wealth+management+software+for+independent+advisors&gl=US&hl=en",
+                "item_types": ["ai_overview", "organic", "people_also_ask", "related_searches"],
+                "items_count": 11,
+                "items": [
+                  {
+                    "type": "ai_overview",
+                    "rank_group": 1,
+                    "rank_absolute": 1,
+                    "page": 1,
+                    "asynchronous_ai_overview": true
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 1,
+                    "rank_absolute": 2,
+                    "page": 1,
+                    "domain": "masttro.com",
+                    "title": "The Best Wealth Management Software in 2026",
+                    "url": "https://masttro.com/insights/the-best-wealth-management-software",
+                    "breadcrumb": "https://masttro.com › insights › the-best-wealth-manage...",
+                    "website_name": "Masttro",
+                    "description": "7 of the Best Wealth Management Software Platforms on the Market: · 1. Masttro · 2. Addepar · 3. SS&C Black Diamond · 4. Altoo · 5. Landytech · 6. Canoe · 7. Arch. Read more",
+                    "highlighted": ["1. Masttro"]
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 2,
+                    "rank_absolute": 3,
+                    "page": 1,
+                    "domain": "www.salesforce.com",
+                    "title": "Wealth Management Software for Financial Advisors",
+                    "url": "https://www.salesforce.com/financial-services/wealth-management-software/",
+                    "breadcrumb": "https://www.salesforce.com › financial-services › wealth...",
+                    "website_name": "Salesforce",
+                    "description": "The leading wealth management platform for the Agentic Enterprise—built to scale relationship intelligence, personalized advice, and advisor productivity. Read more",
+                    "highlighted": ["Agentic Enterprise"]
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 3,
+                    "rank_absolute": 4,
+                    "page": 1,
+                    "domain": "www.investopedia.com",
+                    "title": "Top 5 Financial Planning Software Tools Used by ...",
+                    "url": "https://www.investopedia.com/articles/professionals/080615/top-5-software-programs-used-financial-advisors.asp",
+                    "breadcrumb": "https://www.investopedia.com › ... › Emerging Advisors",
+                    "website_name": "Investopedia",
+                    "description": "Top 5 Financial Planning Software Tools Used by Financial Advisors · 1. eMoney Pro · 2. MoneyGuidePro · 3. RightCapital · 4. MoneyGuideElite · 5. Orion Financial ... Read more",
+                    "highlighted": ["1. eMoney Pro"]
+                  },
+                  {
+                    "type": "people_also_ask",
+                    "rank_group": 1,
+                    "rank_absolute": 5,
+                    "page": 1,
+                    "items": [
+                      {
+                        "type": "people_also_ask_element",
+                        "title": "What software do independent financial advisors use?",
+                        "expanded_element": [
+                          {
+                            "type": "people_also_ask_ai_overview_expanded_element",
+                            "asynchronous_ai_overview": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "people_also_ask_element",
+                        "title": "What software do most financial advisors use?",
+                        "expanded_element": [
+                          {
+                            "type": "people_also_ask_ai_overview_expanded_element",
+                            "asynchronous_ai_overview": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "people_also_ask_element",
+                        "title": "What is the best wealth management software for individuals?",
+                        "expanded_element": [
+                          {
+                            "type": "people_also_ask_ai_overview_expanded_element",
+                            "asynchronous_ai_overview": true
+                          }
+                        ]
+                      },
+                      {
+                        "type": "people_also_ask_element",
+                        "title": "Can ChatGPT be used as a financial advisor?",
+                        "expanded_element": [
+                          {
+                            "type": "people_also_ask_ai_overview_expanded_element",
+                            "asynchronous_ai_overview": true
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 4,
+                    "rank_absolute": 6,
+                    "page": 1,
+                    "domain": "www.reddit.com",
+                    "title": "Financial planning software recommendations : r/fatFIRE",
+                    "url": "https://www.reddit.com/r/fatFIRE/comments/1lc2fcq/financial_planning_software_recommendations/",
+                    "breadcrumb": "50+ comments  ·  1 year ago",
+                    "website_name": "Reddit · r/fatFIRE",
+                    "description": "I work in the industry and eMoney is widely regarded as Best In Class. It forecasts all your assets through a simulated 1040, state specific. Read more",
+                    "highlighted": ["eMoney"]
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 5,
+                    "rank_absolute": 7,
+                    "page": 1,
+                    "domain": "www.wealthbox.com",
+                    "title": "Wealthbox | The AI-Powered CRM Workspace for Financial ...",
+                    "url": "https://www.wealthbox.com/",
+                    "breadcrumb": "https://www.wealthbox.com",
+                    "website_name": "Wealthbox",
+                    "description": "Concurrent, an independent wealth management platform. Wealthbox has the highest user adoption rating of any financial advisor CRM. Certified Independently ...",
+                    "highlighted": ["Wealthbox"]
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 6,
+                    "rank_absolute": 8,
+                    "page": 1,
+                    "domain": "www.justvanilla.com",
+                    "title": "Top Financial Advisor Software Picks for 2025",
+                    "url": "https://www.justvanilla.com/blog/top-financial-advisor-software-picks",
+                    "breadcrumb": "https://www.justvanilla.com › Blog",
+                    "website_name": "justvanilla.com",
+                    "description": "Feb 16, 2024 — BlackDiamond is a wealth management software that provides advisors with the ability to view, trade, rebalance and create reports for client ...",
+                    "pre_snippet": "02/16/2024 00:00:00",
+                    "highlighted": ["BlackDiamond"],
+                    "timestamp": "2024-02-16 00:00:00 +00:00"
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 7,
+                    "rank_absolute": 9,
+                    "page": 1,
+                    "domain": "www.kitces.com",
+                    "title": "Advisor's Guide To The Best Financial Planning Software",
+                    "url": "https://www.kitces.com/blog/best-financial-planning-software-reviews-financial-advisors-guide-on-how-to-choose/",
+                    "breadcrumb": "https://www.kitces.com › blog › best-financial-planning...",
+                    "website_name": "Kitces.com",
+                    "description": "Mar 21, 2016 — A financial advisor's guide to choosing the best financial planning software, including software reviews and pricing information.",
+                    "pre_snippet": "03/21/2016 00:00:00",
+                    "highlighted": ["best financial planning software"],
+                    "timestamp": "2016-03-21 00:00:00 +00:00"
+                  },
+                  {
+                    "type": "organic",
+                    "rank_group": 8,
+                    "rank_absolute": 10,
+                    "page": 1,
+                    "domain": "aldeninvestmentgroup.com",
+                    "title": "10 Must-Have Financial Advisor Tools in 2026",
+                    "url": "https://aldeninvestmentgroup.com/blog/10-must-have-financial-advisor-tools-in-2026/",
+                    "breadcrumb": "https://aldeninvestmentgroup.com › blog › 10-must-ha...",
+                    "website_name": "Alden Investment Group",
+                    "description": "Wealthbox is a CRM designed specifically for financial advisors. Some worthwhile options include Riskalyze Nitrogen, Morningstar Direct, and BlackRock's ...",
+                    "highlighted": ["Wealthbox"]
+                  },
+                  {
+                    "type": "related_searches",
+                    "rank_group": 1,
+                    "rank_absolute": 12,
+                    "page": 1,
+                    "items": [
+                      "Best wealth management software for independent advisors reddit",
+                      "Best wealth management software for independent advisors free",
+                      "Wealthbox",
+                      "Best financial planning software for advisors"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "platform": "chatgpt",
+    "source": "NDEX Systems luna run 2026-09-28, ChatGPT Rankings/raw-json/01 - NDEX Systems (US).json reportData[13]",
+    "synthetic": "Answer text and citation URLs are real; the Responses envelope, annotation offsets and usage numbers were rebuilt (luna kept only text + citations).",
+    "note": "Case 1: \"fiserv\" appears only inside ([fiserv.com](…)) inline citations, never in the prose.",
+    "vendors": [
+      "Excel Power Query",
+      "SQL",
+      "Python",
+      "Power Automate",
+      "Alteryx",
+      "Oracle",
+      "Fiserv"
+    ]
+  },
+  "input": {
+    "prompt": "What are alternatives to manual investment reconciliation?",
+    "country": "US",
+    "language": "en"
+  },
+  "http": [
+    {
+      "status": 200,
+      "body": {
+        "id": "resp_fixture_13",
+        "object": "response",
+        "created_at": 1790611200,
+        "status": "completed",
+        "model": "gpt-5.6-luna",
+        "output": [
+          {
+            "type": "reasoning",
+            "id": "rs_1",
+            "summary": []
+          },
+          {
+            "type": "web_search_call",
+            "id": "ws_1",
+            "status": "completed",
+            "action": {
+              "type": "search",
+              "query": "What are alternatives to manual investment reconciliation?"
+            }
+          },
+          {
+            "type": "web_search_call",
+            "id": "ws_2",
+            "status": "completed",
+            "action": {
+              "type": "search",
+              "query": "What are alternatives to manual investment reconciliation? 2026"
+            }
+          },
+          {
+            "type": "message",
+            "id": "msg_1",
+            "role": "assistant",
+            "status": "completed",
+            "content": [
+              {
+                "type": "output_text",
+                "text": "Alternatives to fully manual investment reconciliation include:\n\n1. **Automated reconciliation software**\n   - Compares positions, cash, trades, fees, prices, and corporate actions across custodians, brokers, fund administrators, and the general ledger.\n   - Uses configurable matching rules and produces an exception queue rather than requiring staff to review every item.\n   - Best for firms with recurring, high-volume reconciliation needs.\n\n2. **Exception-based reconciliation**\n   - Automatically clears transactions that match within predefined tolerances.\n   - Staff investigate only unmatched or unusual items—such as quantity, price, settlement-date, or cash differences.\n   - This is often the most practical replacement for manual reconciliation. Automated systems commonly classify unmatched items as reconciliation exceptions for review. ([docs.oracle.com](https://docs.oracle.com/en/cloud/saas/financials/25d/faofc/overview-of-reconciliation-exceptions.html?utm_source=openai))\n\n3. **API and straight-through processing**\n   - Connects portfolio-management systems, custodians, broker-dealers, banks, accounting platforms, and market-data providers through APIs or standardized files.\n   - Reduces rekeying and enables near-real-time or scheduled reconciliations.\n   - Particularly useful when the main problem is fragmented or delayed data.\n\n4. **Robotic process automation (RPA)**\n   - Bots download statements, transform files, compare records, update systems, and route breaks for approval.\n   - Useful when existing systems lack APIs or when reconciliation involves repetitive web or spreadsheet steps.\n   - RPA is generally better for structured, rules-based work than for judgment-heavy exceptions. ([fiserv.com](https://www.fiserv.com/content/dam/fiserv-com/additional-resources/robotic-process-automation-white-paper.pdf?utm_source=openai))\n\n5. **Spreadsheet-assisted or low-code automation**\n   - Uses Excel Power Query, SQL, Python, Power Automate, Alteryx, or similar tools to automate data loading, matching, and reporting.\n   - Lower cost and faster to deploy than a full reconciliation platform, but requires strong version control, access controls, documentation, and testing.\n\n6. **Outsourcing to a fund administrator or middle-office provider**\n   - A third party performs reconciliation, trade support, NAV support, corporate-action processing, and exception management.\n   - Attractive for smaller investment managers or firms that lack operational infrastructure.\n   - The firm still needs oversight, service-level monitoring, and evidence that controls operate effectively.\n\n7. **Centralized investment data or accounting platform**\n   - A single source of truth consolidates custodial, portfolio, transaction, and accounting data.\n   - This can reduce the need to reconcile multiple internally maintained books and records, though external-custodian reconciliation remains necessary.\n\n8. **Distributed-ledger or shared-ledger models**\n   - Multiple parties use a synchronized transaction record, potentially reducing some reconciliation between counterparties.\n   - These approaches are more relevant to specific asset classes or market infrastructures and are not usually a near-term replacement for conventional reconciliation.\n\n### A common target operating model\n\nFor many firms, the best approach is a **hybrid model**:\n\n- automate data ingestion;\n- apply rules-based matching and tolerance thresholds;\n- auto-clear clean items;\n- route only exceptions to analysts;\n- require documented review and approval for material breaks;\n- retain an audit trail of inputs, rules, adjustments, and sign-offs.\n\nAutomation should not eliminate control ownership. Reconciliation is still an important internal control for detecting errors and ensuring records are complete and accurate. ([sec.gov](https://www.sec.gov/rules-regulations/staff-guidance/compliance-disclosure-interpretations/managements-report-internal-control-over-financial-reporting-certification-disclosure-exchange-act?utm_source=openai))\n\n### Quick selection guide\n\n- **Low volume, limited budget:** spreadsheet/low-code automation  \n- **High volume and repeatable processes:** reconciliation platform  \n- **Legacy systems without APIs:** RPA plus file-based integration  \n- **Small operations team:** outsourced middle office or fund administrator  \n- **Complex, judgment-heavy investments:** automated matching with human exception review  \n- **Multiple disconnected systems:** API integration and a centralized data layer",
+                "annotations": [
+                  {
+                    "type": "url_citation",
+                    "start_index": 852,
+                    "end_index": 990,
+                    "url": "https://docs.oracle.com/en/cloud/saas/financials/25d/faofc/overview-of-reconciliation-exceptions.html?utm_source=openai",
+                    "title": "Overview of Reconciliation Exceptions"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 1721,
+                    "end_index": 1862,
+                    "url": "https://www.fiserv.com/content/dam/fiserv-com/additional-resources/robotic-process-automation-white-paper.pdf?utm_source=openai",
+                    "title": "Automating the Right Tasks: Reconciliation"
+                  },
+                  {
+                    "type": "url_citation",
+                    "start_index": 3816,
+                    "end_index": 4034,
+                    "url": "https://www.sec.gov/rules-regulations/staff-guidance/compliance-disclosure-interpretations/managements-report-internal-control-over-financial-reporting-certification-disclosure-exchange-act?utm_source=openai",
+                    "title": "SEC.gov | Management's Report on Internal Control Over Financial Reporting and Certification of Disclosure in Exchange Act Periodic Reports"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "usage": {
+          "input_tokens": 12000,
+          "input_tokens_details": {
+            "cached_tokens": 2000
+          },
+          "output_tokens": 1500,
+          "output_tokens_details": {
+            "reasoning_tokens": 400
+          },
+          "total_tokens": 13500
+        }
+      }
+    }
+  ]
+}

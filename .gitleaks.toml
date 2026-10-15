@@ -1,0 +1,10 @@
+# Secret scanning for v2 (CI job `secrets`, TODO 8.3). Default gitleaks rules; v1 (backend/,
+# frontend/, deleted at go-live) and installed or generated folders are skipped.
+[extend]
+useDefault = true
+
+[allowlist]
+description = "v1 code, dependencies and build output"
+paths = [
+  '''(^|[\/])(backend|frontend|node_modules|dist|\.git|test-results|playwright-report|backups)[\/]''',
+]

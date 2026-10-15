@@ -1,0 +1,32 @@
+{
+  "meta": {
+    "platform": "gemini",
+    "source": "synthetic",
+    "synthetic": "Built from the documented API response shape (no real response was stored); re-record with `pnpm engine ask --record` in TODO 2.11.",
+    "note": "finishReason SAFETY → refused."
+  },
+  "input": {
+    "prompt": "best immigration consultants in Toronto for express entry",
+    "country": "CA",
+    "language": "en"
+  },
+  "http": [
+    {
+      "status": 200,
+      "body": {
+        "candidates": [
+          {
+            "finishReason": "SAFETY",
+            "content": {
+              "parts": []
+            }
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 22
+        },
+        "modelVersion": "gemini-2.5-flash"
+      }
+    }
+  ]
+}

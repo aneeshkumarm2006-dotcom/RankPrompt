@@ -1,0 +1,12 @@
+# v2 workspace (D-018). v1 lives in backend/ and frontend/ and is NOT part of it:
+# those keep building with npm from their own package-lock.json files.
+packages:
+  - apps/*
+  - packages/*
+# Install scripts are opt-in (pnpm 11). mongodb-memory-server downloads mongod on first use instead.
+allowBuilds:
+  esbuild: true
+  mongodb-memory-server: false
+  core-js: false
+minimumReleaseAgeExclude:
+  - openai@7.33.0

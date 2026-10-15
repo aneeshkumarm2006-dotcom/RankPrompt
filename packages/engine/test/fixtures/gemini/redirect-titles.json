@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "platform": "gemini",
+    "source": "synthetic",
+    "synthetic": "Built from the documented API response shape (no real response was stored); re-record with `pnpm engine ask --record` in TODO 2.11.",
+    "note": "Case 4: grounding chunk uris are Google redirects; titles hold the source domain, except one (resolved via the redirect resolver)."
+  },
+  "input": {
+    "prompt": "best immigration consultants in Toronto for express entry",
+    "country": "CA",
+    "language": "en"
+  },
+  "http": [
+    {
+      "status": 200,
+      "body": {
+        "candidates": [
+          {
+            "content": {
+              "role": "model",
+              "parts": [
+                {
+                  "text": "For Express Entry in Toronto, well-reviewed options include **Visa Place**, **Matthew Jeffery Immigration Law** and **Bellissimo Law Group**. Licensed consultants (RCICs) can be checked on the College of Immigration and Citizenship Consultants register."
+                },
+                {
+                  "text": " Canadim also publishes detailed Express Entry guides."
+                }
+              ]
+            },
+            "finishReason": "STOP",
+            "groundingMetadata": {
+              "webSearchQueries": ["best immigration consultants Toronto express entry"],
+              "groundingChunks": [
+                {
+                  "web": {
+                    "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGk1",
+                    "title": "canadim.com"
+                  }
+                },
+                {
+                  "web": {
+                    "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGk2",
+                    "title": "visaplace.com"
+                  }
+                },
+                {
+                  "web": {
+                    "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGk2",
+                    "title": "visaplace.com"
+                  }
+                },
+                {
+                  "web": {
+                    "uri": "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGk3",
+                    "title": "College of Immigration and Citizenship Consultants"
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 22,
+          "candidatesTokenCount": 180,
+          "thoughtsTokenCount": 420,
+          "toolUsePromptTokenCount": 900,
+          "totalTokenCount": 1522
+        },
+        "modelVersion": "gemini-2.5-flash"
+      }
+    }
+  ],
+  "redirects": {
+    "https://vertexaisearch.cloud.google.com/grounding-api-redirect/AUZIYQGk3": "https://college-ic.ca/protecting-the-public/find-an-immigration-consultant"
+  }
+}
