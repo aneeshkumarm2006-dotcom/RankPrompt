@@ -5,6 +5,9 @@ import dotenv from 'dotenv';
 // Load environment variables explicitly
 dotenv.config();
 
+// gpt-5-chat-latest was retired by OpenAI (404). Override with OPENAI_MODEL if needed.
+const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-5.4-mini';
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -65,7 +68,7 @@ export const generateCategories = async (req, res) => {
 
     // Generate 10 SEO categories using OpenAI based on brand summary
     const completion = await openai.chat.completions.create({
-      model: 'gpt-5-chat-latest',
+      model: OPENAI_MODEL,
       messages: [
         {
           role: 'system',
@@ -98,7 +101,6 @@ Return a valid JSON object in this EXACT format:
 Please provide the 10 categories:`,
         },
       ],
-      temperature: 0.3, // Lower temperature for more consistent results
       response_format: { type: "json_object" },
     });
 
@@ -225,7 +227,7 @@ export const generatePrompts = async (req, res) => {
       }
 
       const completion = await openai.chat.completions.create({
-        model: 'gpt-5-chat-latest',
+        model: OPENAI_MODEL,
         messages: [
           {
             role: 'system',
@@ -259,8 +261,6 @@ Return a valid JSON object in this EXACT format:
 IMPORTANT: Generate exactly ${promptCount} prompts, no markdown, no code blocks, no brand names.`,
           },
         ],
-        temperature: 0.9,
-        // max_tokens: 1500,
         response_format: { type: "json_object" },
       });
 
